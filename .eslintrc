@@ -1,0 +1,9 @@
+{
+  "extends": ["4catalyzer-react", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "global-require": "off",
+    "no-console": "off",
+    "import/no-dynamic-require": "off"
+  }
+}
