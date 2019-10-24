@@ -1,9 +1,9 @@
-import styled from '@emotion/styled';
-
+import React from 'react';
 import { LiveError } from 'react-live';
 
-const Error = styled(LiveError)`
-  white-space: pre;
-`;
-
-export default Error;
+/**
+ * An Error _component_ for *building*
+ */
+export default function Error(props) {
+  return <LiveError style={{ whiteSpace: 'pre' }} {...props} />;
+}

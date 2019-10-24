@@ -1,10 +1,4 @@
-import {
-  Editor,
-  Preview,
-  Provider,
-  InfoMessage,
-  Error,
-} from '@docpocalypse/editable-example';
 import Example from './src/components/Example';
+import theme from './src/themes/default';
 
-export { Editor, Preview, Provider, InfoMessage, Error };
+export { Example, theme };

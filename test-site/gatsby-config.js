@@ -1,11 +1,14 @@
 const path = require('path');
 
 module.exports = {
-  __experimentalThemes: [
+  plugins: [
     {
-      resolve: 'theme',
+      resolve: 'docpocalypse',
       options: {
         sources: [path.resolve(__dirname, '../packages/editable-example/src')],
+        reactDocgenConfig: {
+          babelrcRoots: true,
+        },
       },
     },
   ],

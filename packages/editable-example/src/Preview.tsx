@@ -1,14 +1,21 @@
-import { withLive, LivePreview } from 'react-live';
-import holderjs from 'holderjs';
-import React, { useEffect } from 'react';
+// @ts-ignore
+import { LiveContext, LivePreview } from 'react-live';
+import React, { useEffect, useContext } from 'react';
 import useCallbackRef from '@restart/hooks/useCallbackRef';
 
-const Preview = withLive(({ className, live, holderTheme }: any) => {
+let holderjs;
+if (typeof window !== 'undefined') {
+  holderjs = require('holderjs');
+}
+
+const Preview = ({ className, holderTheme }: any) => {
   const [example, attachRef] = useCallbackRef();
   const hasTheme = !!holderTheme;
+  const live = useContext(LiveContext) as any;
 
   useEffect(() => {
     holderjs.addTheme('userTheme', holderTheme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasTheme]);
 
   useEffect(() => {
@@ -18,7 +25,7 @@ const Preview = withLive(({ className, live, holderTheme }: any) => {
       theme: hasTheme ? 'userTheme' : undefined,
       images: example.querySelectorAll('img'),
     });
-  }, [live.element, example]);
+  }, [live.element, example, hasTheme]);
 
   // prevent links in examples from navigating
   const handleClick = (e: any) => {
@@ -26,6 +33,7 @@ const Preview = withLive(({ className, live, holderTheme }: any) => {
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <div
       role="region"
       aria-label="Code Example"
@@ -36,6 +44,6 @@ const Preview = withLive(({ className, live, holderTheme }: any) => {
       <LivePreview />
     </div>
   );
-});
+};
 
 export default Preview;

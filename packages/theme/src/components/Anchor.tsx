@@ -1,6 +1,5 @@
 import React, { ReactType, ReactNode } from 'react';
-import cn from 'classnames';
-import styled from '../styled';
+import styled from 'astroturf';
 
 const Wrapper = styled('span')`
   position: relative;
@@ -16,7 +15,7 @@ const A = styled('a')`
   opacity: 0;
 
   &:focus,
-  .__heading:hover & {
+  :global(.__heading):hover & {
     text-decoration: none;
     opacity: 0.5;
   }

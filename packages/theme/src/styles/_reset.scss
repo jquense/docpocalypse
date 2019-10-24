@@ -1,0 +1,59 @@
+@use 'variables';
+
+// @import '~bootstrap/scss/root';
+// @import '~bootstrap/scss/reboot';
+// @import 'prism';
+
+:root {
+  font-size: variables.$font-size-root;
+
+  --theme-font-size-root: #{variables.$font-size-root};
+  --theme-font-size-base: #{variables.$font-size-base};
+
+  --theme-body-bg: #ffffff;
+  --theme-text-color: #333333;
+
+  --theme-navbar-height: #{variables.$navbar-height};
+  --theme-navbar-bg-color: black;
+  --theme-navbar-color: white;
+  --theme-navbar-link-color: white;
+  --theme-navbar-link-hover-color: #efefef;
+
+  --theme-side-nav-bg-color: #ccc;
+
+  --theme-doc-outline-bg-color: #white;
+
+  --theme-color-divider: #ccc;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--theme-body-bg);
+  color: var(--theme-text-color);
+  font-family: variables.$font-family-base;
+  font-size: variables.$font-size-base;
+  line-height: variables.$line-height-base;
+  margin: 0;
+  padding: 0;
+
+  // gatsby divs
+  &,
+  & > *,
+  & > * > * {
+    min-height: 100vh;
+  }
+}
+
+a {
+  color: var(--theme-link-color, #{variables.$link-color});
+
+  &:hover {
+    color: var(--theme-link-hover-color, #{variables.$link-hover-color});
+  }
+}

@@ -3,9 +3,9 @@ import { LiveProvider } from 'react-live';
 
 const prettierComment = /(\{\s*\/\*\s+prettier-ignore\s+\*\/\s*\})|(\/\/\s+prettier-ignore)/gim;
 
-export default function Provider<T extends {} = {}>(props: {
+export default function Provider<TScope extends {} = {}>(props: {
   code: String;
-  scope?: T;
+  scope?: TScope;
   children?: ReactNode;
 }) {
   const { code: codeText, scope, children } = props;

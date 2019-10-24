@@ -1,14 +1,13 @@
-import styled from '../styled';
-import { transparentize } from 'polished';
+import styled from 'astroturf';
 
 const ListItem = styled('li')`
   & a {
     display: block;
     padding: 0.125rem 1.5rem;
-    color: ${p => transparentize(0.4, p.theme.textColor)};
+    color: var(--theme-link-color);
 
     &:hover {
-      color: ${p => p.theme.color.primary};
+      color: var(--theme-link-hover-color);
       text-decoration: none;
     }
   }

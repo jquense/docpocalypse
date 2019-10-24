@@ -1,6 +1,11 @@
-import { useMemo, useRef, useState, ReactNode, useCallback } from 'react';
+import React, {
+  useMemo,
+  useRef,
+  useState,
+  ReactNode,
+  useCallback,
+} from 'react';
 import useAnimationFrame from '@restart/hooks/useAnimationFrame';
-import React from 'react';
 
 export interface Node {
   id: string;
@@ -19,9 +24,9 @@ export const DocumentOutlineContext = React.createContext<{
 }>(null as any);
 
 function toTree(list: Iterable<Node>): Tree {
-  let map: Record<string, Node[]> = {};
-  let root: Tree = { children: [] };
-  let parents = [] as Node[];
+  const map: Record<string, Node[]> = {};
+  const root: Tree = { children: [] };
+  const parents = [] as Node[];
   let last: Node | null = null;
 
   // eslint-disable-next-line
@@ -29,7 +34,7 @@ function toTree(list: Iterable<Node>): Tree {
     if (last && item.level > last.level) parents.push(last);
     if (last && item.level < last.level) parents.pop();
     last = item;
-    let parent = parents[parents.length - 1];
+    const parent = parents[parents.length - 1];
 
     map[item.id] = map[item.id] || [];
     item.children = map[item.id];

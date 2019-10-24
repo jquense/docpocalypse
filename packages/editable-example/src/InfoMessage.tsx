@@ -1,10 +1,15 @@
-import styled from '@emotion/styled';
+import React from 'react';
 
-const InfoMessage = styled('div')`
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-`;
-
-export default InfoMessage;
+export default function InfoMessage(props: React.HTMLProps<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      style={{
+        pointerEvents: 'none',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+      }}
+    />
+  );
+}

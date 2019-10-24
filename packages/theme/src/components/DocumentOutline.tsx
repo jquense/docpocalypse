@@ -9,6 +9,7 @@ function renderNode(root: Tree | Node) {
       {'title' in root && <a href={`#${root.id}`}>{root.title}</a>}
       <ul className="list-unstyled">
         {root.children!.map((item, idx) => (
+          // eslint-disable-next-line react/no-array-index-key
           <DocumentOutlineItem key={idx}>
             {renderNode(item)}
           </DocumentOutlineItem>

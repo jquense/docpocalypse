@@ -1,0 +1,75 @@
+{
+  "name": "docpocalypse-core",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/4Catalyzer/theme.git",
+    "directory": "packages/theme-core"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "4Catalyzer",
+  "license": "MIT",
+  "scripts": {
+    "tdd": "jest --watch",
+    "test": "jest"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "jest": {
+    "preset": "@4c/jest-preset",
+    "testEnvironment": "jsdom"
+  },
+  "peerDependencies": {
+    "gatsby": "^2.8.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "optionalDependencies": {
+    "fibers": "^4.0.1"
+  },
+  "devDependencies": {
+    "@4c/babel-preset": "^7.1.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/classnames": "^2.2.8",
+    "@types/react": "^16.8.19",
+    "@types/react-dom": "^16.8.4",
+    "gatsby": "^2.8.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "dependencies": {
+    "@4c/layout": "^1.0.0",
+    "@mdx-js/mdx": "^1.0.20",
+    "@mdx-js/react": "^1.0.20",
+    "@restart/hooks": "^0.3.0",
+    "ast-types": "^0.13.2",
+    "astroturf": "^0.9.10",
+    "classnames": "^2.2.6",
+    "find-package-json": "^1.2.0",
+    "find-pkg": "^2.0.0",
+    "find-up": "^4.0.0",
+    "gatsby-plugin-astroturf": "^0.2.1",
+    "gatsby-plugin-catch-links": "^2.0.15",
+    "gatsby-plugin-mdx": "^1.0.22",
+    "gatsby-plugin-page-creator": "^2.0.13",
+    "gatsby-plugin-sass": "^2.0.11",
+    "gatsby-plugin-sorted-assets": "^1.0.2",
+    "gatsby-plugin-typescript": "^2.0.15",
+    "gatsby-remark-prismjs": "^3.2.11",
+    "gatsby-source-filesystem": "^2.0.38",
+    "gatsby-transformer-documentationjs": "^4.0.2",
+    "gatsby-transformer-react-docgen": "^5.0.0",
+    "gatsby-transformer-remark": "^2.4.0",
+    "lodash": "^4.17.11",
+    "remark-slug": "^5.1.1",
+    "resolve": "^1.11.1",
+    "sass": "^1.23.0",
+    "webpack-atoms": "^11.1.0"
+  }
+}

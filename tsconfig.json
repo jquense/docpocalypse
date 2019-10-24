@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/props-table" },
+    { "path": "packages/editable-example" },
+    { "path": "packages/theme-core" },
+    { "path": "packages/theme" }
+  ]
+}
