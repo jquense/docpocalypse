@@ -1,8 +1,8 @@
 import React from 'react';
 import DefaultValue from './DefaultValue';
 import PropTypeValue, { PropType } from './PropTypeValue';
-import { TSType } from './TypescriptTypeValue';
-import { Doclet, docletsToMap, getDoclet, getTypeName } from './utils';
+import TypescriptTypeValue, { TSType, TokenMap } from './TypescriptTypeValue';
+import { Doclet, docletsToMap, getTypeName } from './utils';
 
 export interface Prop {
   name: string;
@@ -33,21 +33,32 @@ const isElementType = (name: string, types: Array<string | RegExp>) => {
   });
 };
 
+export interface RenderPropsOptions {
+  tokenMap?: TokenMap;
+  elementTypes?: Array<string | RegExp>;
+}
 export default function renderProps(
   propsData: Prop[],
-  elementTypes: Array<string | RegExp> = [
-    'elementType',
-    /React\.ComponentType(<.*>)?/,
-  ],
+  {
+    tokenMap,
+    elementTypes = ['elementType', /React\.ComponentType(<.*>)?/]
+  }: RenderPropsOptions = {}
 ) {
   return propsData
     .filter(
       prop =>
         prop.type &&
-        !prop.doclets.find(d => d.tag === 'private' || d.tag === 'ignore'),
+        !prop.doclets.find(d => d.tag === 'private' || d.tag === 'ignore')
     )
     .map(propData => {
-      const { name, type, defaultValue, description, doclets } = propData;
+      const {
+        name,
+        type,
+        defaultValue,
+        description,
+        doclets,
+        tsType
+      } = propData;
 
       const docletMap = docletsToMap(doclets);
       const typeName = getTypeName(propData);
@@ -58,20 +69,34 @@ export default function renderProps(
           description.childMarkdownRemark.html) ||
         '';
 
+      let renderedType = null;
+      if (tsType)
+        renderedType = (
+          <TypescriptTypeValue
+            type={tsType}
+            doclets={doclets}
+            tokens={tokenMap}
+          />
+        );
+      else if (type)
+        renderedType = (
+          <PropTypeValue type={type} doclets={doclets} tokens={tokenMap} />
+        );
+
       return {
         name,
         doclets,
         typeName,
         description: descHtml,
         deprecated: docletMap.get('deprecated'),
-        type: type && <PropTypeValue type={type} doclets={doclets} />,
+        type: renderedType,
         defaultValue: defaultValue && (
           <DefaultValue
             {...defaultValue}
             isElementType={isElementType(typeName, elementTypes)}
           />
         ),
-        propData,
+        propData
       };
     });
 }

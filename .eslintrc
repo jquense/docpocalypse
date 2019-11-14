@@ -1,9 +1,15 @@
 {
-  "extends": ["4catalyzer-react", "4catalyzer-typescript", "prettier"],
+  "extends": [
+    "4catalyzer-react",
+    "4catalyzer-typescript",
+    "4catalyzer-jest",
+    "prettier"
+  ],
   "plugins": ["prettier"],
   "rules": {
     "global-require": "off",
     "no-console": "off",
+    "no-param-reassign": "off",
     "import/no-dynamic-require": "off",
     "react/prop-types": "off",
     "react/jsx-one-expression-per-line": "off"

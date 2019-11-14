@@ -8,13 +8,13 @@ import Heading, { HeadingLevel } from './Heading';
 const List = ({ elements, level, ignoreParams }) => (
   <ul
     css={css`
-      composes: mt-3 ml-5 p-0 mb-0 from global;
+      composes: ml-5 p-0 mt-0 mb-0 from global;
     `}
   >
     {elements
       .filter(param => !ignoreParams.includes(param.name))
       .map(param => (
-        <li key={param.name}>
+        <li key={param.name} className='mt-3'>
           <DocBlock definition={param} level={level + 1} />
         </li>
       ))}
@@ -31,14 +31,14 @@ interface ParamsProps {
 function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
   if (definition.params && definition.params.length > 0) {
     return (
-      <React.Fragment>
+      <>
         <Heading level={level}>Parameters</Heading>
         <List
           elements={definition.params}
           level={level}
           ignoreParams={ignoreParams}
         />
-      </React.Fragment>
+      </>
     );
   }
   if (definition.properties && definition.properties.length > 0) {
@@ -59,14 +59,14 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
     definition.members.static.length > 0
   ) {
     return (
-      <React.Fragment>
+      <>
         {level === 1 && <Heading level={level}>Fields</Heading>}
         <List
           elements={definition.members.static}
           level={level}
           ignoreParams={ignoreParams}
         />
-      </React.Fragment>
+      </>
     );
   }
   if (definition.type && definition.type.typeDef) {

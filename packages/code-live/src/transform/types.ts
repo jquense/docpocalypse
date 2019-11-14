@@ -1,0 +1,29 @@
+import MagicString from 'magic-string';
+
+export type Node = any;
+
+export type VisitorFn = <TNode extends Node = any>(
+  this: MagicString,
+  node: TNode,
+  parent: Node
+) => void;
+
+export type NormalVisitor = { enter?: VisitorFn; leave?: VisitorFn };
+
+export type Visitor = VisitorFn | NormalVisitor;
+
+export type PluginOptions = {};
+
+export type VisitorMap = Record<string, Visitor>;
+
+export type Plugin = {
+  onComment?: (
+    isBlock: boolean,
+    text: string,
+    start: number,
+    end: number,
+    startLoc?: acorn.Position,
+    endLoc?: acorn.Position
+  ) => void;
+  visitor?: VisitorMap;
+};

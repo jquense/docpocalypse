@@ -1,6 +1,8 @@
 const findPkg = require('find-pkg');
 const path = require('path');
 
+const parseCodeBlocks = require('./parse-code-blocks');
+
 const isComponent = node => node.internal.type === 'ComponentMetadata';
 
 const isHook = node =>
@@ -8,22 +10,92 @@ const isHook = node =>
   node.name &&
   node.name.match(/^use[A-Z]/);
 
-// function defaultImport(node, fileNode) {
-//   if (node.package && node.package.main) {
-//     return `import {${}}`
-//   }
-// }
+exports.createResolvers = ({ createResolvers }) => {
+  createResolvers({
+    Mdx: {
+      codeBlockImports: {
+        type: ['CodeBlockImport'],
+        resolve: parseCodeBlocks
+      }
+    }
+  });
+};
+
+exports.createSchemaCustomization = ({ actions, schema }) => {
+  const { createTypes } = actions;
+
+  createTypes([
+    /* GraphQL */ `
+      enum ImportType {
+        IMPORT
+        REQUIRE
+      }
+
+      type CodeBlockImport {
+        type: ImportType!
+        request: String!
+        context: String!
+      }
+    `,
+    schema.buildObjectType({
+      name: 'Docpocalypse',
+      interfaces: ['Node'],
+      fields: {
+        type: 'String!',
+        name: 'String!',
+        fileName: 'String!',
+        rootDir: 'String',
+        package: 'JSON',
+        packageName: 'String',
+        importName: 'String',
+
+        metadata: {
+          type: 'ComponentMetadata',
+          resolve: (source, _, context) =>
+            context.nodeModel.getNodeById({
+              type: 'ComponentMetadata',
+              id: source.metadata___NODE
+            })
+        },
+        documentation: {
+          type: 'DocumentationJs',
+          resolve: (source, _, context) =>
+            context.nodeModel.getNodeById({
+              type: 'DocumentationJs',
+              id: source.documentation___NODE
+            })
+        },
+        example: {
+          type: 'Mdx',
+          resolve: (source, args, context) => {
+            // console.log(source);
+            return context.nodeModel
+              .getAllNodes({ type: 'Mdx' })
+              .find(example => {
+                const exampleFile =
+                  example.parent &&
+                  context.nodeModel.getNodeById({
+                    type: 'File',
+                    id: example.parent
+                  });
+
+                return (
+                  exampleFile &&
+                  exampleFile.sourceInstanceName === '@docs::examples' &&
+                  (exampleFile.name === source.fileName ||
+                    exampleFile.name === source.displayName)
+                );
+              });
+          }
+        }
+      }
+    })
+  ]);
+};
 
 exports.onCreateNode = async function onCreateNode(
-  {
-    node,
-    getNode,
-    getNodesByType,
-    actions,
-    createNodeId,
-    createContentDigest,
-  },
-  pluginOptions,
+  { node, getNode, actions, createNodeId, createContentDigest },
+  pluginOptions
 ) {
   const { getImportName } = pluginOptions;
   const { createNode } = actions;
@@ -37,15 +109,6 @@ exports.onCreateNode = async function onCreateNode(
     }
     const displayName = isComp ? node.displayName : node.name;
 
-    const exampleMdx = getNodesByType('Mdx').find(n => {
-      const exampleFile = n.parent && getNode(n.parent);
-      return (
-        exampleFile &&
-        exampleFile.sourceInstanceName === '@docs::examples' &&
-        (exampleFile.name === srcFile.name || exampleFile.name === displayName)
-      );
-    });
-
     let pkgJson = await findPkg(srcFile.dir);
     const rootDir = pkgJson && path.dirname(pkgJson);
 
@@ -55,6 +118,7 @@ exports.onCreateNode = async function onCreateNode(
     const docNode = {
       name,
       rootDir,
+      fileName: srcFile.name,
       type: isComp ? 'component' : 'hook',
       id: createNodeId(`${node.id}-${name}`),
       children: [node.id, srcFile.id],
@@ -64,34 +128,12 @@ exports.onCreateNode = async function onCreateNode(
       documentation___NODE: !isComp ? node.id : undefined,
       internal: {
         contentDigest: createContentDigest(`${node.id}-${name}`),
-        type: `Docpocalypse`,
-      },
+        type: `Docpocalypse`
+      }
     };
 
     docNode.importName = getImportName ? getImportName(docNode, srcFile) : '';
 
-    if (exampleMdx) {
-      docNode.children.push(exampleMdx.id);
-      docNode.example___NODE = exampleMdx.id;
-    }
     createNode(docNode);
   }
-};
-
-exports.sourceNodes = ({ actions }) => {
-  const { createTypes } = actions;
-
-  createTypes(/* GraphQL */ `
-    type Docpocalypse implements Node @infer {
-      type: String!
-      name: String!
-      rootDir: String
-      package: JSON
-      packageName: String
-      importName: String
-      metadata: ComponentMetadata @link(from: "metadata___NODE")
-      documentation: DocumentationJs @link(from: "documentation___NODE")
-      example: Mdx @link(from: "example___NODE")
-    }
-  `);
 };

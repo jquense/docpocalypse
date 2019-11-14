@@ -9,6 +9,7 @@ const templates = {
 module.exports = (options = {}) => {
   return {
     plugins: [
+      'gatsby-plugin-typescript',
       {
         resolve: 'docpocalypse-core',
         options: {

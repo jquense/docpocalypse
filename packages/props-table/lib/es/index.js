@@ -3,6 +3,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 import React from 'react';
 import DefaultValue from './DefaultValue';
 import PropTypeValue from './PropTypeValue';
+import TypescriptTypeValue from './TypescriptTypeValue';
 import { docletsToMap, getTypeName } from './utils';
 
 var isElementType = function isElementType(name, types) {
@@ -12,10 +13,11 @@ var isElementType = function isElementType(name, types) {
   });
 };
 
-export default function renderProps(propsData, elementTypes) {
-  if (elementTypes === void 0) {
-    elementTypes = ['elementType', /React\.ComponentType(<.*>)?/];
-  }
+export default function renderProps(propsData, _temp) {
+  var _ref = _temp === void 0 ? {} : _temp,
+      tokenMap = _ref.tokenMap,
+      _ref$elementTypes = _ref.elementTypes,
+      elementTypes = _ref$elementTypes === void 0 ? ['elementType', /React\.ComponentType(<.*>)?/] : _ref$elementTypes;
 
   return propsData.filter(function (prop) {
     return prop.type && !prop.doclets.find(function (d) {
@@ -26,20 +28,28 @@ export default function renderProps(propsData, elementTypes) {
         type = propData.type,
         defaultValue = propData.defaultValue,
         description = propData.description,
-        doclets = propData.doclets;
+        doclets = propData.doclets,
+        tsType = propData.tsType;
     var docletMap = docletsToMap(doclets);
     var typeName = getTypeName(propData);
     var descHtml = description && description.childMarkdownRemark && description.childMarkdownRemark.html || '';
+    var renderedType = null;
+    if (tsType) renderedType = React.createElement(TypescriptTypeValue, {
+      type: tsType,
+      doclets: doclets,
+      tokens: tokenMap
+    });else if (type) renderedType = React.createElement(PropTypeValue, {
+      type: type,
+      doclets: doclets,
+      tokens: tokenMap
+    });
     return {
       name: name,
       doclets: doclets,
       typeName: typeName,
       description: descHtml,
       deprecated: docletMap.get('deprecated'),
-      type: type && React.createElement(PropTypeValue, {
-        type: type,
-        doclets: doclets
-      }),
+      type: renderedType,
       defaultValue: defaultValue && React.createElement(DefaultValue, _extends({}, defaultValue, {
         isElementType: isElementType(typeName, elementTypes)
       })),

@@ -17,7 +17,7 @@ $className: #fac863;
 $method: #6699cc;
 $operator: #fc929e;
 
-[class*='language-'] {
+pre[class*='language-'] {
   display: block;
   color: $white;
   background-color: $bg-color-dark;

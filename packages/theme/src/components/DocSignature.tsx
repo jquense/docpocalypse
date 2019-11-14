@@ -26,8 +26,8 @@ const join = (arrayOfElements, joiner) =>
     if (index > 0) {
       acc.push(
         React.cloneElement(joiner, {
-          key: `joiner ${index}`,
-        }),
+          key: `joiner ${index}`
+        })
       );
     }
     acc.push(current);
@@ -67,7 +67,7 @@ const TypeExpression = ({ type }) => {
           type.elements.map((element, index) => (
             <TypeExpression key={`union element ${index}`} type={element} />
           )),
-          <Operator> | </Operator>,
+          <Operator> | </Operator>
         )}
       </>
     );
@@ -102,7 +102,7 @@ interface FunctionSignatureProps {
 function FunctionSignature({
   definition,
   block,
-  ignoreParams,
+  ignoreParams
 }: FunctionSignatureProps) {
   const params = definition.params
     ? definition.params
@@ -154,7 +154,7 @@ function SignatureElement({
   definition,
   ignoreParams = [],
   fallbackToName = false,
-  block = false,
+  block = false
 }: SignatureProps) {
   if (isFunctionDef(definition, false)) {
     return (
@@ -207,12 +207,12 @@ export {
   SignatureElement,
   SignatureBlock,
   TypeComponent,
-  Wrapper as SignatureWrapper,
+  Wrapper as SignatureWrapper
 };
 
 export const fragment = graphql`
   fragment DocumentationTypeFragment on DocumentationJs {
-    optional
+    # optional
     type {
       name
       type

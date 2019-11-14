@@ -24,6 +24,10 @@
   --theme-doc-outline-bg-color: #white;
 
   --theme-color-divider: #ccc;
+
+  @each $level, $spacer in variables.$spacers {
+    --theme-spacer-#{$level}: #{$spacer};
+  }
 }
 
 html {

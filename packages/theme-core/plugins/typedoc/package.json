@@ -1,0 +1,7 @@
+{
+  "name": "gatsby-plugin-typedoc",
+  "main": "./gatsby-node.js",
+  "dependencies": {
+    "typedoc": "^0.15.0"
+  }
+}

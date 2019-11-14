@@ -1,24 +1,12 @@
-const { GraphQLBoolean } = require('gatsby/graphql');
+const apis = require('./create-node');
+const { Imports } = require('./example-scope-loader');
 
-const { onCreateNode, sourceNodes } = require('./create-node');
+module.exports = apis;
 
-exports.onCreateNode = onCreateNode;
-exports.sourceNodes = sourceNodes;
-
-exports.setFieldsOnGraphQLNodeType = ({ type }, pluginOptions) => {
-  const { components } = pluginOptions;
-  return type.name === 'File'
-    ? {
-        isStyleGuideComponent: {
-          type: GraphQLBoolean,
-          resolve: source => components.includes(source.absolutePath),
-        },
-      }
-    : {};
-};
-
-exports.createPages = async ({ graphql, actions }, pluginOptions) => {
+module.exports.createPages = async ({ graphql, actions }, pluginOptions) => {
   const { templates } = pluginOptions;
+  Imports.clear();
+
   const { data, errors } = await graphql(/* GraphQL */ `
     {
       allDocpocalypse {
@@ -26,6 +14,13 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
           name
           type
           id
+          example {
+            codeBlockImports {
+              type
+              request
+              context
+            }
+          }
         }
       }
     }
@@ -34,29 +29,42 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
   if (errors) throw errors;
 
   for (const doc of data.allDocpocalypse.nodes) {
-    console.log(doc);
+    if (doc.example) {
+      Imports.set(doc.name, doc.example.codeBlockImports);
+    }
+
     actions.createPage({
       path: `/api/${doc.name}`,
       component: templates[doc.type],
       context: {
-        nodeId: doc.id,
-      },
+        nodeId: doc.id
+      }
     });
   }
 };
 
-exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
+module.exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
   const isSsr = stage.includes('html');
 
   actions.setWebpackConfig({
+    module: {
+      rules: [
+        {
+          include: [require.resolve('./gatsby-browser')],
+          use: {
+            loader: require.resolve('./example-scope-loader')
+          }
+        }
+      ]
+    },
     plugins: [
       plugins.define({
         // Allow browser-only code to be eliminated
         'typeof window': isSsr
           ? JSON.stringify('undefined')
-          : JSON.stringify('object'),
-      }),
-    ],
+          : JSON.stringify('object')
+      })
+    ]
   });
 };
 

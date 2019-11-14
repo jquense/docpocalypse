@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@4c/layout": "^1.0.0",
-    "@docpocalypse/editable-example": "^1.0.0",
+    "@docpocalypse/code-live": "^1.0.0",
     "@docpocalypse/props-table": "^0.1.0",
     "@mdx-js/mdx": "^1.1.5",
     "@mdx-js/react": "^1.1.5",

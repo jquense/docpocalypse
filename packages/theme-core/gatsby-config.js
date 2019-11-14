@@ -15,15 +15,15 @@ module.exports = (options = {}) => {
     sources,
     templates,
     reactDocgenConfig,
-    examplesPath = 'src/examples',
+    examplesPath = 'src/examples'
   } = options;
 
   const sourceFiles = sources.map(src => ({
     resolve: 'gatsby-source-filesystem',
     options: {
       path: src,
-      name: `@docs::source//${src}`,
-    },
+      name: `@docs::source//${src}`
+    }
   }));
 
   return {
@@ -31,44 +31,43 @@ module.exports = (options = {}) => {
       'gatsby-plugin-sorted-assets',
       require.resolve('./plugins/sass-plugin'),
       'gatsby-plugin-typescript',
+      // {
+      //   resolve: require.resolve('./plugins/typedoc'),
+      //   options: { src: sources }
+      // },
       {
         resolve: 'gatsby-plugin-astroturf',
-        options: { extension: '.module.scss', enableCssProp: true },
+        options: { extension: '.module.scss', enableCssProp: true }
       },
       examplesPath && {
         resolve: 'gatsby-source-filesystem',
         options: {
           path: examplesPath,
-          name: '@docs::examples',
-        },
+          name: '@docs::examples'
+        }
       },
       ...sourceFiles,
       {
         resolve: 'gatsby-plugin-mdx',
         options: {
           defaultLayouts: {
-            default: templates.default,
+            default: templates.default
           },
-          remarkPlugins: [remarkSlug],
-          gatsbyRemarkPlugins: [
-            {
-              resolve: 'gatsby-remark-prismjs',
-            },
-          ],
-        },
+          remarkPlugins: [remarkSlug]
+        }
       },
       {
         resolve: 'gatsby-transformer-remark',
-        options: { plugins: ['gatsby-remark-prismjs'] },
+        options: { plugins: ['gatsby-remark-prismjs'] }
       },
       'gatsby-transformer-documentationjs',
       {
-        resolve: 'gatsby-transformer-react-docgen',
+        resolve: require.resolve('./plugins/react-docgen'),
         options: {
           resolver: require('./tools/resolver'),
-          ...reactDocgenConfig,
-        },
-      },
-    ].filter(Boolean),
+          ...reactDocgenConfig
+        }
+      }
+    ].filter(Boolean)
   };
 };

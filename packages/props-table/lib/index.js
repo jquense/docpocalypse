@@ -9,6 +9,8 @@ var _DefaultValue = _interopRequireDefault(require("./DefaultValue"));
 
 var _PropTypeValue = _interopRequireDefault(require("./PropTypeValue"));
 
+var _TypescriptTypeValue = _interopRequireDefault(require("./TypescriptTypeValue"));
+
 var _utils = require("./utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -22,10 +24,11 @@ var isElementType = function isElementType(name, types) {
   });
 };
 
-function renderProps(propsData, elementTypes) {
-  if (elementTypes === void 0) {
-    elementTypes = ['elementType', /React\.ComponentType(<.*>)?/];
-  }
+function renderProps(propsData, _temp) {
+  var _ref = _temp === void 0 ? {} : _temp,
+      tokenMap = _ref.tokenMap,
+      _ref$elementTypes = _ref.elementTypes,
+      elementTypes = _ref$elementTypes === void 0 ? ['elementType', /React\.ComponentType(<.*>)?/] : _ref$elementTypes;
 
   return propsData.filter(function (prop) {
     return prop.type && !prop.doclets.find(function (d) {
@@ -36,20 +39,28 @@ function renderProps(propsData, elementTypes) {
         type = propData.type,
         defaultValue = propData.defaultValue,
         description = propData.description,
-        doclets = propData.doclets;
+        doclets = propData.doclets,
+        tsType = propData.tsType;
     var docletMap = (0, _utils.docletsToMap)(doclets);
     var typeName = (0, _utils.getTypeName)(propData);
     var descHtml = description && description.childMarkdownRemark && description.childMarkdownRemark.html || '';
+    var renderedType = null;
+    if (tsType) renderedType = _react.default.createElement(_TypescriptTypeValue.default, {
+      type: tsType,
+      doclets: doclets,
+      tokens: tokenMap
+    });else if (type) renderedType = _react.default.createElement(_PropTypeValue.default, {
+      type: type,
+      doclets: doclets,
+      tokens: tokenMap
+    });
     return {
       name: name,
       doclets: doclets,
       typeName: typeName,
       description: descHtml,
       deprecated: docletMap.get('deprecated'),
-      type: type && _react.default.createElement(_PropTypeValue.default, {
-        type: type,
-        doclets: doclets
-      }),
+      type: renderedType,
       defaultValue: defaultValue && _react.default.createElement(_DefaultValue.default, _extends({}, defaultValue, {
         isElementType: isElementType(typeName, elementTypes)
       })),

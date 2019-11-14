@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import { PropType } from './PropTypeValue';
-import { TSType } from './TypescriptTypeValue';
+import { TSType, TokenMap } from './TypescriptTypeValue';
 import { Doclet } from './utils';
 export interface Prop {
     name: string;
@@ -22,7 +22,11 @@ export interface Prop {
     type: null | PropType;
     tsType: TSType | null;
 }
-export default function renderProps(propsData: Prop[], elementTypes?: Array<string | RegExp>): {
+export interface RenderPropsOptions {
+    tokenMap?: TokenMap;
+    elementTypes?: Array<string | RegExp>;
+}
+export default function renderProps(propsData: Prop[], { tokenMap, elementTypes }?: RenderPropsOptions): {
     name: string;
     doclets: Doclet[];
     typeName: string;

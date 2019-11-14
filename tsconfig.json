@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/props-table" },
-    { "path": "packages/editable-example" },
+    { "path": "packages/code-live" },
     { "path": "packages/theme-core" },
     { "path": "packages/theme" }
   ]

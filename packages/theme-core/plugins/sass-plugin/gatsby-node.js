@@ -29,6 +29,9 @@ exports.onCreateWebpackConfig = ({
                 loaders.postcss(),
                 loaders.sass({
                   implementation: require('sass'),
+                  sassOptions: {
+                    fiber: require('fibers'),
+                  },
                 }),
               ].filter(Boolean),
             },
@@ -42,6 +45,9 @@ exports.onCreateWebpackConfig = ({
                     loaders.postcss(),
                     loaders.sass({
                       implementation: require('sass'),
+                      sassOptions: {
+                        fiber: require('fibers'),
+                      },
                     }),
                   ],
             },

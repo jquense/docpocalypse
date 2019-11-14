@@ -1,0 +1,34 @@
+{
+  "name": "gatsby-transformer-react-docgen",
+  "description": "Expose React component metadata and prop information as GraphQL types",
+  "version": "5.0.20",
+  "license": "MIT",
+  "main": "./gatsby-node.js",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
+  "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-transformer-react-docgen#readme",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "react",
+    "react-docgen"
+  ],
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
+  },
+  "peerDependencies": {
+    "gatsby": "^2.0.15"
+  },
+  "dependencies": {
+    "@babel/code-frame": "^7.5.5",
+    "@babel/runtime": "^7.7.2",
+    "@babel/types": "^7.7.2",
+    "ast-types": "^0.13.2",
+    "common-tags": "^1.8.0",
+    "@monastic.panic/react-docgen": "^5.0.0-beta.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "lodash": "^4.17.15"
+  }
+}

@@ -1,18 +1,20 @@
-const { utils } = require('react-docgen');
 const { namedTypes: t, visit } = require('ast-types');
-const { default: resolveHOC } = require('react-docgen/dist/utils/resolveHOC');
+const { utils } = require('@monastic.panic/react-docgen');
 const {
-  default: resolveToModule,
-} = require('react-docgen/dist/utils/resolveToModule');
+  default: resolveHOC
+} = require('@monastic.panic/react-docgen/dist/utils/resolveHOC');
+const {
+  default: resolveToModule
+} = require('@monastic.panic/react-docgen/dist/utils/resolveToModule');
 
 module.exports = ({ moduleName } = {}) => {
-  const isStyledExpression = (tagPath, t) =>
+  const isStyledExpression = tagPath =>
     (t.CallExpression.check(tagPath.node) &&
       tagPath.get('callee').node.name === 'styled') ||
     (t.MemberExpression.check(tagPath.node) &&
       tagPath.get('object').node.name === 'styled');
 
-  function isStyledComponent(def, t) {
+  function isStyledComponent(def) {
     if (
       !t.TaggedTemplateExpression.check(def.node) ||
       !isStyledExpression(def.get('tag'), t)
@@ -26,12 +28,12 @@ module.exports = ({ moduleName } = {}) => {
     return !!module && module === moduleName;
   }
 
-  const exportTagged = (path, t) => {
+  const exportTagged = path => {
     const definitions = utils.resolveExportDeclaration(path, t);
     const components = [];
     definitions.filter(Boolean).forEach(def => {
       let comp = def;
-      if (isStyledComponent(comp, t)) {
+      if (isStyledComponent(comp)) {
         components.push(comp);
       } else {
         if (t.CallExpression.check(comp.node)) {
@@ -40,7 +42,7 @@ module.exports = ({ moduleName } = {}) => {
           if (
             utils.match(callee.node, {
               object: { name: 'Object' },
-              property: { name: 'assign' },
+              property: { name: 'assign' }
             })
           ) {
             comp = comp.get('arguments', 0);
@@ -76,7 +78,7 @@ module.exports = ({ moduleName } = {}) => {
       visitForStatement: false,
       visitForInStatement: false,
 
-      visitExportDefaultDeclaration: visitor,
+      visitExportDefaultDeclaration: visitor
     });
 
     return components;
@@ -86,7 +88,7 @@ module.exports = ({ moduleName } = {}) => {
     const components = [];
 
     const visitor = path => {
-      components.push(...exportTagged(path, t));
+      components.push(...exportTagged(path));
       return false;
     };
 
@@ -106,7 +108,7 @@ module.exports = ({ moduleName } = {}) => {
 
       visitExportDeclaration: visitor,
       visitExportNamedDeclaration: visitor,
-      visitExportDefaultDeclaration: visitor,
+      visitExportDefaultDeclaration: visitor
     });
     return components;
   }
@@ -138,7 +140,7 @@ module.exports = ({ moduleName } = {}) => {
           if (isStyledComponent(comp, t)) components.push(comp);
         }
         return false;
-      },
+      }
     });
     return components;
   }
@@ -146,6 +148,6 @@ module.exports = ({ moduleName } = {}) => {
   return {
     findAllStyledComponents,
     findAllExportedStyledComponents,
-    findExportedStyledComponent,
+    findExportedStyledComponent
   };
 };

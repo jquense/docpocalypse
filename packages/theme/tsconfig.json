@@ -5,10 +5,10 @@
     "rootDir": "src",
     "noImplicitAny": false
   },
-  "include": ["src"],
+  "include": ["src", "../theme-core/ImportsContext.ts"],
   "references": [
     { "path": "../props-table" },
-    { "path": "../editable-example" },
+    { "path": "../code-live" },
     { "path": "../theme-core" }
   ]
 }

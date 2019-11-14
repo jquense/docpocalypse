@@ -8,12 +8,7 @@ import Box from './Box';
 import ExamplesBlock from './DocExamples';
 import Params from './DocParams';
 import ReturnBlock from './DocReturns';
-import {
-  SignatureElement,
-  SignatureWrapper,
-  TypeComponent,
-  isFunctionDef,
-} from './DocSignature';
+import { SignatureElement } from './DocSignature';
 import Heading, { HeadingLevel } from './Heading';
 
 const Optional = styled(`span`)`
@@ -33,6 +28,10 @@ const Description = ({ definition }) => {
       <div
         css={css`
           margin-top: 0.5em;
+
+          & p {
+            margin: 0;
+          }
         `}
       >
         <MDXRenderer>{description.childMdx.body}</MDXRenderer>
@@ -57,8 +56,9 @@ const DocBlock = ({
   level = 2,
   title = null,
   showSignature = true,
-  ignoreParams = [],
+  ignoreParams = []
 }: Props) => {
+  if (!definition) return null;
   let titleElement: ReactNode = title || definition.name;
 
   if (typeof titleElement === 'string' && titleElement.match(/\$\d+$/g)) {
@@ -68,11 +68,11 @@ const DocBlock = ({
   } else if (titleElement) {
     titleElement = <code>{titleElement}</code>;
   }
-  const nextLevel: HeadingLevel = level + 1;
+  const nextLevel: HeadingLevel = (level + 1) as any;
 
   return (
     <div>
-      <Heading level={level}>
+      <Heading level={level} css="font-size: inherit; margin: 0;">
         <Box mr={3} display="inline-block">
           {titleElement}
           {showSignature && (

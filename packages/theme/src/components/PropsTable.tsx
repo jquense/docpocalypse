@@ -2,11 +2,22 @@ import { css } from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
 import renderProps from '@docpocalypse/props-table';
+import { TokenMap } from '@docpocalypse/props-table/src/TypescriptTypeValue';
 
 export { renderProps };
 
+const tokenMap: TokenMap = css`
+  .union {
+    & > *:not(:last-child)::after {
+      content: ' | ';
+    }
+  }
+`;
+
 function PropsTable({ metadata }) {
-  const props = renderProps(metadata.props || []);
+  const props = renderProps(metadata.props || [], {
+    tokenMap
+  });
 
   if (!props.length) {
     return null;
@@ -46,8 +57,8 @@ function PropsTable({ metadata }) {
           {props.map(prop => (
             <tr key={prop.name}>
               <td>{prop.name}</td>
-              <td>{prop.type}</td>
-              <td>{prop.defaultValue}</td>
+              <td css="white-space: pre;">{prop.type}</td>
+              <td css="white-space: pre;">{prop.defaultValue}</td>
               <td dangerouslySetInnerHTML={{ __html: prop.description }} />
             </tr>
           ))}
@@ -88,6 +99,7 @@ export const metadataFragment = graphql`
         ...Description_markdown
       }
       required
+      tsType
       type {
         name
         value

@@ -1,0 +1,33 @@
+{
+  "name": "synthetic-grass",
+  "version": "1.0.0",
+  "description": "A cheaper, less useful, Astroturf",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "4c build src",
+    "prepublishOnly": "yarn run build",
+    "tdd": "jest --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "astroturf": "^0.9.21",
+    "stylis": "^3.5.4",
+    "stylis-rule-sheet": "^0.0.10"
+  },
+  "jest": {
+    "preset": "@4c/jest-preset",
+    "testEnvironment": "jsdom"
+  },
+  "devDependencies": {
+    "@4c/babel-preset": "^7.1.0",
+    "@4c/cli": "^1.0.0",
+    "@4c/import-sort": "^4.3.5",
+    "@4c/jest-preset": "^1.4.3",
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.22",
+    "jest": "^24.0.0"
+  }
+}

@@ -1,19 +1,10 @@
 import { graphql } from 'gatsby';
-import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
 import ApiLayout from '../components/ApiLayout';
 import DocBlock from '../components/DocBlock';
+import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
-import Heading from '../components/OutlineHeading';
-import ExamplesBlock from './DocExamples';
-import Params from './DocParams';
-import ReturnBlock from './DocReturns';
-import {
-  SignatureElement,
-  SignatureWrapper,
-  TypeComponent,
-  isFunctionDef,
-} from './DocSignature';
+import OutlineHeading from '../components/OutlineHeading';
 
 const propTypes = {};
 
@@ -23,12 +14,12 @@ function HookPageTemplate({ data }) {
   return (
     <ApiLayout>
       <div>
-        <Heading h={1} id={`${name}-page`} title={name}>
+        <OutlineHeading h={1} id={`${name}-page`} title={name}>
           {name}
           {importName && <code>{importName}</code>}
-        </Heading>
+        </OutlineHeading>
       </div>
-      {example ? <MDXRenderer>{example.body}</MDXRenderer> : 'No example'}
+      <Example example={example} name={name} />
 
       <LinkedHeading h={2} id={`${name}-api`}>
         API
@@ -53,7 +44,7 @@ export const pageQuery = graphql`
       id
       name
       example {
-        body
+        ...Example_example
       }
       documentation {
         ...DocumentationFragment

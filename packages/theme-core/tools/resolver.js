@@ -1,4 +1,4 @@
-const { resolver } = require('react-docgen');
+const { resolver } = require('@monastic.panic/react-docgen');
 const createStyledResolvers = require('./styled-components');
 
 const { findAllExportedStyledComponents } = createStyledResolvers();
