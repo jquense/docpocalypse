@@ -1,10 +1,12 @@
 import styled from 'astroturf';
 
 const SidePanel = styled('div')`
+  @import '../theme';
+
   order: 2;
   position: sticky;
-  top: var(--theme-navbar-height);
-  height: calc(100vh - var(--theme-navbar-height));
+  top: $navbar-height;
+  height: calc(100vh - $navbar-height);
   padding-top: 1.5rem;
   background-color: var(--theme-doc-outline-bg-color);
   padding-bottom: 1.5rem;
@@ -13,7 +15,7 @@ const SidePanel = styled('div')`
 
   & > ul {
     padding-left: 0;
-    border-left: 1px solid var(--theme-color-divider);
+    border-left: 1px solid $divider-color;
 
     & ul {
       padding-left: 1rem;

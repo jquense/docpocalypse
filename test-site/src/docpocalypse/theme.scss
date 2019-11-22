@@ -1,0 +1,5 @@
+@use '~docpocalypse/src/styles/theme' as * with (
+  $navbar-height: 6rem
+);
+
+@forward '~docpocalypse/src/styles/theme';

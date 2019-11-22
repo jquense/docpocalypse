@@ -17,14 +17,13 @@ const NavItem = styled('li')`
 `;
 
 const NavLink = styled(Link)`
-  composes: ptx-5 from global;
-  color: var(--theme-text-color);
+  @import '../theme';
 
   &,
   &:hover,
   &:focus,
   &:active {
-    color: var(--theme-text-color);
+    color: $text-color;
     text-decoration: none;
     opacity: 0.75;
   }
@@ -59,10 +58,13 @@ function SideNav(props) {
       p={4}
       {...props}
       css={css`
+        @import '../theme';
+
         position: sticky;
-        top: var(--theme-navbar-height);
-        height: calc(100vh - var(--theme-navbar-height));
-        background-color: var(--theme-side-nav-bg-color);
+        top: $navbar-height;
+        height: calc(100vh - #{$navbar-height});
+        background-color: $side-nav-bg-color;
+        border: 1px solid $divider-color;
         overflow-y: auto;
       `}
     >
@@ -70,7 +72,7 @@ function SideNav(props) {
         <NavList>
           {Object.entries(groups).map(([pkg, nodes]) => (
             <NavItem key={pkg}>
-              <div className="pb-3 font-weight-bold">{pkg}</div>
+              <div className="pb-3 font-weight-boold">{pkg}</div>
               <NavList>
                 {nodes.map(n => (
                   <NavItem key={n.name}>

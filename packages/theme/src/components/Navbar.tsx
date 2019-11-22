@@ -4,13 +4,14 @@ import React from 'react';
 import Box, { BoxProps } from './Box';
 
 const styles = css`
-  .navbar {
-    color: var(--theme-navbar-color);
-    background-color: var(--theme-navbar-bg-color);
-    height: var(--theme-navbar-height);
+  @use '../theme';
 
-    --theme-link-color: var(--theme-navbar-link-color);
-    --theme-link-hover-color: var(--theme-navbar-link-hover-color);
+  .navbar {
+    composes: position-sticky from global;
+    top: 0;
+    color: theme.$navbar-text-color;
+    background-color: theme.$navbar-bg-color;
+    height: theme.$navbar-height;
   }
 `;
 

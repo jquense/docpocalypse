@@ -1,1 +1,6 @@
-@use 'styles/theme';
+@use './theme';
+@forward './styles/utilities';
+@forward './styles/grid';
+
+@forward './styles/reset';
+@forward './styles/prism';

@@ -10,24 +10,20 @@
   --theme-font-size-root: #{variables.$font-size-root};
   --theme-font-size-base: #{variables.$font-size-base};
 
-  --theme-body-bg: #ffffff;
-  --theme-text-color: #333333;
+  // --theme-body-bg: #ffffff;
+  // --theme-text-color: #333333;
 
-  --theme-navbar-height: #{variables.$navbar-height};
-  --theme-navbar-bg-color: black;
-  --theme-navbar-color: white;
-  --theme-navbar-link-color: white;
-  --theme-navbar-link-hover-color: #efefef;
+  // --theme-navbar-height: #{variables.$navbar-height};
+  // --theme-navbar-bg-color: black;
+  // --theme-navbar-color: white;
+  // --theme-navbar-link-color: white;
+  // --theme-navbar-link-hover-color: #efefef;
 
-  --theme-side-nav-bg-color: #ccc;
+  // --theme-side-nav-bg-color: #ccc;
 
-  --theme-doc-outline-bg-color: #white;
+  // --theme-doc-outline-bg-color: #white;
 
-  --theme-color-divider: #ccc;
-
-  @each $level, $spacer in variables.$spacers {
-    --theme-spacer-#{$level}: #{$spacer};
-  }
+  // --theme-color-divider: #ccc;
 }
 
 html {
@@ -35,6 +31,13 @@ html {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
