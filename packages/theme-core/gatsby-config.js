@@ -29,7 +29,7 @@ module.exports = (options = {}) => {
   return {
     plugins: [
       'gatsby-plugin-sorted-assets',
-      require.resolve('./plugins/sass-plugin'),
+      // require.resolve('./plugins/sass-plugin'),
       'gatsby-plugin-typescript',
       // {
       //   resolve: require.resolve('./plugins/typedoc'),
@@ -37,7 +37,7 @@ module.exports = (options = {}) => {
       // },
       {
         resolve: 'gatsby-plugin-astroturf',
-        options: { extension: '.module.scss', enableCssProp: true }
+        options: { extension: '.module.css', enableCssProp: true }
       },
       examplesPath && {
         resolve: 'gatsby-source-filesystem',

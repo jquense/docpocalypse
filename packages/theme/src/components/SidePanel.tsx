@@ -1,8 +1,6 @@
 import styled from 'astroturf';
 
 const SidePanel = styled('div')`
-  @import '../theme';
-
   order: 2;
   position: sticky;
   top: $navbar-height;

@@ -36,6 +36,7 @@
     "@types/react": "^16.8.24",
     "@types/react-dom": "^16.8.5",
     "gatsby": "^2.13.51",
+    "postcss-scss": "^2.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
@@ -54,8 +55,10 @@
     "docpocalypse-core": "^1.0.0",
     "gatsby-plugin-mdx": "^1.0.57",
     "lodash": "^4.17.15",
+    "postcss-nested": "^4.2.1",
     "remark-slug": "^5.1.2",
     "resolve": "^1.12.2",
+    "tailwindcss": "^1.1.3",
     "webpack-atoms": "^11.1.0"
   }
 }

@@ -1,3 +1,3 @@
-require('./src/global.scss');
+require('./src/global.css');
 
 exports.wrapPageElement = require(`./src/wrap-page`).default;

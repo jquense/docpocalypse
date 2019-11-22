@@ -17,13 +17,11 @@ const NavItem = styled('li')`
 `;
 
 const NavLink = styled(Link)`
-  @import '../theme';
-
   &,
   &:hover,
   &:focus,
   &:active {
-    color: $text-color;
+    color: text-color;
     text-decoration: none;
     opacity: 0.75;
   }
@@ -58,14 +56,12 @@ function SideNav(props) {
       p={4}
       {...props}
       css={css`
-        @import '../theme';
-
         position: sticky;
-        top: $navbar-height;
-        height: calc(100vh - #{$navbar-height});
-        background-color: $side-nav-bg-color;
-        border: 1px solid $divider-color;
-        overflow-y: auto;
+        // top: $navbar-height;
+        // height: calc(100vh - #{$navbar-height});
+        // background-color: $side-nav-bg-color;
+        // border: 1px solid $divider-color;
+        // overflow-y: auto;
       `}
     >
       <nav>

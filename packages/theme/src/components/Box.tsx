@@ -1,7 +1,10 @@
 import cn from 'classnames';
 import React, { ReactNode } from 'react';
+import config from '../../tailwind.config.js';
 
 export type ResponsiveValue<T> = T | Record<string, T>;
+
+const { prefix = '', separator = ':' } = config;
 
 type Items =
   | 'start'
@@ -33,7 +36,7 @@ export interface BoxProps<As extends React.ElementType = 'div'> {
   children?: ReactNode;
   grid?: boolean;
   display?: ResponsiveValue<
-    'none' | 'block' | 'flex' | 'inline' | 'inline-flex' | 'inline-block'
+    'hidden' | 'block' | 'flex' | 'inline' | 'inline-flex' | 'inline-block'
   >;
   width?: ResponsiveValue<'auto' | '25' | '50' | '75' | '100'>;
   maxWidth?: ResponsiveValue<'auto' | '25' | '50' | '75' | '100'>;
@@ -72,23 +75,30 @@ export interface BoxProps<As extends React.ElementType = 'div'> {
   alignSelf?: ResponsiveValue<Items>;
   justifyContent?: ResponsiveValue<Content>;
   wrap?: ResponsiveValue<'wrap' | 'no-wrap' | 'wrap-reverse'>;
-  direction?: ResponsiveValue<
-    'row' | 'column' | 'row-reverse' | 'column-reverse'
-  >;
+  direction?: ResponsiveValue<'row' | 'col' | 'row-reverse' | 'col-reverse'>;
   grow?: ResponsiveValue<number | string>;
   shrink?: ResponsiveValue<number | string>;
   fill?: ResponsiveValue<number | string>;
   order?: ResponsiveValue<number | string>;
 }
 
-const propsConfig = {
+function getConfig(c: Record<string, any>): Array<[string, string, boolean]> {
+  return Object.keys(c).map(key => {
+    const configValue = c[key];
+    if (Array.isArray(configValue)) return [key, ...configValue];
+    return configValue === true ? [key, key, true] : [key, configValue, false];
+  }) as any;
+}
+
+const propsConfig = getConfig({
   grid: true,
-  display: 'd',
+
+  display: ['', true],
   direction: 'flex',
-  align: 'align-items',
-  alignSelf: 'align-self',
-  alignContent: 'align-content',
-  justify: 'justify-content',
+  align: 'items',
+  alignSelf: 'self',
+  alignContent: 'content',
+  justify: 'justify',
   fill: 'flex',
   wrap: 'flex',
   grow: 'flex',
@@ -119,13 +129,25 @@ const propsConfig = {
   width: 'w',
   maxWidth: 'mw',
   height: 'h',
-  maxHeight: 'mh',
-};
+  maxHeight: 'mh'
+});
 
 type Keys = keyof BoxProps<any>;
 
-const getSegment = breakpoint =>
-  breakpoint === '_' || breakpoint === 'xs' ? '' : `${breakpoint}-`;
+function getClassName(
+  clsPrefix: string,
+  bool: boolean,
+  breakpoint = '_',
+  value: any
+) {
+  const bp =
+    breakpoint === '_' || breakpoint === 'xs'
+      ? ''
+      : `${breakpoint}${separator}`;
+
+  if (bool) return !value ? '' : `${prefix}${bp}${clsPrefix || value}`;
+  return `${prefix}${bp}${clsPrefix}-${value}`;
+}
 
 function Box<T extends React.ElementType = 'div'>({
   as: asProp,
@@ -142,34 +164,28 @@ function Box<T extends React.ElementType = 'div'>({
     minVh100 && 'min-vh-100',
     minVw100 && 'min-vw-100',
     vh100 && 'vh-100',
-    vw100 && 'vw-100',
+    vw100 && 'vw-100'
   );
 
-  Object.keys(propsConfig).forEach((key: Keys) => {
-    const classPrefix = propsConfig[key];
+  propsConfig.forEach(([key, clsPrefix, isBool]) => {
     // @ts-ignore
     const value = props[key];
-
-    if (!classPrefix || value == null) return;
-
+    if (value == null) return;
     // @ts-ignore
     delete props[key]; // eslint-disable-line no-param-reassign
 
-    const suffix = value === true ? key : value;
-    if (classPrefix === true && value === true) {
-      classes = cn(classes, key);
-    } else if (value && typeof value === 'object') {
+    if (typeof value === 'object' && value) {
       classes = cn(
         classes,
         Object.entries(value)
-          .map(
-            ([breakpoint, rValue]) =>
-              `${classPrefix}-${getSegment(breakpoint)}${rValue}`,
+          .map(([breakpoint, rValue]) =>
+            getClassName(clsPrefix, isBool, breakpoint, rValue)
           )
-          .join(' '),
+          .join(' ')
       );
     } else {
-      classes = cn(classes, `${classPrefix}-${suffix}`);
+      const cls = getClassName(clsPrefix, isBool, undefined, value);
+      if (cls) classes = cn(classes, cls);
     }
   });
 
@@ -177,7 +193,7 @@ function Box<T extends React.ElementType = 'div'>({
 }
 
 Box.defaultProps = {
-  as: 'div',
+  as: 'div'
   // display: 'flex',
 };
 
