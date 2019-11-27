@@ -1,6 +1,6 @@
 {
   "name": "docpocalypse",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@docpocalypse/code-live": "^1.0.0",
-    "@docpocalypse/props-table": "^0.1.0",
+    "@docpocalypse/props-table": "^0.1.1",
     "@mdx-js/mdx": "^1.1.5",
     "@mdx-js/react": "^1.1.5",
     "@restart/hooks": "^0.3.9",
