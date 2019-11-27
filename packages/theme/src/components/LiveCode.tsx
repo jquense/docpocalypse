@@ -16,13 +16,13 @@ const StyledError = styled(Error)`
 `;
 
 const StyledLiveProviderChild = styled('div')`
-  background-color: var(--theme-body-bg);
+  background-color: theme('body.bg-color');
   margin-bottom: 3rem;
 `;
 
 const StyledEditor = styled(Editor)`
-  font-family: var(--theme-font-family);
-  border-radius: 0 0 var(--theme-border-radius) var(--theme-border-radius);
+  font-family: theme('fontFamily');
+  border-radius: 0 0 theme('border-radius') theme('border-radius');
 `;
 
 const StyledInfoMessage = styled(InfoMessage)`

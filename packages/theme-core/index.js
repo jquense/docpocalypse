@@ -1,4 +1,3 @@
-import Example from './src/components/Example';
-import theme from './src/themes/default';
+import { useScopes } from './ImportsContext';
 
-export { Example, theme };
+export { useScopes };

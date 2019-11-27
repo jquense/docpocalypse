@@ -72,12 +72,12 @@ function ApiLayout({ children, ...props }) {
         </Box>
       </Navbar>
       <Box grid height="100">
-        <SideNav col={{ _: 12, md: 3, xl: 2 }}></SideNav>
+        <SideNav col={{ _: 12, md: 3, xl: 2 }} />
         <Box
           as={DocumentOutline}
           order={2}
-          display={{ _: 'none', xl: 'block' }}
           col={{ xl: 2 }}
+          display={{ _: 'hidden', xl: 'block' }}
         />
         <Box
           as="main"

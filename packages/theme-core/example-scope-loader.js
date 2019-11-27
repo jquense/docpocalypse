@@ -1,7 +1,7 @@
-// const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const { promisify } = require('util');
 
 const helpers = `
+
 const allValues = obj => {
   const keys = Object.keys(obj);
   return Promise.all(keys.map(k => obj[k])).then(values => {
@@ -16,6 +16,7 @@ const allValues = obj => {
 `;
 
 const Imports = new Map();
+const BaseModules = new Map();
 
 function exampleScopeLoader(src) {
   const resolve = promisify(this.resolve);
@@ -43,6 +44,7 @@ function exampleScopeLoader(src) {
           : ''
       )
     );
+
     const imports = `const IMPORTS = {\n${keys.join('\n')}\n};\n`;
 
     return `${helpers}${imports}${src}`;
@@ -52,4 +54,6 @@ function exampleScopeLoader(src) {
 }
 
 module.exports = exampleScopeLoader;
+
 module.exports.Imports = Imports;
+module.exports.BaseModules = BaseModules;

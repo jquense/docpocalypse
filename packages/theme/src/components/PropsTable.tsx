@@ -57,8 +57,8 @@ function PropsTable({ metadata }) {
           {props.map(prop => (
             <tr key={prop.name}>
               <td>{prop.name}</td>
-              <td css="white-space: pre;">{prop.type}</td>
-              <td css="white-space: pre;">{prop.defaultValue}</td>
+              <td className="font-mono whitespace-pre">{prop.type}</td>
+              <td className="font-mono whitespace-pre">{prop.defaultValue}</td>
               <td dangerouslySetInnerHTML={{ __html: prop.description }} />
             </tr>
           ))}

@@ -67,38 +67,3 @@ module.exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
     ]
   });
 };
-
-// exports.onCreateWebpackConfig = async (
-//   { plugins, actions },
-//   pluginOptions,
-// ) => {
-//   const { components, scope } = pluginOptions;
-//   const scopePath = path.resolve('.cache/component-docs-scope.js');
-
-//   await fs.writeFile(
-//     scopePath,
-//     `
-// var d = i => i.default || i;
-
-// module.exports = {
-//   ${components
-//     .map(c => [getName(c), c])
-//     .concat(Object.entries(scope))
-//     .map(([key, value]) => `${key}: d(require('${value}'))`)
-//     .join(',\n  ')}
-// }
-//     `.trim(),
-//   );
-
-//   actions.setWebpackConfig({
-//     plugins: [
-//       plugins.normalModuleReplacement(
-//         /found\/lib\/withRouter/,
-//         require.resolve('./__mocks__/withRouter'),
-//       ),
-//       plugins.provide({
-//         __SCOPE__: scopePath,
-//       }),
-//     ],
-//   });
-// };

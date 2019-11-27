@@ -1,14 +1,4 @@
-// const path = require('path');
 const remarkSlug = require('remark-slug');
-// const finder = require('find-package-json');
-
-// function getPkgMeta(root) {
-//   for (const { value } of finder(root)) {
-//     if (value) return value;
-//   }
-
-//   return {};
-// }
 
 module.exports = (options = {}) => {
   const {
@@ -29,16 +19,7 @@ module.exports = (options = {}) => {
   return {
     plugins: [
       'gatsby-plugin-sorted-assets',
-      // require.resolve('./plugins/sass-plugin'),
       'gatsby-plugin-typescript',
-      // {
-      //   resolve: require.resolve('./plugins/typedoc'),
-      //   options: { src: sources }
-      // },
-      {
-        resolve: 'gatsby-plugin-astroturf',
-        options: { extension: '.module.css', enableCssProp: true }
-      },
       examplesPath && {
         resolve: 'gatsby-source-filesystem',
         options: {

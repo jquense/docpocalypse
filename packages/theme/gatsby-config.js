@@ -4,17 +4,25 @@ const templates = {
   hook: require.resolve('./src/templates/hook.tsx')
 };
 
+const tailwindConfigPath = require.resolve('./tailwind.config');
+
 module.exports = (options = {}) => {
   return {
     plugins: [
-      'gatsby-plugin-typescript',
+      {
+        resolve: 'gatsby-plugin-astroturf',
+        options: { extension: '.module.css', enableCssProp: true }
+      },
       {
         resolve: require.resolve('./plugins/css-plugin'),
         options: {
-          postcssPlugins: [
-            require('tailwindcss')(require('./tailwind.config')),
-            require('postcss-nested')
-          ]
+          postcssPlugins: loader => {
+            loader.addDependency(tailwindConfigPath);
+            return [
+              require('tailwindcss')(tailwindConfigPath),
+              require('postcss-nested')
+            ];
+          }
         }
       },
       {

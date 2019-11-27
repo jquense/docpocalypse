@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import SidePanel from './SidePanel';
 import DocumentOutlineItem from './DocumentOutlineItem';
-import { Tree, Node, DocumentOutlineContext } from './DocumentOutlineProvider';
+import { DocumentOutlineContext, Node, Tree } from './DocumentOutlineProvider';
+import SidePanel from './SidePanel';
 
 function renderNode(root: Tree | Node) {
   return (
     <>
       {'title' in root && <a href={`#${root.id}`}>{root.title}</a>}
-      <ul className="list-unstyled">
+      <ul>
         {root.children!.map((item, idx) => (
           // eslint-disable-next-line react/no-array-index-key
           <DocumentOutlineItem key={idx}>

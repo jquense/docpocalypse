@@ -1,7 +1,30 @@
 @tailwind base;
 
+html {
+  @apply antialiased font-default;
+}
+
 body {
   color: theme('body.color');
+}
+
+h1 {
+  @apply text-2xl mb-5;
+}
+
+h2 {
+  @apply text-xl mb-5;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  @apply text-lg mb-4;
+}
+
+a {
+  @apply text-blue-600 underline;
 }
 
 @tailwind components;

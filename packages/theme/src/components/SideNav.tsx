@@ -6,14 +6,10 @@ import React, { useMemo } from 'react';
 import Box from './Box';
 import Link from './Link';
 
-const NavList = styled('ul')`
-  margin: 0;
-  padding: 0;
-`;
+const NavHeader = styled('div')`
+  @apply pb-3 font-bold capitalize;
 
-const NavItem = styled('li')`
-  list-style: none;
-  padding: 0;
+  color: nav-header;
 `;
 
 const NavLink = styled(Link)`
@@ -21,7 +17,7 @@ const NavLink = styled(Link)`
   &:hover,
   &:focus,
   &:active {
-    color: text-color;
+    color: theme('body.color');
     text-decoration: none;
     opacity: 0.75;
   }
@@ -32,6 +28,11 @@ const NavLink = styled(Link)`
     opacity: 0.5;
   }
 `;
+
+const NAMES = {
+  component: 'Components',
+  hook: 'Hooks'
+};
 
 function SideNav(props) {
   const data = useStaticQuery(graphql`
@@ -47,7 +48,7 @@ function SideNav(props) {
   `);
 
   const groups = useMemo(
-    () => groupBy(sortBy(data.allDocpocalypse.nodes, 'type'), 'packageName'),
+    () => groupBy(sortBy(data.allDocpocalypse.nodes, 'type'), 'type'),
     [data.allDocpocalypse]
   );
 
@@ -57,28 +58,28 @@ function SideNav(props) {
       {...props}
       css={css`
         position: sticky;
-        // top: $navbar-height;
-        // height: calc(100vh - #{$navbar-height});
-        // background-color: $side-nav-bg-color;
-        // border: 1px solid $divider-color;
-        // overflow-y: auto;
+        top: theme('navbar.height');
+        height: calc(100vh - theme('navbar.height'));
+        background-color: theme('side-nav.bg-color');
+        // border-right: 1px solid theme('divider-color');
+        overflow-y: auto;
       `}
     >
       <nav>
-        <NavList>
+        <ul>
           {Object.entries(groups).map(([pkg, nodes]) => (
-            <NavItem key={pkg}>
-              <div className="pb-3 font-weight-boold">{pkg}</div>
-              <NavList>
+            <li key={pkg}>
+              <NavHeader>{NAMES[pkg]}</NavHeader>
+              <ul className="mb-4">
                 {nodes.map(n => (
-                  <NavItem key={n.name}>
+                  <li key={n.name}>
                     <NavLink to={`/api/${n.name}`}>{n.name}</NavLink>
-                  </NavItem>
+                  </li>
                 ))}
-              </NavList>
-            </NavItem>
+              </ul>
+            </li>
           ))}
-        </NavList>
+        </ul>
       </nav>
     </Box>
   );

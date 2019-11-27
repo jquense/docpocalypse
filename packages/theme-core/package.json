@@ -55,10 +55,8 @@
     "@monastic.panic/react-docgen": "^5.0.0-beta.2",
     "@restart/hooks": "^0.3.0",
     "ast-types": "^0.13.2",
-    "astroturf": "^0.9.10",
     "classnames": "^2.2.6",
     "common-tags": "^1.8.0",
-    "fibers": "^4.0.2",
     "find-package-json": "^1.2.0",
     "find-pkg": "^2.0.0",
     "find-up": "^4.0.0",
@@ -66,7 +64,6 @@
     "gatsby-plugin-catch-links": "^2.0.15",
     "gatsby-plugin-mdx": "^1.0.22",
     "gatsby-plugin-page-creator": "^2.0.13",
-    "gatsby-plugin-sass": "^2.0.11",
     "gatsby-plugin-sorted-assets": "^1.0.2",
     "gatsby-plugin-typescript": "^2.0.15",
     "gatsby-remark-prismjs": "^3.2.11",
@@ -76,8 +73,6 @@
     "lodash": "^4.17.11",
     "remark-slug": "^5.1.1",
     "resolve": "^1.11.1",
-    "sass": "^1.23.0",
-    "typedoc": "^0.15.0",
     "unist-util-visit": "^2.0.0",
     "webpack-atoms": "^11.1.0"
   }

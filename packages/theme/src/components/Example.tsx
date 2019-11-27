@@ -1,7 +1,7 @@
-import ImportsContext from 'docpocalypse-core/ImportsContext';
+import useScopes from 'docpocalypse-core';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import LiveCode from './LiveCode';
 
@@ -25,7 +25,7 @@ interface Props {
 export default function Example({ example, name }: Props) {
   const pre = useMemo(() => {
     const Pre = props => {
-      const imports = useContext<any>(ImportsContext);
+      const imports = useScopes();
       const {
         children,
         originalType: _1,

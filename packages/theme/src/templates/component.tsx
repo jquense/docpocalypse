@@ -2,6 +2,7 @@ import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
 import ApiLayout from '../components/ApiLayout';
+import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
 import Heading from '../components/OutlineHeading';
 import PropsTable from '../components/PropsTable';
@@ -24,7 +25,7 @@ import PropsTable from '../components/PropsTable';
 const propTypes = {};
 
 function ComponentPageTemplate({ data }) {
-  const { metadata, name } = data.docpocalypse;
+  const { metadata, importName, name, example } = data.docpocalypse;
 
   // // TODO: This should be passed through somehow
   // const importName = `import ${displayName} from '${
@@ -36,7 +37,7 @@ function ComponentPageTemplate({ data }) {
       <div>
         <Heading h={1} id={`${name}-page`} title={name}>
           {name}
-          {/* <code className={styles.import}>{importName}</code> */}
+          {importName && <code className={styles.import}>{importName}</code>}
         </Heading>
 
         {metadata.description && metadata.description.childMdx && (
@@ -47,11 +48,9 @@ function ComponentPageTemplate({ data }) {
           </div>
         )}
       </div>
-      {data.mdxFile ? (
-        <MDXRenderer>{data.mdxFile.childMdx.body}</MDXRenderer>
-      ) : (
-        'No example'
-      )}
+
+      <Example example={example} name={name} />
+
       <LinkedHeading h={2} id={`${name}-api`}>
         API
       </LinkedHeading>
@@ -70,6 +69,10 @@ export const pageQuery = graphql`
     docpocalypse(id: { eq: $nodeId }) {
       id
       name
+      importName
+      example {
+        ...Example_example
+      }
       metadata {
         id
         description {

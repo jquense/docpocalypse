@@ -5,7 +5,7 @@ import Box, { BoxProps } from './Box';
 
 const styles = css`
   .navbar {
-    composes: sticky from global;
+    composes: sticky z-40 from global;
 
     top: 0;
     height: theme('navbar.height');
