@@ -20,7 +20,7 @@
   },
   "lint-staged": {
     "*.{js,json,css,md}": [
-      "yarn cli lint --fix",
+      "yarn 4c lint --fix",
       "git add"
     ]
   },
@@ -31,9 +31,20 @@
     ]
   },
   "devDependencies": {
-    "@4c/cli": "^1.0.2",
+    "@4c/cli": "^1.0.5",
     "@4c/import-sort": "^4.3.5",
     "@4c/prettier-config": "^1.1.0",
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/plugin-proposal-export-namespace-from": "^7.5.2",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.7.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.4",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.4",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "eslint": "^6.6.0",
     "eslint-config-4catalyzer-jest": "^2.0.1",

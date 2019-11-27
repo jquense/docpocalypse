@@ -2,7 +2,7 @@
   "name": "@docpocalypse/props-table",
   "version": "0.1.0",
   "main": "lib/index.js",
-  "module": "lib/es/index.js",
+  "module": "esm/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/4Catalyzer/theme.git",
@@ -27,13 +27,13 @@
     "react": "^16.8.6"
   },
   "devDependencies": {
-    "@4c/babel-preset": "^7.1.0",
-    "@4c/cli": "^1.0.0",
+    "@4c/cli": "^1.0.5",
     "@4c/import-sort": "^4.3.5",
     "@4c/jest-preset": "^1.4.3",
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-typescript": "^7.3.3",
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-modules": "^0.1.1",
+    "@babel/preset-typescript": "^7.7.4",
     "jest": "^24.0.0"
   }
 }
