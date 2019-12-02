@@ -1,6 +1,6 @@
 {
   "name": "docpocalypse",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "@types/lodash": "^4.14.149",
     "astroturf": "^0.9.10",
     "classnames": "^2.2.6",
-    "docpocalypse-core": "^0.2.0",
+    "docpocalypse-core": "^0.2.1",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-mdx": "^1.0.57",
     "lodash": "^4.17.15",
