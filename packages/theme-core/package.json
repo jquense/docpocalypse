@@ -54,7 +54,7 @@
     "@mdx-js/react": "^1.0.20",
     "@monastic.panic/react-docgen": "^5.0.0-beta.2",
     "@restart/hooks": "^0.3.0",
-    "ast-types": "^0.13.2",
+    "ast-types": "~0.12.4",
     "classnames": "^2.2.6",
     "common-tags": "^1.8.0",
     "find-package-json": "^1.2.0",

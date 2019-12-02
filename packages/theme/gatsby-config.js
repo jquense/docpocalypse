@@ -23,13 +23,6 @@ module.exports = (options = {}) => {
         }
       },
       {
-        resolve: 'gatsby-plugin-astroturf',
-        options: {
-          extension: '.module.css',
-          enableCssProp: true
-        }
-      },
-      {
         resolve: 'docpocalypse-core',
         options: {
           templates,
