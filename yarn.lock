@@ -1625,6 +1625,30 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@docpocalypse/code-live@^1.0.0":
+  version "0.1.0"
+  dependencies:
+    "@4c/tsconfig" "^0.3.0"
+    "@emotion/core" "^10.0.10"
+    "@emotion/styled" "^10.0.11"
+    "@restart/hooks" "^0.3.9"
+    "@types/classnames" "^2.2.9"
+    "@types/react" "^16.9.12"
+    "@types/react-dom" "^16.8.5"
+    acorn "^7.1.0"
+    acorn-dynamic-import "^4.0.0"
+    acorn-jsx "^5.1.0"
+    buble "^0.19.8"
+    classnames "^2.2.6"
+    estree-walker "^0.9.0"
+    holderjs "^2.9.6"
+    magic-string "^0.25.4"
+    prism-react-renderer "^1.0.2"
+    prismjs "^1.17.1"
+    prop-types "^15.7.2"
+    react-live "^2.1.2"
+    react-simple-code-editor "^0.10.0"
+
 "@emotion/cache@^10.0.17":
   version "10.0.19"
   resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-10.0.19.tgz#d258d94d9c707dcadaf1558def968b86bb87ad71"
@@ -6891,6 +6915,42 @@ dns-txt@^2.0.2:
   integrity sha1-uR2Ab10nGI5Ks+fRB9iBocxGQrY=
   dependencies:
     buffer-indexof "^1.0.0"
+
+docpocalypse-core@^1.0.0:
+  version "0.1.0"
+  dependencies:
+    "@4c/layout" "^1.0.0"
+    "@babel/code-frame" "^7.5.5"
+    "@babel/runtime" "^7.7.2"
+    "@babel/traverse" "^7.7.0"
+    "@babel/types" "^7.7.2"
+    "@mdx-js/mdx" "^1.0.20"
+    "@mdx-js/react" "^1.0.20"
+    "@monastic.panic/react-docgen" "^5.0.0-beta.2"
+    "@restart/hooks" "^0.3.0"
+    ast-types "^0.13.2"
+    classnames "^2.2.6"
+    common-tags "^1.8.0"
+    find-package-json "^1.2.0"
+    find-pkg "^2.0.0"
+    find-up "^4.0.0"
+    gatsby-plugin-astroturf "^0.2.1"
+    gatsby-plugin-catch-links "^2.0.15"
+    gatsby-plugin-mdx "^1.0.22"
+    gatsby-plugin-page-creator "^2.0.13"
+    gatsby-plugin-sorted-assets "^1.0.2"
+    gatsby-plugin-typescript "^2.0.15"
+    gatsby-remark-prismjs "^3.2.11"
+    gatsby-source-filesystem "^2.0.38"
+    gatsby-transformer-documentationjs "^4.0.2"
+    gatsby-transformer-remark "^2.4.0"
+    lodash "^4.17.11"
+    remark-slug "^5.1.1"
+    resolve "^1.11.1"
+    unist-util-visit "^2.0.0"
+    webpack-atoms "^11.1.0"
+  optionalDependencies:
+    fibers "^4.0.1"
 
 doctrine-temporary-fork@2.1.0:
   version "2.1.0"

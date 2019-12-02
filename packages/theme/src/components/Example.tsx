@@ -1,4 +1,4 @@
-import useScopes from 'docpocalypse-core';
+import { useImportsForExample } from 'docpocalypse-core';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React, { useMemo } from 'react';
@@ -19,13 +19,13 @@ const toText = (node: React.ReactNode) => {
 
 interface Props {
   example: any;
-  name?: string;
+  name: string;
 }
 
 export default function Example({ example, name }: Props) {
   const pre = useMemo(() => {
     const Pre = props => {
-      const imports = useScopes();
+      const imports = useImportsForExample(name);
       const {
         children,
         originalType: _1,
@@ -39,7 +39,7 @@ export default function Example({ example, name }: Props) {
         <LiveCode
           code={toText(children)}
           {...codeProps}
-          imports={imports && imports[name!]}
+          resolveImports={imports}
         />
       ) : (
         <pre {...props} />

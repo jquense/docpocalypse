@@ -1,3 +1,3 @@
-import { useScopes } from './ImportsContext';
+import { useImportsForExample, useScope } from './ExamplesContext';
 
-export { useScopes };
+export { useScope, useImportsForExample };

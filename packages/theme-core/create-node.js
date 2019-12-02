@@ -97,7 +97,7 @@ exports.onCreateNode = async function onCreateNode(
   { node, getNode, actions, createNodeId, createContentDigest },
   pluginOptions
 ) {
-  const { getImportName } = pluginOptions;
+  const { getImportName, ignore } = pluginOptions;
   const { createNode } = actions;
   const isComp = isComponent(node);
 
@@ -124,6 +124,7 @@ exports.onCreateNode = async function onCreateNode(
       children: [node.id, srcFile.id],
       package: pkgJson,
       packageName: pkgJson && pkgJson.name,
+      file___NODE: srcFile.id,
       metadata___NODE: isComp ? node.id : undefined,
       documentation___NODE: !isComp ? node.id : undefined,
       internal: {
@@ -133,6 +134,10 @@ exports.onCreateNode = async function onCreateNode(
     };
 
     docNode.importName = getImportName ? getImportName(docNode, srcFile) : '';
+
+    if (ignore && ignore(docNode)) {
+      return;
+    }
 
     createNode(docNode);
   }

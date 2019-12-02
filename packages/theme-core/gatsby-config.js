@@ -19,7 +19,6 @@ module.exports = (options = {}) => {
   return {
     plugins: [
       'gatsby-plugin-sorted-assets',
-      'gatsby-plugin-typescript',
       examplesPath && {
         resolve: 'gatsby-source-filesystem',
         options: {

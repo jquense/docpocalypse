@@ -35,7 +35,7 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@docpocalypse/code-live": "^1.0.0",
+    "@docpocalypse/code-live": "^0.1.0",
     "@docpocalypse/props-table": "^0.1.1",
     "@mdx-js/mdx": "^1.1.5",
     "@mdx-js/react": "^1.1.5",
@@ -43,7 +43,7 @@
     "@types/lodash": "^4.14.149",
     "astroturf": "^0.9.10",
     "classnames": "^2.2.6",
-    "docpocalypse-core": "^1.0.0",
+    "docpocalypse-core": "^0.1.0",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-mdx": "^1.0.57",
     "lodash": "^4.17.15",

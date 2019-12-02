@@ -46,8 +46,9 @@ function exampleScopeLoader(src) {
     );
 
     const imports = `const IMPORTS = {\n${keys.join('\n')}\n};\n`;
+    const scope = `const SCOPE = null;\n`;
 
-    return `${helpers}${imports}${src}`;
+    return `${helpers}${imports}${scope}${src}`;
   };
 
   process().then(result => done(null, result), done);

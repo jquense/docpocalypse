@@ -3,6 +3,7 @@ import React from 'react';
 import {
   Editor,
   Error,
+  ImportResolver,
   InfoMessage,
   Preview,
   Provider
@@ -31,7 +32,7 @@ const StyledInfoMessage = styled(InfoMessage)`
 
 const StyledPreview = styled(Preview)`
   position: relative;
-  color: var(--theme-body-bg);
+  color: theme('body.bg-color');
   padding: 1rem;
   border-style: solid;
   border-color: rgb(236, 236, 236);
@@ -52,21 +53,34 @@ const StyledPreview = styled(Preview)`
   }
 `;
 
+export interface Props<TScope extends {} = {}> {
+  code: string;
+  scope: TScope;
+  className?: string;
+  exampleClassName?: string;
+  resolveImports?: ImportResolver;
+  language?: string;
+  showCode?: boolean;
+  showImports?: boolean;
+}
+
 export default function LiveCode({
   code,
   scope,
   className,
   exampleClassName,
-  imports,
+  resolveImports,
   language = getLanguage(className),
-  showCode = true
-}) {
+  showCode = true,
+  showImports = false
+}: Props) {
   return (
     <Provider
       scope={scope}
       code={code}
       language={language}
-      resolveImports={imports}
+      showImports={showImports}
+      resolveImports={resolveImports}
     >
       <StyledLiveProviderChild>
         <StyledPreview

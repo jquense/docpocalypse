@@ -9,10 +9,7 @@ const tailwindConfigPath = require.resolve('./tailwind.config');
 module.exports = (options = {}) => {
   return {
     plugins: [
-      {
-        resolve: 'gatsby-plugin-astroturf',
-        options: { extension: '.module.css', enableCssProp: true }
-      },
+      'gatsby-plugin-typescript',
       {
         resolve: require.resolve('./plugins/css-plugin'),
         options: {
@@ -23,6 +20,13 @@ module.exports = (options = {}) => {
               require('postcss-nested')
             ];
           }
+        }
+      },
+      {
+        resolve: 'gatsby-plugin-astroturf',
+        options: {
+          extension: '.module.css',
+          enableCssProp: true
         }
       },
       {

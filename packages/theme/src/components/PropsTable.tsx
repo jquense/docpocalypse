@@ -27,7 +27,7 @@ function PropsTable({ metadata }) {
     <>
       <table
         css={css`
-          composes: px-4 from global;
+          composes: py-4 from global;
           display: grid;
           width: auto;
           border-collapse: collapse;

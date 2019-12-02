@@ -1,7 +1,10 @@
 import React from 'react';
-import ImportsContext from './ImportsContext';
+
+import ExamplesContext from './ExamplesContext';
+
+// eslint-disable-next-line no-undef
+const context = { imports: IMPORTS, scope: SCOPE };
 
 export const wrapPageElement = ({ element }) => (
-  // eslint-disable-next-line no-undef
-  <ImportsContext.Provider value={IMPORTS}>{element}</ImportsContext.Provider>
+  <ExamplesContext.Provider value={context}>{element}</ExamplesContext.Provider>
 );
