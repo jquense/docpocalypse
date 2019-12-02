@@ -73,9 +73,9 @@ function codeToComponent<TScope extends {}>(
   });
 }
 
-type ImportResolver = () => Promise<Record<string, any>>;
+export type ImportResolver = () => Promise<Record<string, any>>;
 
-interface Props<TScope> {
+export interface Props<TScope> {
   code: string;
   scope?: TScope;
   children?: ReactNode;
@@ -90,6 +90,8 @@ interface Props<TScope> {
    *   './foo': Foo
    * })
    * ```
+   *
+   * @default undefined
    */
   resolveImports?: ImportResolver;
 }
@@ -112,7 +114,7 @@ export default function Provider<TScope extends {} = {}>({
   code: codeText,
   language,
   theme,
-  showImports = true,
+  showImports = false,
   resolveImports = () => Promise.resolve({})
 }: Props<TScope>) {
   const [error, setError] = useState<Error | null>(null);
