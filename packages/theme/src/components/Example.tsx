@@ -1,7 +1,7 @@
-import { useImportsForExample } from 'docpocalypse-core';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React, { useMemo } from 'react';
+import { useImportsForExample } from '@docpocalypse/gatsby-theme-core';
 import { MDXProvider } from '@mdx-js/react';
 import LiveCode from './LiveCode';
 

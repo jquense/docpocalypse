@@ -23,7 +23,7 @@ module.exports = (options = {}) => {
         }
       },
       {
-        resolve: 'docpocalypse-core',
+        resolve: '@docpocalypse/gatsby-theme-core',
         options: {
           templates,
           ...options

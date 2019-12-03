@@ -1,5 +1,5 @@
 {
-  "name": "docpocalypse-core",
+  "name": "@docpocalypse/gatsby-theme-core",
   "version": "0.2.1",
   "main": "index.js",
   "repository": {
