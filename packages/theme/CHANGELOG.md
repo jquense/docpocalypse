@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.3.0 (2019-12-03)
+
+### Bug Fixes
+
+- scope astroturf and pin ast-types ([56d598a](https://github.com/4Catalyzer/theme/commit/56d598a26e32d7e8a6fb418c99f0e137bb4b2597))
+
+### Features
+
+- ignore config and refactor example plumbing ([79d7ffe](https://github.com/4Catalyzer/theme/commit/79d7ffe18032d814b239dce8161492178839d3d6))
+- rename to match gatsby naming conventions ([878fbf1](https://github.com/4Catalyzer/theme/commit/878fbf1e75cb65782f24ac2d97780ecfd3688737))
+
 ## [0.2.1](https://github.com/4Catalyzer/theme/compare/docpocalypse@0.2.0...docpocalypse@0.2.1) (2019-12-02)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@docpocalypse/code-live": "^0.1.1",
+    "@docpocalypse/gatsby-theme-core": "^0.3.0",
     "@docpocalypse/props-table": "^0.2.0",
     "@mdx-js/mdx": "^1.1.5",
     "@mdx-js/react": "^1.1.5",
@@ -43,7 +44,6 @@
     "@types/lodash": "^4.14.149",
     "astroturf": "^0.9.10",
     "classnames": "^2.2.6",
-    "@docpocalypse/gatsby-theme-core": "^0.2.1",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-mdx": "^1.0.57",
     "lodash": "^4.17.15",
