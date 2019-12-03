@@ -46,6 +46,7 @@
     "@babel/preset-react": "^7.7.4",
     "@babel/preset-typescript": "^7.7.4",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "astroturf": "^0.10.0",
     "eslint": "^6.6.0",
     "eslint-config-4catalyzer-jest": "^2.0.1",
     "eslint-config-4catalyzer-react": "^1.0.0",
@@ -56,9 +57,11 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
+    "glob": "^7.1.6",
     "husky": "^3.0.9",
     "lerna": "^3.18.3",
     "lint-staged": "^9.2.1",
-    "prettier": "^1.9.0"
+    "prettier": "^1.9.0",
+    "yargs": "^15.0.2"
   }
 }
