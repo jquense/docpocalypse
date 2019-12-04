@@ -50,7 +50,7 @@ function exampleScopeLoader(src) {
 
     const requires = exampleCodeScope
       ? `{\n${Object.entries(exampleCodeScope)
-          .map((ident, request) => `"${ident}": require('${request}')`)
+          .map(([ident, request]) => `"${ident}": require('${request}')`)
           .join(',\n')}\n}`
       : 'null';
 
