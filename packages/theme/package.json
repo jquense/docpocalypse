@@ -42,7 +42,7 @@
     "@mdx-js/react": "^1.1.5",
     "@restart/hooks": "^0.3.9",
     "@types/lodash": "^4.14.149",
-    "astroturf": "^0.9.10",
+    "astroturf": "^0.10.2",
     "classnames": "^2.2.6",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-mdx": "^1.0.57",

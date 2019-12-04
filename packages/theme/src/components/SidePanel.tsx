@@ -1,10 +1,9 @@
-import styled from 'astroturf';
+import dstyled from 'astroturf';
 
-const SidePanel = styled('div')`
+const SidePanel = dstyled('div')`
   order: 2;
   position: sticky;
-  top: $navbar-height;
-  height: calc(100vh - $navbar-height);
+  height: calc(100vh - theme('navbar.height'));
   padding-top: 1.5rem;
   background-color: var(--theme-doc-outline-bg-color);
   padding-bottom: 1.5rem;

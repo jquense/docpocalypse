@@ -1,4 +1,4 @@
-import styled from 'astroturf';
+import dstyled from 'astroturf';
 import React from 'react';
 import {
   Editor,
@@ -10,27 +10,27 @@ import {
 } from '@docpocalypse/code-live';
 import { getLanguage } from './CodeBlock';
 
-const StyledError = styled(Error)`
+const StyledError = dstyled(Error)`
   border-radius: 0;
   border-width: 0.2rem;
   margin-bottom: 0;
 `;
 
-const StyledLiveProviderChild = styled('div')`
+const StyledLiveProviderChild = dstyled('div')`
   background-color: theme('body.bg-color');
   margin-bottom: 3rem;
 `;
 
-const StyledEditor = styled(Editor)`
+const StyledEditor = dstyled(Editor)`
   font-family: theme('fontFamily');
   border-radius: 0 0 theme('border-radius') theme('border-radius');
 `;
 
-const StyledInfoMessage = styled(InfoMessage)`
+const StyledInfoMessage = dstyled(InfoMessage)`
   font-size: 70%;
 `;
 
-const StyledPreview = styled(Preview)`
+const StyledPreview = dstyled(Preview)`
   position: relative;
   color: theme('body.bg-color');
   padding: 1rem;

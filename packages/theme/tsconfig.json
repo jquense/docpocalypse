@@ -11,7 +11,7 @@
       }
     ]
   },
-  "include": ["src", "../theme-core/ImportsContext.ts"],
+  "include": ["src"],
   "references": [
     { "path": "../props-table" },
     { "path": "../code-live" },

@@ -1,4 +1,4 @@
-import { css } from 'astroturf';
+import { css as dcss } from 'astroturf';
 import React, { ReactNode, useContext, useEffect } from 'react';
 import { DocumentOutlineContext } from './DocumentOutlineProvider';
 import Heading from './Heading';
@@ -24,7 +24,7 @@ function OutlineHeading({ h, id, title, className, children }: HProps) {
     <Heading
       id={id}
       level={h}
-      css={css`
+      css={dcss`
         position: relative;
         pointer-events: none;
 
@@ -39,7 +39,7 @@ function OutlineHeading({ h, id, title, className, children }: HProps) {
     >
       <div
         className={className}
-        css={css`
+        css={dcss`
           pointer-events: auto;
         `}
       >

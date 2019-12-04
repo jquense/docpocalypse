@@ -1,3 +1,6 @@
+const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
+const defaultConfig = require('tailwindcss/defaultConfig');
+
 const templates = {
   default: require.resolve('./src/components/PageLayout.js'),
   component: require.resolve('./src/templates/component.tsx'),
@@ -15,8 +18,14 @@ module.exports = (options = {}) => {
         options: {
           postcssPlugins: loader => {
             loader.addDependency(tailwindConfigPath);
+
+            delete require.cache[tailwindConfigPath];
+            const base = require(tailwindConfigPath);
+
             return [
-              require('tailwindcss')(tailwindConfigPath),
+              require('tailwindcss')(
+                resolveConfig([options.config || {}, base, defaultConfig])
+              ),
               require('postcss-nested')
             ];
           }

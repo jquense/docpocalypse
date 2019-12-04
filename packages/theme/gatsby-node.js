@@ -12,6 +12,8 @@ exports.onCreateWebpackConfig = ({ actions }) => {
             {
               loader: 'astroturf/loader',
               options: {
+                tagName: 'dcss',
+                styledTag: 'dstyled',
                 extension: '.module.css',
                 enableCssProp: true
               }

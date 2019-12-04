@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 
-import styled, { css } from 'astroturf';
+import dstyled, { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React, { ReactNode } from 'react';
@@ -11,7 +11,7 @@ import ReturnBlock from './DocReturns';
 import { SignatureElement } from './DocSignature';
 import Heading, { HeadingLevel } from './Heading';
 
-const Optional = styled(`span`)`
+const Optional = dstyled(`span`)`
   &:before {
     content: ' (optional)';
     color: #4084a1;
@@ -26,7 +26,7 @@ const Description = ({ definition }) => {
   if (description) {
     return (
       <div
-        css={css`
+        css={dcss`
           margin-top: 0.5em;
 
           & p {

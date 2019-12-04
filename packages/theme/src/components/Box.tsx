@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import React, { ReactNode } from 'react';
-import config from '../../tailwind.config.js';
+import config from '../../tailwind.config';
 
 export type ResponsiveValue<T> = T | Record<string, T>;
 

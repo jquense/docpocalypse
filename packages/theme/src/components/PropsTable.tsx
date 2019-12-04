@@ -1,4 +1,4 @@
-import { css } from 'astroturf';
+import { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
 import renderProps from '@docpocalypse/props-table';
@@ -6,7 +6,7 @@ import { TokenMap } from '@docpocalypse/props-table/src/TypescriptTypeValue';
 
 export { renderProps };
 
-const tokenMap: TokenMap = css`
+const tokenMap: TokenMap = dcss`
   .union {
     & > *:not(:last-child)::after {
       content: ' | ';
@@ -26,7 +26,7 @@ function PropsTable({ metadata }) {
   return (
     <>
       <table
-        css={css`
+        css={dcss`
           composes: py-4 from global;
           display: grid;
           width: auto;

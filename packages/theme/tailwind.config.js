@@ -2,6 +2,10 @@ const base = require('tailwindcss/defaultTheme');
 
 module.exports = {
   theme: {
+    colors: {
+      white: base.colors.white,
+      gray: base.colors.gray
+    },
     fontFamily: {
       default: base.fontFamily.sans,
       mono: base.fontFamily.mono
@@ -14,7 +18,7 @@ module.exports = {
     navbar: t => ({
       height: t('spacing.16'),
       color: t('colors.white'),
-      'bg-color': t('colors.gray.600')
+      'bg-color': t('colors.gray.100')
     }),
 
     'divider-color': t => t('colors.gray.300'),

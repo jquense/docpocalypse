@@ -1,4 +1,4 @@
-import styled, { css } from 'astroturf';
+import dstyled, { css as dcss } from 'astroturf';
 import { graphql, useStaticQuery } from 'gatsby';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
@@ -6,13 +6,13 @@ import React, { useMemo } from 'react';
 import Box from './Box';
 import Link from './Link';
 
-const NavHeader = styled('div')`
+const NavHeader = dstyled('div')`
   @apply pb-3 font-bold capitalize;
 
   color: nav-header;
 `;
 
-const NavLink = styled(Link)`
+const NavLink = dstyled(Link)`
   &,
   &:hover,
   &:focus,
@@ -56,7 +56,7 @@ function SideNav(props) {
     <Box
       p={4}
       {...props}
-      css={css`
+      css={dcss`
         position: sticky;
         top: theme('navbar.height');
         height: calc(100vh - theme('navbar.height'));

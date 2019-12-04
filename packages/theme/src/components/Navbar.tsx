@@ -1,9 +1,9 @@
-import { css } from 'astroturf';
+import { css as dcss } from 'astroturf';
 import cn from 'classnames';
 import React from 'react';
 import Box, { BoxProps } from './Box';
 
-const styles = css`
+const styles = dcss`
   .navbar {
     composes: sticky z-40 from global;
 

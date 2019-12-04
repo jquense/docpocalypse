@@ -1,4 +1,4 @@
-import { css } from 'astroturf';
+import { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
 // eslint-disable-next-line import/no-cycle
@@ -7,14 +7,14 @@ import Heading, { HeadingLevel } from './Heading';
 
 const List = ({ elements, level, ignoreParams }) => (
   <ul
-    css={css`
+    css={dcss`
       composes: ml-5 p-0 mt-0 mb-0 from global;
     `}
   >
     {elements
       .filter(param => !ignoreParams.includes(param.name))
       .map(param => (
-        <li key={param.name} className='mt-3'>
+        <li key={param.name} className="mt-3">
           <DocBlock definition={param} level={level + 1} />
         </li>
       ))}

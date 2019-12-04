@@ -1,10 +1,10 @@
 /* eslint-disable react/no-array-index-key */
-import styled from 'astroturf';
+import dstyled from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
 import Heading, { HeadingLevel } from './Heading';
 
-const Wrapper = styled('span')<{ block?: boolean }>`
+const Wrapper = dstyled('span')<{ block?: boolean }>`
   &.block {
     display: block;
     margin-top: 20px;

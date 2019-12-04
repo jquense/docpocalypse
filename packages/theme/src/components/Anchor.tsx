@@ -1,13 +1,13 @@
-import React, { ReactType, ReactNode } from 'react';
-import styled from 'astroturf';
+import dstyled from 'astroturf';
+import React, { ReactNode, ReactType } from 'react';
 
-const Wrapper = styled('span')`
+const Wrapper = dstyled('span')`
   position: relative;
   display: inline-block;
   padding-right: 1em;
 `;
 
-const A = styled('a')`
+const A = dstyled('a')`
   font-size: 90%;
   position: absolute;
   right: 0.3em;

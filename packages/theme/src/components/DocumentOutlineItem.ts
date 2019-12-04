@@ -1,6 +1,6 @@
-import styled from 'astroturf';
+import dstyled from 'astroturf';
 
-const ListItem = styled('li')`
+const ListItem = dstyled('li')`
   & a {
     display: block;
     padding: 0.125rem 1.5rem;
