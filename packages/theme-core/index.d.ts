@@ -23,6 +23,22 @@ export interface PluginOptions {
   /** An array directories or file globs to component source files */
   sources: string[];
 
+  /**
+   * An dictionary of modules to make available globally in example code blocks.
+   * The key of of each should be the identifier the module is assigned too
+   *
+   * ```js
+   * scope: {
+   *   _: 'lodash',
+   *   helpers: require.resolve('./src/helpers'),
+   *   Bootstrap: 'react-bootstrap',
+   *   ReactIntl: 'react-intl',
+   *   yup: 'yup',
+   * },
+   * ```
+   */
+  exampleCodeScope: Record<string, string>;
+
   /** The relative path to the examples directory */
   examplesPath: string;
 

@@ -19,9 +19,12 @@ const compiler = mdx.createMdxAstCompiler({
 
 module.exports = mdxNode => {
   const mdxAST = compiler.parse(mdxNode.rawBody);
-  const context = dirname(mdxNode.fileAbsolutePath);
 
-  const imports = [];
+  const context = mdxNode.fileAbsolutePath
+    ? dirname(mdxNode.fileAbsolutePath)
+    : '';
+
+  const imports = new Map();
 
   visit(mdxAST, 'code', node => {
     const { lang = 'js' } = node;
@@ -38,7 +41,7 @@ module.exports = mdxNode => {
       ImportDeclaration(path) {
         const request = path.node.source.value;
 
-        imports.push({
+        imports.set(request, {
           request,
           context,
           type: 'IMPORT'
@@ -47,5 +50,5 @@ module.exports = mdxNode => {
     });
   });
 
-  return imports;
+  return Array.from(imports.values());
 };

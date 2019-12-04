@@ -43,7 +43,10 @@ module.exports.createPages = async ({ graphql, actions }, pluginOptions) => {
   }
 };
 
-module.exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
+module.exports.onCreateWebpackConfig = (
+  { stage, actions, plugins },
+  pluginOptions
+) => {
   const isSsr = stage.includes('html');
 
   actions.setWebpackConfig({
@@ -52,7 +55,8 @@ module.exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
         {
           include: [require.resolve('./gatsby-browser')],
           use: {
-            loader: require.resolve('./example-scope-loader')
+            loader: require.resolve('./example-scope-loader'),
+            options: pluginOptions
           }
         }
       ]

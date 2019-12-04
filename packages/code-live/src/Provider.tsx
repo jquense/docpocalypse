@@ -10,6 +10,11 @@ import transpile, { removeImports } from './transpile';
 
 const prettierComment = /(\{\s*\/\*\s+prettier-ignore\s+\*\/\s*\})|(\/\/\s+prettier-ignore)/gim;
 
+const hooks = {};
+Object.entries(React).forEach(([key, value]) => {
+  if (key.startsWith('use')) hooks[key] = value;
+});
+
 export interface LiveContext {
   code?: string;
   language?: string;
@@ -63,8 +68,11 @@ function codeToComponent<TScope extends {}>(
       resolve(withErrorBoundary(element, reject));
     };
 
-    const args = ['React', 'render'].concat(Object.keys(scope || {}));
-    const values = [React, render].concat(Object.values(scope || {}));
+    // DU NA NA NAAAH
+    const finalScope = { ...hooks, ...scope };
+
+    const args = ['React', 'render'].concat(Object.keys(finalScope));
+    const values = [React, render].concat(Object.values(finalScope));
 
     // eslint-disable-next-line no-new-func
     const fn = new Function(...args, result.code);

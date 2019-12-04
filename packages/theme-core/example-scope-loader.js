@@ -19,6 +19,7 @@ const Imports = new Map();
 const BaseModules = new Map();
 
 function exampleScopeLoader(src) {
+  const { exampleCodeScope } = this.query || {};
   const resolve = promisify(this.resolve);
 
   const done = this.async();
@@ -46,7 +47,14 @@ function exampleScopeLoader(src) {
     );
 
     const imports = `const IMPORTS = {\n${keys.join('\n')}\n};\n`;
-    const scope = `const SCOPE = null;\n`;
+
+    const requires = exampleCodeScope
+      ? `{\n${Object.entries(exampleCodeScope)
+          .map((ident, request) => `"${ident}": require('${request}')`)
+          .join(',\n')}\n}`
+      : 'null';
+
+    const scope = `const SCOPE = ${requires};\n`;
 
     return `${helpers}${imports}${scope}${src}`;
   };
