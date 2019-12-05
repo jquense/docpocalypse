@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 
 const helpers = `
-const d = (obj) => obj && obj.__esModule ? obj.default. : obj;
+const d = (obj) => obj && obj.__esModule ? obj.default : obj;
 
 const allValues = obj => {
   const keys = Object.keys(obj);
