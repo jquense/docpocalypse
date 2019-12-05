@@ -1,6 +1,7 @@
 const { promisify } = require('util');
 
 const helpers = `
+const d = (obj) => obj && obj.__esModule ? obj.default. : obj;
 
 const allValues = obj => {
   const keys = Object.keys(obj);
@@ -50,7 +51,7 @@ function exampleScopeLoader(src) {
 
     const requires = exampleCodeScope
       ? `{\n${Object.entries(exampleCodeScope)
-          .map(([ident, request]) => `"${ident}": require('${request}')`)
+          .map(([ident, request]) => `"${ident}": d(require('${request}'))`)
           .join(',\n')}\n}`
       : 'null';
 
