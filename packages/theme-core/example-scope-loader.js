@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const path = require('path');
 
 const helpers = `
 const d = (obj) => obj && obj.__esModule ? obj.default : obj;
@@ -22,6 +23,10 @@ const BaseModules = new Map();
 function exampleScopeLoader(src) {
   const { exampleCodeScope } = this.query || {};
   const resolve = promisify(this.resolve);
+
+  // This file changes every time there is an update to imports
+  // so it triggers a rebuild of the page
+  this.addDependency(path.resolve('.cache/example-import-hash'));
 
   const done = this.async();
 

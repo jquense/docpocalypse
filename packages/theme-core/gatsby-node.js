@@ -1,9 +1,17 @@
+const fs = require('fs');
+const path = require('path');
+
 const apis = require('./create-node');
 const { Imports } = require('./example-scope-loader');
 
+const hashPath = path.resolve('.cache/example-import-hash');
+
 module.exports = apis;
 
-module.exports.createPages = async ({ graphql, actions }, pluginOptions) => {
+module.exports.createPages = async (
+  { graphql, actions, createContentDigest },
+  pluginOptions
+) => {
   const { templates } = pluginOptions;
   Imports.clear();
 
@@ -40,6 +48,18 @@ module.exports.createPages = async ({ graphql, actions }, pluginOptions) => {
         nodeId: doc.id
       }
     });
+  }
+
+  // We hash the imports and output a file so that the loader has something to
+  // check for a "dirty" state
+  const hash = createContentDigest(JSON.stringify(Array.from(Imports))).trim();
+
+  const last = fs.existsSync(hashPath)
+    ? fs.readFileSync(hashPath, 'utf-8').trim()
+    : '';
+
+  if (last !== hash) {
+    fs.writeFileSync(hashPath, hash);
   }
 };
 

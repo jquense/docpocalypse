@@ -118,6 +118,7 @@ exports.onCreateNode = async function onCreateNode(
     const docNode = {
       name,
       rootDir,
+      parent: srcFile.id,
       fileName: srcFile.name,
       type: isComp ? 'component' : 'hook',
       id: createNodeId(`${node.id}-${name}`),
