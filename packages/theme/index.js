@@ -1,3 +1,2 @@
-import Example from './src/components/Example';
-
-export { Example };
+export Example from './src/components/Example';
+export { components } from './src/wrap-page';

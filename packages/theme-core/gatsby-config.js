@@ -5,6 +5,7 @@ module.exports = (options = {}) => {
     sources,
     templates,
     reactDocgenConfig,
+    // typedocConfig,
     examplesPath = 'src/examples'
   } = options;
 
@@ -48,6 +49,13 @@ module.exports = (options = {}) => {
           ...reactDocgenConfig
         }
       }
+      // {
+      //   resolve: require.resolve('./plugins/typedoc'),
+      //   options: {
+      //     src: sources,
+      //     typedoc: typedocConfig
+      //   }
+      // }
     ].filter(Boolean)
   };
 };

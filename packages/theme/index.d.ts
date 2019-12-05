@@ -1,7 +1,6 @@
-import {
+export {
   DocumentationNode,
   DocType,
   PluginOptions
 } from '@docpocalypse/gatsby-theme-core';
-
-export { DocumentationNode, DocType, PluginOptions };
+export { components } from './src/wrap-page';

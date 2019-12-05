@@ -2,6 +2,7 @@
 import dstyled from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
+import { highlight } from '@docpocalypse/code-live';
 import Heading, { HeadingLevel } from './Heading';
 
 const Wrapper = dstyled('span')<{ block?: boolean }>`
@@ -21,77 +22,49 @@ const Wrapper = dstyled('span')<{ block?: boolean }>`
   }
 `;
 
-const join = (arrayOfElements, joiner) =>
-  arrayOfElements.reduce((acc, current, index) => {
-    if (index > 0) {
-      acc.push(
-        React.cloneElement(joiner, {
-          key: `joiner ${index}`
-        })
-      );
-    }
-    acc.push(current);
-
-    return acc;
-  }, []);
-
 const TypeComponent = ({ children }) => (
   <span className="token builtin">{children}</span>
 );
 
-const Punctuation = ({ children }) => (
-  <span className="token punctuation">{children}</span>
-);
-
-const Operator = ({ children }) => (
-  <span className="token operator">{children}</span>
-);
-
-const TypeExpression = ({ type }) => {
+const typeExpression = (type): string => {
   if (type.type === `RecordType`) {
-    return <TypeComponent>object</TypeComponent>;
+    return 'object';
   }
   if (type.type === `NameExpression`) {
-    return <TypeComponent>{type.name}</TypeComponent>;
+    return type.name;
   }
   if (type.type === `NullLiteral`) {
-    return <TypeComponent>null</TypeComponent>;
+    return 'null';
   }
   if (type.type === `UndefinedLiteral`) {
-    return <TypeComponent>undefined</TypeComponent>;
+    return 'undefined';
   }
   if (type.type === `UnionType`) {
-    return (
-      <>
-        {join(
-          type.elements.map((element, index) => (
-            <TypeExpression key={`union element ${index}`} type={element} />
-          )),
-          <Operator> | </Operator>
-        )}
-      </>
-    );
+    return type.elements.map(typeExpression).join(' | ');
   }
+  // tuples [number, string]
+  if (type.type === `ArrayType`) {
+    return `[${type.elements.map(typeExpression).join(', ')}]`;
+  }
+
   if (type.type === `TypeApplication` && type.expression) {
     if (type.expression.name === `Array`) {
-      return (
-        <>
-          <TypeExpression type={type.applications[0]} />
-          <Operator>[]</Operator>
-        </>
-      );
+      return `${typeExpression(type.applications[0])}[]`;
     }
-    return (
-      <>
-        <TypeExpression type={type.expression} />
-        {`<`}
-        <TypeExpression type={type.applications[0]} />
-        {`>`}
-      </>
-    );
+    return `${typeExpression(type.expression)}<${typeExpression(
+      type.applications[0]
+    )}>`;
   }
-  return null;
+
+  return '';
 };
+
+function TypeExpression({ type }) {
+  const str = typeExpression(type);
+  return (
+    <span dangerouslySetInnerHTML={{ __html: highlight(str, 'typescript') }} />
+  );
+}
 
 interface FunctionSignatureProps {
   definition: any;
@@ -107,31 +80,26 @@ function FunctionSignature({
   const params = definition.params
     ? definition.params
         .filter(param => !ignoreParams.includes(param.name))
-        .map((param, index) => (
-          <React.Fragment key={param.name}>
-            {index > 0 && <Punctuation>, </Punctuation>}
-            {param.name}
-            {param.type && (
-              <>
-                <Punctuation>{param.optional && '?'}:</Punctuation>{' '}
-                <TypeExpression type={param.type} />
-              </>
-            )}
-          </React.Fragment>
-        ))
-    : null;
+        .map(param => {
+          const type =
+            param.type &&
+            `${param.optional ? '?' : ''}: ${typeExpression(param.type)}`;
+          return `${param.name}${type || ''}`;
+        })
+    : [];
+
+  const returns =
+    definition.returns && definition.returns.length
+      ? typeExpression(definition.returns[0].type)
+      : 'void';
 
   return (
-    <Wrapper block={block}>
-      <Punctuation>(</Punctuation>
-      {params}
-      <Punctuation>)</Punctuation> <Operator>=&gt;</Operator>{' '}
-      {definition.returns && definition.returns.length ? (
-        <TypeExpression type={definition.returns[0].type} />
-      ) : (
-        <TypeComponent>void</TypeComponent>
-      )}
-    </Wrapper>
+    <Wrapper
+      block={block}
+      dangerouslySetInnerHTML={{
+        __html: highlight(`(${params.join(', ')}) => ${returns}`, 'typescript')
+      }}
+    />
   );
 }
 
@@ -212,7 +180,7 @@ export {
 
 export const fragment = graphql`
   fragment DocumentationTypeFragment on DocumentationJs {
-    # optional
+    optional
     type {
       name
       type

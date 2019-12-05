@@ -11,6 +11,10 @@ module.exports = {
         },
         reactDocgenConfig: {
           babelrcRoots: true
+        },
+        typedocConfig: {
+          tsconfig: require.resolve('./tsconfig.json'),
+          mode: 'modules'
         }
       }
     }

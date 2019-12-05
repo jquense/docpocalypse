@@ -11,6 +11,7 @@ export default function useTest(
   foo: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { baz, buz }: { baz: boolean; buz: number }
-): string {
+): [string, number] {
+  // @ts-ignore
   return String(foo && 'badass' && baz && buz);
 }

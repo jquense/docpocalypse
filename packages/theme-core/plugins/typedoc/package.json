@@ -2,6 +2,8 @@
   "name": "gatsby-plugin-typedoc",
   "main": "./gatsby-node.js",
   "dependencies": {
-    "typedoc": "^0.15.0"
+    "lodash": "^4.17.11",
+    "typescript": "^3.7.0",
+    "typedoc": "^0.15.3"
   }
 }

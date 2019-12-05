@@ -4,14 +4,7 @@ import CodeBlock from './components/CodeBlock';
 import LinkedHeading from './components/LinkedHeading';
 import Heading from './components/OutlineHeading';
 
-declare const IMPORTS: any;
-
-// const getMode = (className = '') => {
-//   const [, mode]: RegExpMatchArray = className.match(/language-(\w+)/) || [];
-//   return mode;
-// };
-
-const components = {
+export const components = {
   wrapper: props => <>{props.children}</>,
   h1: props => <Heading h="1" {...props} />,
   h2: props => <LinkedHeading h="2" {...props} />,
