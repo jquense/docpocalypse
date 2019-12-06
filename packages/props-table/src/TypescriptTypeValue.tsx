@@ -102,6 +102,9 @@ const isPrimitive = (name: string) => name[0].toLowerCase() === name[0];
 
 const isArray = (t: TSType): t is TSArray => t.name === 'Array';
 
+const isComplex = (t: TSType): t is TSConcreteType =>
+  ['signature', 'union', 'tuple', 'intersect'].includes(t.name);
+
 interface Props {
   type: TSType;
   doclets: Doclet[];
@@ -144,12 +147,10 @@ function getType(
   }
 
   function renderArray(arrType: TSArray) {
-    return arrType.elements[0].name !== 'signature' ? (
-      <span className={t('array')}>
-        {renderName(arrType.elements[0].name)}[]
-      </span>
-    ) : (
+    return isComplex(arrType.elements[0]) ? (
       renderNamedType(arrType)
+    ) : (
+      <span className={t('array')}>{get(arrType.elements[0])}[]</span>
     );
   }
 
