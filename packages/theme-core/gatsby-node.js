@@ -23,6 +23,7 @@ module.exports.createPages = async (
           type
           id
           example {
+            id
             codeBlockImports {
               type
               request
@@ -40,12 +41,13 @@ module.exports.createPages = async (
     if (doc.example) {
       Imports.set(doc.name, doc.example.codeBlockImports);
     }
-
     actions.createPage({
       path: `/api/${doc.name}`,
       component: templates[doc.type],
       context: {
-        nodeId: doc.id
+        nodeId: doc.id,
+        // triggers query rerun
+        exampleId: doc.example && doc.example.id
       }
     });
   }

@@ -7,12 +7,27 @@ const {
   default: resolveToModule
 } = require('@monastic.panic/react-docgen/dist/utils/resolveToModule');
 
+const isSimpleStyled = tagPath =>
+  t.CallExpression.check(tagPath.node) &&
+  tagPath.get('callee').node.name === 'styled';
+
+const isAttrsStyled = tagPath =>
+  t.CallExpression.check(tagPath.node) &&
+  t.MemberExpression.check(tagPath.get('callee').node) &&
+  tagPath
+    .get('callee')
+    .get('object')
+    .get('callee').node.name === 'styled';
+
+const isShorthandStyled = tagPath =>
+  t.MemberExpression.check(tagPath.node) &&
+  tagPath.get('object').node.name === 'styled';
+
 module.exports = ({ moduleName } = {}) => {
   const isStyledExpression = tagPath =>
-    (t.CallExpression.check(tagPath.node) &&
-      tagPath.get('callee').node.name === 'styled') ||
-    (t.MemberExpression.check(tagPath.node) &&
-      tagPath.get('object').node.name === 'styled');
+    isSimpleStyled(tagPath) ||
+    isAttrsStyled(tagPath) ||
+    isShorthandStyled(tagPath);
 
   function isStyledComponent(def) {
     if (
