@@ -8,6 +8,7 @@
   "references": [
     { "path": "../props-table" },
     { "path": "../code-live" },
-    { "path": "../theme-core" }
+    { "path": "../theme-core" },
+    { "path": "../gatsby-plugin-typedoc" }
   ]
 }

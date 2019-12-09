@@ -1,10 +1,11 @@
 const remarkSlug = require('remark-slug');
+const { handler, resolver } = require('react-docgen-styled-resolver');
 
 module.exports = (options = {}) => {
   const {
     sources,
     templates,
-    reactDocgenConfig,
+    reactDocgenConfig = {},
     // typedocConfig,
     examplesPath = 'src/examples'
   } = options;
@@ -45,8 +46,9 @@ module.exports = (options = {}) => {
       {
         resolve: require.resolve('./plugins/react-docgen'),
         options: {
-          resolver: require('./tools/resolver'),
-          ...reactDocgenConfig
+          resolver,
+          ...reactDocgenConfig,
+          handlers: [handler, ...(reactDocgenConfig.handlers || [])]
         }
       }
       // {

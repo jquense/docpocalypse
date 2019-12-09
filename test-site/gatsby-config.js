@@ -18,5 +18,11 @@ module.exports = {
         }
       }
     }
+    // {
+    //   resolve: 'gatsby-plugin-typedoc',
+    //   options: {
+    //     project: path.resolve(__dirname, '../packages/code-live')
+    //   }
+    // }
   ]
 };

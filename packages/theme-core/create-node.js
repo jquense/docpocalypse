@@ -40,10 +40,12 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
     schema.buildObjectType({
       name: 'Docpocalypse',
       interfaces: ['Node'],
+      extensions: ['dontInfer'],
       fields: {
         type: 'String!',
         name: 'String!',
         fileName: 'String!',
+        absolutePath: 'String!',
         rootDir: 'String',
         package: 'JSON',
         packageName: 'String',
@@ -70,7 +72,10 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
           resolve: (source, args, context) => {
             // console.log(source);
             return context.nodeModel
-              .getAllNodes({ type: 'Mdx' })
+              .getAllNodes(
+                { type: 'Mdx' },
+                { path: context.path, connectionType: 'Mdx ' }
+              )
               .find(example => {
                 const exampleFile =
                   example.parent &&
@@ -94,7 +99,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
 };
 
 exports.onCreateNode = async function onCreateNode(
-  { node, getNode, actions, createNodeId, createContentDigest },
+  { node, getNode, actions, createNodeId, createContentDigest, getNodesByType },
   pluginOptions
 ) {
   const { getImportName, ignore } = pluginOptions;
@@ -109,6 +114,13 @@ exports.onCreateNode = async function onCreateNode(
     }
     const displayName = isComp ? node.displayName : node.name;
 
+    const typeNode = getNodesByType('TypedocNode').find(n => {
+      return (
+        n.kind === 1 &&
+        n.sources.some(s => path.basename(s.fileName) === srcFile.base)
+      );
+    });
+
     let pkgJson = await findPkg(srcFile.dir);
     const rootDir = pkgJson && path.dirname(pkgJson);
 
@@ -120,6 +132,7 @@ exports.onCreateNode = async function onCreateNode(
       rootDir,
       parent: srcFile.id,
       fileName: srcFile.name,
+      absolutePath: srcFile.absolutePath,
       type: isComp ? 'component' : 'hook',
       id: createNodeId(`${node.id}-${name}`),
       children: [node.id, srcFile.id],
@@ -128,11 +141,16 @@ exports.onCreateNode = async function onCreateNode(
       file___NODE: srcFile.id,
       metadata___NODE: isComp ? node.id : undefined,
       documentation___NODE: !isComp ? node.id : undefined,
+
       internal: {
         contentDigest: createContentDigest(`${node.id}-${name}`),
         type: `Docpocalypse`
       }
     };
+
+    if (typeNode) {
+      docNode.typedoc___NODE = typeNode.id;
+    }
 
     docNode.importName = getImportName ? getImportName(docNode, srcFile) : '';
 
