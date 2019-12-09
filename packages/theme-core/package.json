@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme-core",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -52,7 +52,6 @@
     "@babel/types": "^7.7.2",
     "@mdx-js/mdx": "^1.0.20",
     "@mdx-js/react": "^1.0.20",
-    "react-docgen-styled-resolver": "^0.0.0",
     "@restart/hooks": "^0.3.19",
     "classnames": "^2.2.6",
     "common-tags": "^1.8.0",
@@ -70,6 +69,7 @@
     "gatsby-transformer-documentationjs": "^4.1.20",
     "gatsby-transformer-remark": "^2.6.39",
     "lodash": "^4.17.11",
+    "react-docgen-styled-resolver": "^0.1.0",
     "remark-slug": "^5.1.1",
     "resolve": "^1.11.1",
     "typedoc": "^0.15.3",
