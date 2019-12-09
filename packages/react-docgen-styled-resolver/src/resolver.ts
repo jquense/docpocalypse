@@ -1,18 +1,16 @@
-import astTypes, { ASTNode, NodePath } from 'ast-types';
+import { ASTNode, namedTypes as t, visit } from 'ast-types';
 import { resolver, utils } from '@monastic.panic/react-docgen';
 import resolveHOC from '@monastic.panic/react-docgen/dist/utils/resolveHOC';
 import { isStyledComponent } from './utils';
-
-const { namedTypes: t, visit } = astTypes;
 
 interface Options {
   moduleName?: string;
 }
 
 export function createStyledResolvers({ moduleName }: Options = {}) {
-  const exportTagged = (path: NodePath) => {
-    const definitions = utils.resolveExportDeclaration(path, t) as NodePath[];
-    const components = [] as NodePath[];
+  const exportTagged = (path: any) => {
+    const definitions = utils.resolveExportDeclaration(path, t) as any[];
+    const components = [] as any[];
 
     definitions.filter(Boolean).forEach(def => {
       let comp = def;
@@ -40,9 +38,9 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
   };
 
   function findExportedStyledComponent(ast: ASTNode) {
-    const components = [] as NodePath[];
+    const components = [] as any[];
 
-    const visitor = (path: NodePath) => {
+    const visitor = (path: any) => {
       components.push(...exportTagged(path));
       return false;
     };
@@ -55,9 +53,9 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
   }
 
   function findAllExportedStyledComponents(ast: ASTNode) {
-    const components = [] as NodePath[];
+    const components = [] as any[];
 
-    const visitor = (path: NodePath) => {
+    const visitor = (path: any) => {
       components.push(...exportTagged(path));
       return false;
     };
@@ -71,7 +69,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
   }
 
   function findAllStyledComponents(ast: ASTNode) {
-    const components = [] as NodePath[];
+    const components = [] as any[];
 
     visit(ast, {
       visitTaggedTemplateExpression(path) {

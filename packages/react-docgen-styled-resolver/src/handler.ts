@@ -1,4 +1,4 @@
-import astTypes, { NodePath } from 'ast-types';
+import { namedTypes as t } from 'ast-types';
 import { unwrapUtilityType } from '@monastic.panic/react-docgen/dist/utils/flowUtilityTypes';
 import { applyToFlowTypeProperties } from '@monastic.panic/react-docgen/dist/utils/getFlowTypeFromReactComponent';
 import getPropertyName from '@monastic.panic/react-docgen/dist/utils/getPropertyName';
@@ -9,12 +9,10 @@ import setPropDescription from '@monastic.panic/react-docgen/dist/utils/setPropD
 import { Documentation } from './types';
 import { isShorthandStyled, isSimpleStyled, isStyledComponent } from './utils';
 
-const t = astTypes.namedTypes;
-
 /** Copied almost verbatim from: https://github.com/reactjs/react-docgen/blob/master/src/handlers/flowTypeHandler.js */
 function setPropDescriptor(
   documentation: Documentation,
-  path: NodePath,
+  path: any,
   typeParams
 ): void {
   if (t.ObjectTypeSpreadProperty.check(path.node)) {
@@ -66,11 +64,11 @@ function setPropDescriptor(
 }
 
 export function createHandler({ moduleName }: any = {}) {
-  function addComposes(tagPath: NodePath, doc: Documentation) {
+  function addComposes(tagPath: any, doc: Documentation) {
     // just DOM nodes for this case
     if (isShorthandStyled(tagPath)) return;
 
-    let composes: NodePath | null = null;
+    let composes: any | null = null;
     if (isSimpleStyled(tagPath)) {
       composes = tagPath.get('arguments').get(0);
     } else {
@@ -91,7 +89,7 @@ export function createHandler({ moduleName }: any = {}) {
     }
   }
 
-  return (documentation: Documentation, path: NodePath) => {
+  return (documentation: Documentation, path: any) => {
     if (!isStyledComponent(path, moduleName)) {
       return;
     }

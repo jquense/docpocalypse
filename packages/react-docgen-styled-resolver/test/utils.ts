@@ -3,7 +3,7 @@
  * Helper methods for tests.
  */
 
-import types, { ASTNode, NodePath } from 'ast-types';
+import { ASTNode } from 'ast-types';
 import buildParser from '@monastic.panic/react-docgen/dist/babelParser';
 
 function stringify(value) {

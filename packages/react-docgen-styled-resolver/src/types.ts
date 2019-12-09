@@ -1,4 +1,4 @@
-import { ASTNode, NodePath } from 'ast-types';
+import { ASTNode } from 'ast-types';
 
 export type PropTypeDescriptor = {
   name:
@@ -109,14 +109,11 @@ export type PropDescriptor = {
 
 export type Handler = (
   documentation: Documentation,
-  path: NodePath,
+  path: any,
   parser: any
 ) => void;
 
-export type Resolver = (
-  node: ASTNode,
-  parser: any
-) => NodePath | Array<NodePath> | null;
+export type Resolver = (node: ASTNode, parser: any) => any | Array<any> | null;
 
 export type DocumentationObject = {
   props?: Record<string, PropDescriptor>;

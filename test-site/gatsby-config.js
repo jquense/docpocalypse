@@ -5,7 +5,10 @@ module.exports = {
     {
       resolve: '@docpocalypse/gatsby-theme',
       options: {
-        sources: [path.resolve(__dirname, '../packages/code-live/src')],
+        sources: [
+          // path.resolve(__dirname, '../packages/code-live/src'),
+          path.resolve(__dirname, '../packages/theme/src/components')
+        ],
         getImportName(docNode, _) {
           return `import { ${docNode.name} } from '${docNode.packageName}'`;
         },

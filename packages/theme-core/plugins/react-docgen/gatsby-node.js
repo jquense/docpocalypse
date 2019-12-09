@@ -1,3 +1,4 @@
+const path = require('path');
 const parseMetadata = require('./parse');
 
 const propsId = (parentId, name) => `${parentId}--ComponentProp-${name}`;
@@ -56,6 +57,11 @@ exports.sourceNodes = ({ actions }) => {
       text: String!
     }
 
+    type ComponentComposes @dontInfer {
+      path: String!
+      metadata: ComponentMetadata
+    }
+
     type ComponentMetadata implements Node @infer {
       doclets: JSON
 
@@ -68,7 +74,7 @@ exports.sourceNodes = ({ actions }) => {
       #   name: PropTypes.string,
       #   ...AnotherComponent.propTypes,
       # }
-      composes: [String!]
+      composes: [ComponentComposes!]!
 
       # Component methods
       methods: [ComponentMethod]
@@ -82,6 +88,33 @@ exports.createResolvers = ({ createResolvers }) => {
       required: {
         type: 'Boolean!',
         resolve: ({ required }) => required || false
+      }
+    },
+    ComponentMetadata: {
+      composes: {
+        type: '[ComponentComposes!]!',
+        resolve: ({ composes, parent }, args, context) => {
+          if (!composes) return null;
+          const file = context.nodeModel.getNodeById({
+            id: parent,
+            type: 'File'
+          });
+
+          const resolve = composes
+            .filter(c => c.startsWith('.'))
+            .map(c => path.resolve(path.dirname(file.absolutePath), c));
+
+          const result = context.nodeModel.runQuery({
+            type: 'ComponentMetadata',
+            query: {
+              filter: {
+                parent: { absolutePath: { eq: resolve } }
+              }
+            }
+          });
+          console.log(composes, resolve, result);
+          return null;
+        }
       }
     }
   });

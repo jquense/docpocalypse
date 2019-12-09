@@ -30,6 +30,9 @@
       "packages/*"
     ]
   },
+  "resolutions": {
+    "ast-types": "0.13.x"
+  },
   "devDependencies": {
     "@4c/cli": "^1.0.5",
     "@4c/import-sort": "^4.3.5",
