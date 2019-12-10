@@ -94,7 +94,7 @@ exports.createResolvers = ({ createResolvers }) => {
       composes: {
         type: '[ComponentComposes!]!',
         resolve: ({ composes, parent }, args, context) => {
-          if (!composes) return null;
+          if (!composes) return [];
           const file = context.nodeModel.getNodeById({
             id: parent,
             type: 'File'

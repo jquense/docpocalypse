@@ -171,10 +171,10 @@ const SignatureBlock = ({ definition, level = 1 }) => (
 );
 
 export {
-  isFunctionDef,
-  SignatureElement,
+  // isFunctionDef,
+  // SignatureElement,
   SignatureBlock,
-  TypeComponent,
+  // TypeComponent,
   Wrapper as SignatureWrapper
 };
 
