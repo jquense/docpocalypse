@@ -41,7 +41,7 @@
     "@emotion/styled": "^10.0.11",
     "@restart/hooks": "^0.3.19",
     "@types/classnames": "^2.2.9",
-    "@types/react": "^16.9.15",
+    "@types/react": "^16.9.16",
     "@types/react-dom": "^16.8.5",
     "acorn": "^7.1.0",
     "acorn-dynamic-import": "^4.0.0",

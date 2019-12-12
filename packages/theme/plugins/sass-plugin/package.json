@@ -2,7 +2,7 @@
   "name": "@docpocalypse/gatsby-plugin-sass",
   "main": "index.js",
   "dependencies": {
-    "webpack-atoms": "^11.1.0",
+    "webpack-atoms": "^12.0.2",
     "fibers": "^4.0.2",
     "sass": "^1.23.0"
   }

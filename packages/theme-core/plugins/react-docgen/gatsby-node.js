@@ -65,6 +65,7 @@ exports.sourceNodes = ({ actions }) => {
     type ComponentMetadata implements Node @infer {
       doclets: JSON
 
+      absolutePath: String
       description: ComponentDescription! @link
       props: [ComponentProp]! @link
 
@@ -94,26 +95,33 @@ exports.createResolvers = ({ createResolvers }) => {
       composes: {
         type: '[ComponentComposes!]!',
         resolve: ({ composes, parent }, args, context) => {
-          if (!composes) return [];
+          if (!composes || !composes.length) return [];
           const file = context.nodeModel.getNodeById({
             id: parent,
             type: 'File'
           });
 
-          const resolve = composes
-            .filter(c => c.startsWith('.'))
-            .map(c => path.resolve(path.dirname(file.absolutePath), c));
+          const resolve = composes.map(c =>
+            path.resolve(path.dirname(file.absolutePath), c)
+          );
 
-          const result = context.nodeModel.runQuery({
-            type: 'ComponentMetadata',
-            query: {
-              filter: {
-                parent: { absolutePath: { eq: resolve } }
+          const result = [];
+          context.nodeModel
+            .getAllNodes(
+              { type: 'ComponentMetadata' },
+              { path: context.path, connectionType: 'ComponentMetadata ' }
+            )
+            .forEach(node => {
+              const idx = resolve.findIndex(p =>
+                node.absolutePath.startsWith(p)
+              );
+
+              if (idx !== -1) {
+                result.push({ path: composes[idx], metadata: node });
               }
-            }
-          });
-          console.log(composes, resolve, result);
-          return null;
+            });
+
+          return result;
         }
       }
     }
@@ -244,6 +252,7 @@ exports.onCreateNode = async (
       id: createNodeId(nodeId),
       children: [],
       parent: node.id,
+      absolutePath: node.absolutePath || null,
       internal: {
         contentDigest,
         type: `ComponentMetadata`
