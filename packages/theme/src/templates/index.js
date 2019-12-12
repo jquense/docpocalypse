@@ -1,5 +1,5 @@
-export default {
-  default: require.resolve('./PageLayout.js'),
+module.exports = {
+  default: require.resolve('../components/PageLayout.js'),
   component: require.resolve('./component.tsx'),
   hook: require.resolve('./hook.tsx')
 };
