@@ -26,6 +26,9 @@
   "peerDependencies": {
     "react": "^16.8.6"
   },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
   "devDependencies": {
     "@4c/cli": "^1.0.5",
     "@4c/import-sort": "^4.3.5",
