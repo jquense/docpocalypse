@@ -1,11 +1,6 @@
 const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
 const defaultConfig = require('tailwindcss/defaultConfig');
-
-const templates = {
-  default: require.resolve('./src/components/PageLayout.js'),
-  component: require.resolve('./src/templates/component.tsx'),
-  hook: require.resolve('./src/templates/hook.tsx')
-};
+const templates = require('./src/templates');
 
 const tailwindConfigPath = require.resolve('./tailwind.config');
 
