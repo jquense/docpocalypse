@@ -3,6 +3,7 @@ import { graphql } from 'gatsby';
 import React from 'react';
 import renderProps from '@docpocalypse/props-table';
 import { TokenMap } from '@docpocalypse/props-table/src/TypescriptTypeValue';
+import PropDescription from './PropDescription';
 
 export { renderProps };
 
@@ -59,7 +60,11 @@ function PropsTable({ metadata }) {
               <td>{prop.name}</td>
               <td className="font-mono whitespace-pre">{prop.type}</td>
               <td className="font-mono whitespace-pre">{prop.defaultValue}</td>
-              <td dangerouslySetInnerHTML={{ __html: prop.description }} />
+              <PropDescription
+                as="td"
+                html={prop.description}
+                mdx={prop.propData.description?.childMdx}
+              />
             </tr>
           ))}
         </tbody>
@@ -77,6 +82,11 @@ function PropsTable({ metadata }) {
 }
 
 export const metadataFragment = graphql`
+  fragment PropsTableDescription_mdx on ComponentDescription {
+    childMdx {
+      body
+    }
+  }
   fragment PropsTableDescription_markdown on ComponentDescription {
     childMarkdownRemark {
       html
@@ -88,6 +98,7 @@ export const metadataFragment = graphql`
     }
     displayName
     description {
+      ...PropsTableDescription_mdx
       ...PropsTableDescription_markdown
     }
     props {
@@ -98,6 +109,7 @@ export const metadataFragment = graphql`
         computed
       }
       description {
+        ...PropsTableDescription_mdx
         ...PropsTableDescription_markdown
       }
       required

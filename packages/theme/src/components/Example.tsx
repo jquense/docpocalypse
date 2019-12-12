@@ -9,12 +9,12 @@ import { MDXProvider } from '@mdx-js/react';
 import CodeBlock from './CodeBlock';
 import LiveCode from './LiveCode';
 
-const toText = (node: React.ReactNode) => {
+export const toText = (node: React.ReactNode): string => {
   const nodes = React.Children.toArray(node);
 
   return nodes
     .filter(c => c !== true && c !== false && c !== null)
-    .reduce((str, next) => {
+    .reduce<string>((str, next) => {
       if (!React.isValidElement(next)) return str + String(next);
 
       return str + toText(next.props.children);
