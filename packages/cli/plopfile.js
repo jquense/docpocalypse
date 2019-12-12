@@ -54,6 +54,11 @@ module.exports = plop => {
           type: 'add',
           path: '{{location}}/gatsby-config.js',
           templateFile: `${templatePath}/gatsby-config.js`
+        },
+        {
+          type: 'add',
+          path: '{{location}}/gatsby-node.js',
+          templateFile: `${templatePath}/gatsby-node.js`
         }
       ].filter(Boolean);
     }
