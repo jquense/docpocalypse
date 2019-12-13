@@ -1,6 +1,7 @@
 import { graphql } from 'gatsby';
 import React from 'react';
 import ApiLayout from '../components/ApiLayout';
+import ComponentImport from '../components/ComponentImport';
 import DocBlock from '../components/DocBlock';
 import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
@@ -16,7 +17,12 @@ function HookPageTemplate({ data }) {
       <div>
         <OutlineHeading h={1} id={`${name}-page`} title={name}>
           {name}
-          {importName && <code>{importName}</code>}
+          {importName && (
+            <ComponentImport
+              importName={importName}
+              docNode={data.docpocalypse}
+            />
+          )}
         </OutlineHeading>
       </div>
       <Example example={example} name={name} />

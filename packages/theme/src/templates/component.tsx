@@ -1,8 +1,8 @@
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
-import { highlight } from '@docpocalypse/code-live';
 import ApiLayout from '../components/ApiLayout';
+import ComponentImport from '../components/ComponentImport';
 import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
 import Heading from '../components/OutlineHeading';
@@ -28,11 +28,9 @@ function ComponentPageTemplate({ data }) {
       </LinkedHeading>
       <div>
         {importName && (
-          <code
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{
-              __html: highlight(importName, 'js')
-            }}
+          <ComponentImport
+            importName={importName}
+            docNode={data.docpocalypse}
           />
         )}
       </div>
