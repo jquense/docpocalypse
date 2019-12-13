@@ -12,6 +12,7 @@
     "no-param-reassign": "off",
     "import/no-dynamic-require": "off",
     "react/prop-types": "off",
+    "react/static-property-placement": "off",
     "react/jsx-one-expression-per-line": "off"
   }
 }

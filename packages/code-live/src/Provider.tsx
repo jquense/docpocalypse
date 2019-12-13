@@ -21,27 +21,12 @@ export interface LiveContext {
   theme?: string;
   disabled?: boolean;
   error: Error | null;
-  component: React.ComponentType | null;
+  element: JSX.Element | null;
   onChange(code: string): void;
   onError(error: Error): void;
 }
 
-const Context = React.createContext<LiveContext>({} as any);
-
-const withErrorBoundary = (
-  Element: any,
-  errorCallback: (err: Error) => void
-): React.ComponentType => {
-  return class ErrorBoundary extends React.Component {
-    componentDidCatch(error: Error) {
-      errorCallback(error);
-    }
-
-    render() {
-      return typeof Element === 'function' ? <Element /> : Element;
-    }
-  };
-};
+export const Context = React.createContext<LiveContext>({} as any);
 
 const getRequire = (imports?: Record<string, any>) =>
   function require(request: string) {
@@ -53,7 +38,7 @@ const getRequire = (imports?: Record<string, any>) =>
 function codeToComponent<TScope extends {}>(
   code: string,
   scope?: TScope
-): Promise<React.ComponentType> {
+): Promise<React.ReactElement> {
   return new Promise((resolve, reject) => {
     const isInline = !code.includes('render(');
 
@@ -65,7 +50,7 @@ function codeToComponent<TScope extends {}>(
         return;
       }
 
-      resolve(withErrorBoundary(element, reject));
+      resolve(element);
     };
 
     // DU NA NA NAAAH
@@ -108,8 +93,8 @@ export function useLiveContext() {
   return useContext(Context);
 }
 
-export function useComponent() {
-  return useLiveContext().component;
+export function useElement() {
+  return useLiveContext().element;
 }
 
 export function useError() {
@@ -126,7 +111,7 @@ export default function Provider<TScope extends {} = {}>({
   resolveImports = () => Promise.resolve({})
 }: Props<TScope>) {
   const [error, setError] = useState<Error | null>(null);
-  const [component, setComponent] = useState<React.ComponentType | null>(null);
+  const [element, setElement] = useState<React.ReactElement | null>(null);
 
   const [code, importBlock] = useMemo<[string, string]>(() => {
     // Remove the prettier comments.
@@ -146,7 +131,7 @@ export default function Provider<TScope extends {} = {}>({
         })
       )
       .then(c => {
-        setComponent(() => c);
+        setElement(c);
         setError(null);
       }, setError);
   });
@@ -163,13 +148,13 @@ export default function Provider<TScope extends {} = {}>({
     () => ({
       code,
       error,
-      component,
+      element,
       language,
       theme,
       onError: setError,
       onChange: handleChange
     }),
-    [code, component, error, handleChange, language, theme]
+    [code, element, error, handleChange, language, theme]
   );
 
   return <Context.Provider value={context}>{children}</Context.Provider>;
