@@ -7,7 +7,7 @@ export function useScope() {
 }
 
 export function useImportsForExample(name) {
-  const { imports } = useContext(ImportsContext);
+  const { imports = {} } = useContext(ImportsContext);
   return imports[name];
 }
 
