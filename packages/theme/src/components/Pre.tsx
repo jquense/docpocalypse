@@ -3,8 +3,14 @@ import {
   useImportsForExample,
   useScope
 } from '@docpocalypse/gatsby-theme-core';
+import { canParse } from '@docpocalypse/gatsby-theme-core/can-parse';
 import CodeBlock from './CodeBlock';
 import LiveCode from './LiveCode';
+
+export const getLanguage = (className = '') => {
+  const [, mode]: RegExpMatchArray = className.match(/language-(\w+)/) || [];
+  return mode;
+};
 
 export const toText = (node: React.ReactNode): string => {
   const nodes = React.Children.toArray(node);
@@ -31,15 +37,21 @@ const Pre = props => {
   } = props.children?.props ?? {};
 
   const flatCode = toText(children);
-  return React.isValidElement(props.children) ? (
+  const language = codeProps.language || getLanguage(codeProps.className);
+  const isStatic =
+    codeProps.static === true ||
+    (!canParse(language) && codeProps.live !== true);
+
+  return !isStatic ? (
     <LiveCode
       code={flatCode}
       {...codeProps}
       scope={scope}
+      language={language}
       resolveImports={imports}
     />
   ) : (
-    <CodeBlock {...props} code={flatCode} />
+    <CodeBlock {...props} language={language} code={flatCode} />
   );
 };
 

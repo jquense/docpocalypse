@@ -10,11 +10,15 @@ const truthy = <T>(
 export function removeImports(input: string) {
   const imports: Import[] = [];
 
-  const { code } = transform(input, {
-    plugins: [modules({ remove: true, imports })]
-  });
+  try {
+    const { code } = transform(input, {
+      plugins: [modules({ remove: true, imports })]
+    });
 
-  return { code, imports };
+    return { code, imports };
+  } catch (err) {
+    return { code: input, imports };
+  }
 }
 
 export default (input: string, inline = false) => {

@@ -1,5 +1,6 @@
 export { default as Example } from './src/components/Example';
 export { default as PropsTable } from './src/components/PropsTable';
+export { default as PropDescription } from './src/components/PropDescription';
 export { default as LiveCode } from './src/components/LiveCode';
 export { default as CodeBlock } from './src/components/CodeBlock';
 export { default as DocBlock } from './src/components/DocBlock';
@@ -20,4 +21,5 @@ export { default as Box } from './src/components/Box';
 
 export { default as templates } from './src/templates';
 export { components } from './src/wrap-page';
+
 export * from '@docpocalypse/gatsby-theme-core';

@@ -4,8 +4,7 @@ const { dirname } = require('path');
 const visit = require('unist-util-visit');
 const mdx = require('@mdx-js/mdx');
 
-const TYPESCRIPT = ['ts', 'tsx', 'typescript'];
-const LANGUAGES = ['js', 'jsx', 'javascript', ...TYPESCRIPT];
+const { isTypescript, canParse } = require('./can-parse');
 
 const compiler = mdx.createMdxAstCompiler({
   defaultLayouts: {},
@@ -16,6 +15,22 @@ const compiler = mdx.createMdxAstCompiler({
   plugins: [],
   root: process.cwd()
 });
+
+const parseProps = node => {
+  return (
+    node.meta &&
+    node.meta.split(' ').reduce((acc, cur) => {
+      if (cur.split('=').length > 1) {
+        const t = cur.split('=');
+        acc[t[0]] = t[1];
+        return acc;
+      }
+
+      acc[cur] = true;
+      return acc;
+    }, {})
+  );
+};
 
 module.exports = mdxNode => {
   const mdxAST = compiler.parse(mdxNode.rawBody);
@@ -28,12 +43,12 @@ module.exports = mdxNode => {
 
   visit(mdxAST, 'code', node => {
     const { lang = 'js' } = node;
-
-    if (!LANGUAGES.includes(lang.toLowerCase())) {
+    const meta = parseProps(node);
+    if (!canParse(lang) && !meta.live) {
       return;
     }
 
-    const isTS = TYPESCRIPT.includes(lang.toLowerCase());
+    const isTS = isTypescript(lang);
 
     const ast = babelParseToAst(node.value, `example.${isTS ? 'tsx' : 'js'}`);
 
