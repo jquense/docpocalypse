@@ -15,6 +15,7 @@ module.exports = {
         reactDocgenConfig: {
           babelrcRoots: true
         },
+        tailwindConfig: require.resolve('./src/tailwind.config'),
         typedocConfig: {
           tsconfig: require.resolve('./tsconfig.json'),
           mode: 'modules'

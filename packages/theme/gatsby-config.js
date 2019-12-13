@@ -1,8 +1,5 @@
-const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
-const defaultConfig = require('tailwindcss/defaultConfig');
 const templates = require('./src/templates');
-
-const tailwindConfigPath = require.resolve('./tailwind.config');
+const tailwindPlugin = require('./tools/tailwind-plugin');
 
 module.exports = (options = {}) => {
   return {
@@ -11,16 +8,9 @@ module.exports = (options = {}) => {
       {
         resolve: require.resolve('./plugins/css-plugin'),
         options: {
-          postcssPlugins: loader => {
-            loader.addDependency(tailwindConfigPath);
-
-            delete require.cache[tailwindConfigPath];
-            const base = require(tailwindConfigPath);
-
+          postcssPlugins: () => {
             return [
-              require('tailwindcss')(
-                resolveConfig([options.config || {}, base, defaultConfig])
-              ),
+              tailwindPlugin(options.tailwindConfig),
               require('postcss-nested')
             ];
           }
