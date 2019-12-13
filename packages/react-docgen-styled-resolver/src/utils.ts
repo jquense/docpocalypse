@@ -3,6 +3,7 @@ import resolveToModule from '@monastic.panic/react-docgen/dist/utils/resolveToMo
 
 export const isSimpleStyled = (tagPath: any) =>
   t.CallExpression.check(tagPath.node) &&
+  t.Identifier.check(tagPath.get('callee').node) &&
   tagPath.get('callee').node.name.endsWith('styled');
 
 export const isAttrsStyled = (tagPath: any) =>
@@ -16,6 +17,7 @@ export const isAttrsStyled = (tagPath: any) =>
 
 export const isShorthandStyled = (tagPath: any) =>
   t.MemberExpression.check(tagPath.node) &&
+  t.Identifier.check(tagPath.get('object').node) &&
   tagPath.get('object').node.name.endsWith('styled');
 
 export const isStyledExpression = (tagPath: any) =>
