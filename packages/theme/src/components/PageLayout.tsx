@@ -5,7 +5,13 @@ import Link from './Link';
 import Navbar from './Navbar';
 import SideNavigation from './SideNavigation';
 
-function PageLayout({ children, className, style }) {
+export interface Props {
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+function PageLayout({ children, className, style }: Props) {
   return (
     <div
       className={className}
