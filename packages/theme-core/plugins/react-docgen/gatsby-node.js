@@ -10,23 +10,23 @@ exports.sourceNodes = ({ actions }) => {
   const { createTypes } = actions;
 
   createTypes(/* GraphQL */ `
-    type PropDefaultValue {
+    type PropDefaultValue @dontInfer {
       value: String
       computed: Boolean
     }
 
-    type PropTypeValue {
+    type PropTypeValue @dontInfer {
       name: String!
       value: JSON
       raw: String
     }
 
-    type ComponentMethodParams {
+    type ComponentMethodParams @dontInfer {
       name: String
       type: JSON
     }
 
-    type ComponentMethod {
+    type ComponentMethod @dontInfer {
       name: String!
       description: String
 
