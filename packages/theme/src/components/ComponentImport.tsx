@@ -1,9 +1,10 @@
 import React from 'react';
 import { highlight } from '@docpocalypse/code-live';
+import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
 
 interface Props {
   importName: string;
-  docNode: any;
+  docNode?: DocumentationNode;
 }
 
 function ComponentImport({ importName, docNode: _, ...props }: Props) {

@@ -1,3 +1,4 @@
+export { default as ComponentImport } from './src/components/ComponentImport';
 export { default as Example } from './src/components/Example';
 export { default as PropsTable } from './src/components/PropsTable';
 export { default as PropDescription } from './src/components/PropDescription';
