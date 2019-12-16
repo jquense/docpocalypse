@@ -3,6 +3,8 @@ const parseMetadata = require('./parse');
 
 const propsId = (parentId, name) => `${parentId}--ComponentProp-${name}`;
 const descId = parentId => `${parentId}--ComponentDescription`;
+const withoutExtension = p =>
+  path.join(path.dirname(p), path.basename(p, path.extname(p)));
 
 exports.sourceNodes = ({ actions }) => {
   const { createTypes } = actions;
@@ -112,8 +114,10 @@ exports.createResolvers = ({ createResolvers }) => {
               { path: context.path, connectionType: 'ComponentMetadata ' }
             )
             .forEach(node => {
-              const idx = resolve.findIndex(p =>
-                node.absolutePath.startsWith(p)
+              const idx = resolve.findIndex(
+                p =>
+                  node.absolutePath === p ||
+                  withoutExtension(node.absolutePath) === p
               );
 
               if (idx !== -1) {
