@@ -6,9 +6,10 @@ export { default as CodeBlock } from './src/components/CodeBlock';
 export { default as DocBlock } from './src/components/DocBlock';
 export { default as Pre } from './src/components/Pre';
 
-export { default as ApiLayout } from './src/components/ApiLayout';
 export { default as PageLayout } from './src/components/PageLayout';
-export { default as SideNav } from './src/components/SideNav';
+export { default as SideNavigation } from './src/components/SideNavigation';
+export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
+export { default as SideNavigationLink } from './src/components/SideNavigationLink';
 export { default as Navbar } from './src/components/Navbar';
 export { default as SidePanel } from './src/components/SidePanel';
 

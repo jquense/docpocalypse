@@ -1,6 +1,7 @@
 import React from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import CodeBlock from './components/CodeBlock';
+import DocumentOutlineProvider from './components/DocumentOutlineProvider';
 import LinkedHeading from './components/LinkedHeading';
 import Heading from './components/OutlineHeading';
 
@@ -16,5 +17,7 @@ export const components = {
 };
 
 export default ({ element }) => (
-  <MDXProvider components={components}>{element}</MDXProvider>
+  <DocumentOutlineProvider>
+    <MDXProvider components={components}>{element}</MDXProvider>
+  </DocumentOutlineProvider>
 );

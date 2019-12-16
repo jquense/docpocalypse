@@ -95,6 +95,9 @@ export const metadataFragment = graphql`
   fragment PropsTable_metadata on ComponentMetadata {
     composes {
       path
+      metadata {
+        displayName
+      }
     }
     displayName
     description {

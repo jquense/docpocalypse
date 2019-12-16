@@ -30,8 +30,8 @@ function OutlineHeading({ h, id, title, className, children }: HProps) {
 
         &:before {
           display: block;
-          height: 6rem;
-          margin-top: -6rem;
+          height: theme('navbar.height');
+          margin-top: calc(theme('navbar.height') * -1);
           visibility: hidden;
           content: '';
         }

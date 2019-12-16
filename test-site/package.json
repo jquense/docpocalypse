@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "develop": "gatsby develop",
-    "start": "gatsby develop"
+    "start": "gatsby develop",
+    "build": "gatsby build"
   },
   "dependencies": {
     "@4c/cli": "^1.0.5",

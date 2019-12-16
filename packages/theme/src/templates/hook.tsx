@@ -1,11 +1,11 @@
 import { graphql } from 'gatsby';
 import React from 'react';
-import ApiLayout from '../components/ApiLayout';
 import ComponentImport from '../components/ComponentImport';
 import DocBlock from '../components/DocBlock';
 import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
 import OutlineHeading from '../components/OutlineHeading';
+import PageLayout from '../components/PageLayout';
 
 const propTypes = {};
 
@@ -13,7 +13,7 @@ function HookPageTemplate({ data }) {
   const { documentation, name, importName, example } = data.docpocalypse;
 
   return (
-    <ApiLayout>
+    <PageLayout>
       <div>
         <OutlineHeading h={1} id={`${name}-page`} title={name}>
           {name}
@@ -36,7 +36,7 @@ function HookPageTemplate({ data }) {
         showSignatureNextToTitle={false}
         level={3}
       />
-    </ApiLayout>
+    </PageLayout>
   );
 }
 

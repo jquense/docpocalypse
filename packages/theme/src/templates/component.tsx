@@ -1,11 +1,11 @@
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
-import ApiLayout from '../components/ApiLayout';
 import ComponentImport from '../components/ComponentImport';
 import Example from '../components/Example';
 import LinkedHeading from '../components/LinkedHeading';
 import Heading from '../components/OutlineHeading';
+import PageLayout from '../components/PageLayout';
 import PropsTable from '../components/PropsTable';
 
 const propTypes = {};
@@ -14,7 +14,7 @@ function ComponentPageTemplate({ data }) {
   const { metadata, importName, name, example } = data.docpocalypse;
 
   return (
-    <ApiLayout>
+    <PageLayout>
       <div>
         <Heading h={1} id={`${name}-page`} title={name}>
           {name}
@@ -43,7 +43,7 @@ function ComponentPageTemplate({ data }) {
         </div>
       )}
       <PropsTable metadata={metadata} />
-    </ApiLayout>
+    </PageLayout>
   );
 }
 

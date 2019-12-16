@@ -1,12 +1,15 @@
+import { css as dcss } from 'astroturf';
 import React from 'react';
-
-import Box from './Box';
 import DocumentOutlineProvider from './DocumentOutlineProvider';
 
 export default function PageLayout({ children }) {
   return (
-    <Box display="flex" direction="col" minVh100>
+    <div
+      css={dcss`
+        @apply min-h-screen flex flex-col
+      `}
+    >
       <DocumentOutlineProvider>{children}</DocumentOutlineProvider>
-    </Box>
+    </div>
   );
 }

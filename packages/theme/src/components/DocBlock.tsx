@@ -72,8 +72,12 @@ const DocBlock = ({
 
   return (
     <div>
-      <Heading level={level} css="font-size: inherit; margin: 0;">
-        <Box mr={3} display="inline-block">
+      <Heading level={level} css={dcss`font-size: inherit; margin: 0;`}>
+        <div
+          css={dcss`
+            @apply inline-block mr-3;
+          `}
+        >
           {titleElement}
           {showSignature && (
             <>
@@ -84,7 +88,7 @@ const DocBlock = ({
               />
             </>
           )}
-        </Box>
+        </div>
         {definition.optional && <Optional />}
       </Heading>
 
