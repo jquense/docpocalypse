@@ -20,8 +20,11 @@ function renderNode(root: Tree | Node) {
 }
 
 function DocumentOutline(props: any) {
-  const { tree } = useContext(DocumentOutlineContext);
-  return <SidePanel {...props}>{tree && renderNode(tree)}</SidePanel>;
+  const ctx = useContext(DocumentOutlineContext);
+  // TODO: warn instead
+  if (!ctx) return null;
+
+  return <SidePanel {...props}>{ctx.tree && renderNode(ctx.tree)}</SidePanel>;
 }
 
 export default DocumentOutline;

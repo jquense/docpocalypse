@@ -1,9 +1,9 @@
 import React, {
-  useMemo,
-  useRef,
-  useState,
   ReactNode,
   useCallback,
+  useMemo,
+  useRef,
+  useState
 } from 'react';
 import useAnimationFrame from '@restart/hooks/useAnimationFrame';
 
@@ -18,10 +18,10 @@ export interface Tree {
   children: Node[];
 }
 
-export const DocumentOutlineContext = React.createContext<{
+export const DocumentOutlineContext = React.createContext<null | {
   tree: Tree | null;
   registerNode(level: number, title: ReactNode, id: string): () => void;
-}>(null as any);
+}>(null);
 
 function toTree(list: Iterable<Node>): Tree {
   const map: Record<string, Node[]> = {};
@@ -67,13 +67,10 @@ export default function DocumentOutlineProvider({ children }: any) {
         list.delete(id);
       };
     },
-    [list, animationFrame],
+    [list, animationFrame]
   );
 
-  const context = useMemo(() => ({ registerNode, tree }), [
-    registerNode,
-    tree,
-  ]);
+  const context = useMemo(() => ({ registerNode, tree }), [registerNode, tree]);
 
   return (
     <DocumentOutlineContext.Provider value={context}>
