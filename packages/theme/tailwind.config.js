@@ -28,5 +28,8 @@ module.exports = {
     })
   },
   variants: {},
-  plugins: [require('./tools/tailwind-grid-plugin')]
+  plugins: [
+    // require('./tools/tailwind-base-plugin'),
+    require('./tools/tailwind-grid-plugin')
+  ]
 };
