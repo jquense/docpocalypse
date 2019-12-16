@@ -6,9 +6,9 @@
   },
   "include": ["src"],
   "references": [
-    { "path": "../props-table" },
-    { "path": "../code-live" },
-    { "path": "../theme-core" },
-    { "path": "../gatsby-plugin-typedoc" }
+    { "path": "../packages/props-table" },
+    { "path": "../packages/code-live" },
+    { "path": "../packages/theme-core" },
+    { "path": "../packages/gatsby-plugin-typedoc" }
   ]
 }
