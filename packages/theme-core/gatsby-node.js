@@ -66,30 +66,30 @@ module.exports.createPages = async (
 };
 
 module.exports.onCreateWebpackConfig = (
-  { stage, actions, plugins },
+  { actions, getConfig },
   pluginOptions
 ) => {
-  const isSsr = stage.includes('html');
+  const { plugins } = getConfig();
+
+  if (plugins) {
+    const cssExtract = plugins.find(
+      p => p.constructor && p.constructor.name === 'MiniCssExtractPlugin'
+    );
+
+    if (cssExtract) cssExtract.options.ignoreeOrder = true;
+  }
 
   actions.setWebpackConfig({
     module: {
       rules: [
         {
-          include: [require.resolve('./gatsby-browser')],
+          include: [require.resolve('./wrap-page')],
           use: {
             loader: require.resolve('./example-scope-loader'),
             options: pluginOptions
           }
         }
       ]
-    },
-    plugins: [
-      plugins.define({
-        // Allow browser-only code to be eliminated
-        'typeof window': isSsr
-          ? JSON.stringify('undefined')
-          : JSON.stringify('object')
-      })
-    ]
+    }
   });
 };
