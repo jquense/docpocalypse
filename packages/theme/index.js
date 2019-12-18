@@ -9,6 +9,7 @@ export { default as Pre } from './src/components/Pre';
 
 export { default as PageLayout } from './src/components/PageLayout';
 export { default as SideNavigation } from './src/components/SideNavigation';
+export { default as SideNavigationPanel } from './src/components/SideNavigationPanel';
 export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
 export { default as SideNavigationLink } from './src/components/SideNavigationLink';
 export { default as Navbar } from './src/components/Navbar';

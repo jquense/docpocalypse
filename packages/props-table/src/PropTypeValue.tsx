@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import TypescriptTypeValue, { TSType, TokenMap } from './TypescriptTypeValue';
 import {
   Doclet,
@@ -45,74 +45,15 @@ export type PropType =
 
 interface Props {
   type: PropType;
-  doclets: Doclet[];
+  tags: Doclet[];
   tokens?: TokenMap;
 }
 
-function Enum({ type }: { type: EnumPropType }) {
-  const enumValues = type.value || [];
-  if (!Array.isArray(enumValues)) return <>{enumValues}</>;
-
-  return (
-    <span className="pt-type__enum">
-      {enumValues.map(c => (
-        <span key={c.value}>{c.value}</span>
-      ))}
-    </span>
-  );
-}
-
-function getType(type: PropType, doclets: Doclet[]) {
-  const name = getDisplayTypeName(type.name);
-  const docletType = getDoclet(doclets, 'type');
-
-  switch (type.name) {
-    case 'object':
-      return <span className="pt-type__object">{name}</span>;
-    case 'union':
-      return type.value.reduce(
-        (current: ReactNode[], val: any, i: number, list: any[]) => {
-          let item = getType(val, doclets);
-          if (React.isValidElement(item)) {
-            // eslint-disable-next-line react/no-array-index-key
-            item = React.cloneElement(item, { key: i });
-          }
-          // eslint-disable-next-line no-param-reassign
-          current = current.concat(item);
-
-          return i === list.length - 1 ? current : current.concat(' | ');
-        },
-        []
-      );
-    case 'arrayOf': {
-      const child = getType(type.value, doclets);
-
-      return (
-        <span className="pt-type__array-of">
-          {'array<'}
-          <span>{child}</span>
-          {'>'}
-        </span>
-      );
-    }
-    case 'enum':
-      return <Enum type={type} />;
-    case 'custom':
-      return (
-        <span className="pt-type__custom">
-          {cleanDocletValue(docletType || type.raw)}
-        </span>
-      );
-    default:
-      return <span className="pt-type__literal">{name}</span>;
-  }
-}
-
-function mapToTypes(propType: PropType, doclets: Doclet[]): TSType {
-  const map = (pt: PropType) => mapToTypes(pt, doclets);
+function mapToTypes(propType: PropType, tags: Doclet[]): TSType {
+  const map = (pt: PropType) => mapToTypes(pt, tags);
 
   const name = getDisplayTypeName(propType.name);
-  const docletType = getDoclet(doclets, 'type');
+  const docletType = getDoclet(tags, 'type');
 
   switch (propType.name) {
     case 'object':
@@ -156,11 +97,9 @@ function mapToTypes(propType: PropType, doclets: Doclet[]): TSType {
   }
 }
 
-function PropTypeValue({ type, doclets, tokens }: Props) {
-  const tsType = useMemo(() => mapToTypes(type, doclets), [type, doclets]);
-  return (
-    <TypescriptTypeValue type={tsType} doclets={doclets} tokens={tokens} />
-  );
+function PropTypeValue({ type, tags, tokens }: Props) {
+  const tsType = useMemo(() => mapToTypes(type, tags), [type, tags]);
+  return <TypescriptTypeValue type={tsType} tags={tags} tokens={tokens} />;
 }
 
 export default PropTypeValue;

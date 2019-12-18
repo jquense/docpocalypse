@@ -11,7 +11,7 @@ module.exports = function gridPlugin({ addUtilities, theme }) {
 
   for (let col = 1; col < columns + 1; col++) {
     grid[`.col-${col}`] = {
-      position: 'relative',
+      // position: 'relative',
       gridColumnEnd: `span ${col}`
     };
   }

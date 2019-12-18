@@ -8,9 +8,10 @@ import React, {
 import SimpleCodeEditor from 'react-simple-code-editor';
 import useMergeState from '@restart/hooks/useMergeState';
 import useStableMemo from '@restart/hooks/useStableMemo';
+import CodeBlock from './CodeBlock';
 import InfoMessage from './InfoMessage';
 import { useLiveContext } from './Provider';
-import highlight from './highlight';
+import { PrismTheme } from './prism';
 
 let uid = 0;
 
@@ -31,11 +32,16 @@ function useStateFromProp<TProp>(prop: TProp) {
 
 export interface Props {
   className?: string;
+  style?: any;
+  theme?: PrismTheme;
   infoComponent?: React.ComponentType<any>;
 }
 
 const Editor = React.forwardRef(
-  ({ className, infoComponent: Info = InfoMessage }: Props, ref: any) => {
+  (
+    { style, className, theme, infoComponent: Info = InfoMessage }: Props,
+    ref: any
+  ) => {
     const { code: contextCode, language, onChange } = useLiveContext();
     const [code, setCode] = useStateFromProp(contextCode);
 
@@ -91,9 +97,14 @@ const Editor = React.forwardRef(
     };
 
     const handleHighlight = useCallback(
-      (value: string) => highlight(value, language),
-      [language]
+      (value: string) => (
+        <CodeBlock theme={theme} code={value} language={language as any} />
+      ),
+      [language, theme]
     );
+
+    const baseTheme =
+      theme && typeof theme.plain === 'object' ? theme.plain : {};
 
     return (
       <div ref={ref} style={{ position: 'relative' }}>
@@ -109,6 +120,7 @@ const Editor = React.forwardRef(
           className={className}
           aria-describedby={id}
           aria-label="Example code editor"
+          style={{ ...baseTheme, ...style }}
         />
         {visible && (keyboardFocused || !ignoreTab) && (
           <Info id={id} aria-live="polite">

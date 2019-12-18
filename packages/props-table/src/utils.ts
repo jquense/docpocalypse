@@ -1,16 +1,16 @@
 import React, { ReactNode } from 'react';
 
 export interface Doclet {
-  tag: string;
+  name: string;
   value: string;
 }
 
 export function docletsToMap(doclets: Doclet[]) {
-  return new Map(doclets.map(({ tag, value }) => [tag, value]));
+  return new Map(doclets.map(({ name, value }) => [name, value]));
 }
 
-export function getDoclet(doclets: Doclet[] = [], tag: string) {
-  const doc = doclets.find(d => d.tag === tag);
+export function getDoclet(doclets: Doclet[] = [], name: string) {
+  const doc = doclets.find(d => d.name === name);
   return doc && doc.value;
 }
 
@@ -41,21 +41,18 @@ export function getTypeName(prop: any) {
 export function joinElements<T>(
   arr: Array<T>,
   delim: ReactNode,
-  fn: (item: T, idx: number) => ReactNode,
+  fn: (item: T, idx: number) => ReactNode
 ) {
-  return arr.reduce(
-    (acc, val, idx, list) => {
-      let item = fn(val, idx);
-      if (React.isValidElement(item)) {
-        // eslint-disable-next-line react/no-array-index-key
-        item = React.cloneElement(item, { key: idx });
-      }
+  return arr.reduce((acc, val, idx, list) => {
+    let item = fn(val, idx);
+    if (React.isValidElement(item)) {
+      // eslint-disable-next-line react/no-array-index-key
+      item = React.cloneElement(item, { key: idx });
+    }
 
-      // eslint-disable-next-line no-param-reassign
-      acc = acc.concat(item);
+    // eslint-disable-next-line no-param-reassign
+    acc = acc.concat(item);
 
-      return idx === list.length - 1 ? acc : acc.concat(delim);
-    },
-    [] as ReactNode[],
-  );
+    return idx === list.length - 1 ? acc : acc.concat(delim);
+  }, [] as ReactNode[]);
 }

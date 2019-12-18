@@ -1,32 +1,15 @@
 @tailwind base;
 
-/* html {
-  @apply antialiased font-default;
+@theme full {
+  html {
+    @apply antialiased font-default;
+  }
+
+  body {
+    background-color: theme('body.bg-color');
+  }
+
+  @tailwind components;
+
+  @tailwind utilities;
 }
-
-body {
-  color: theme('body.color');
-}
-
-h1 {
-  @apply text-2xl mb-5;
-}
-
-h2 {
-  @apply text-xl mb-5;
-}
-
-h3,
-h4,
-h5,
-h6 {
-  @apply text-lg mb-4;
-}
-
-a {
-  @apply text-blue-600 underline;
-} */
-
-@tailwind components;
-
-@tailwind utilities;

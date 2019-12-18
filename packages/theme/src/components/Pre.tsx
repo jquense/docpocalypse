@@ -24,6 +24,7 @@ export const toText = (node: React.ReactNode): string => {
     }, '');
 };
 
+/** @public */
 const Pre = props => {
   const imports = useImportsForExample(props.name);
   const scope = useScope();
@@ -39,6 +40,7 @@ const Pre = props => {
   const flatCode = toText(children);
   const language = codeProps.language || getLanguage(codeProps.className);
   const isStatic =
+    props.static ||
     codeProps.static === true ||
     (!canParse(language) && codeProps.live !== true);
 
@@ -51,7 +53,7 @@ const Pre = props => {
       resolveImports={imports}
     />
   ) : (
-    <CodeBlock {...props} language={language} code={flatCode} />
+    <CodeBlock {...codeProps} language={language} code={flatCode} />
   );
 };
 

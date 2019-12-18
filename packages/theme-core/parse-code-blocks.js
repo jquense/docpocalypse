@@ -43,26 +43,29 @@ module.exports = mdxNode => {
 
   visit(mdxAST, 'code', node => {
     const { lang = 'js' } = node;
-    const meta = parseProps(node);
-    if (!canParse(lang) && !meta.live) {
+    const meta = parseProps(node) || {};
+
+    if (meta.static === true || (!canParse(lang) && meta.live !== true)) {
       return;
     }
 
     const isTS = isTypescript(lang);
+    try {
+      const ast = babelParseToAst(node.value, `example.${isTS ? 'tsx' : 'js'}`);
+      traverse(ast, {
+        ImportDeclaration(path) {
+          const request = path.node.source.value;
 
-    const ast = babelParseToAst(node.value, `example.${isTS ? 'tsx' : 'js'}`);
-
-    traverse(ast, {
-      ImportDeclaration(path) {
-        const request = path.node.source.value;
-
-        imports.set(request, {
-          request,
-          context,
-          type: 'IMPORT'
-        });
-      }
-    });
+          imports.set(request, {
+            request,
+            context,
+            type: 'IMPORT'
+          });
+        }
+      });
+    } catch {
+      /* ignore */
+    }
   });
 
   return Array.from(imports.values());

@@ -1,18 +1,16 @@
 import dstyled from 'astroturf';
 
+/** @public */
 const SidePanel = dstyled('div')`
-  order: 2;
-  position: sticky;
-  height: calc(100vh - theme('navbar.height'));
-  padding-top: 1.5rem;
-  background-color: var(--theme-doc-outline-bg-color);
-  padding-bottom: 1.5rem;
-  font-size: 1.4rem;
+  @apply sticky text-sm py-3;
+
+  top: theme('height.navbar');
+  height: calc(100vh - theme('height.navbar'));
   overflow-y: auto;
 
   & > ul {
     padding-left: 0;
-    border-left: 1px solid $divider-color;
+    border-left: 1px solid them('divider.color');
 
     & ul {
       padding-left: 1rem;

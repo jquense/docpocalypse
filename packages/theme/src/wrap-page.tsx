@@ -1,9 +1,11 @@
 import React from 'react';
 import { MDXProvider } from '@mdx-js/react';
-import CodeBlock from './components/CodeBlock';
 import DocumentOutlineProvider from './components/DocumentOutlineProvider';
+import InlineCode from './components/InlineCode';
 import LinkedHeading from './components/LinkedHeading';
 import Heading from './components/OutlineHeading';
+import Paragraph from './components/Paragraph';
+import Pre from './components/Pre';
 
 export const components = {
   wrapper: props => <>{props.children}</>,
@@ -13,7 +15,9 @@ export const components = {
   h4: props => <LinkedHeading h="4" {...props} />,
   h5: props => <LinkedHeading h="5" {...props} />,
   h6: props => <LinkedHeading h="6" {...props} />,
-  pre: props => <CodeBlock {...props.children.props} />
+  pre: props => <Pre {...props} static />,
+  p: Paragraph,
+  inlineCode: InlineCode
 };
 
 export default ({ element }) => (

@@ -1,5 +1,5 @@
 const templates = require('./src/templates');
-const tailwindPlugin = require('./tools/tailwind-plugin');
+const themingPlugin = require('./tools/theming-plugin');
 
 module.exports = (options = {}) => {
   return {
@@ -9,10 +9,7 @@ module.exports = (options = {}) => {
         resolve: require.resolve('./plugins/css-plugin'),
         options: {
           postcssPlugins: () => {
-            return [
-              tailwindPlugin(options.tailwindConfig),
-              require('postcss-nested')
-            ];
+            return [themingPlugin(options), require('postcss-nested')];
           }
         }
       },

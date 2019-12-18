@@ -26,6 +26,11 @@ exports.sourceNodes = ({ actions }) => {
       type: JSON
     }
 
+    type ComponentTag @dontInfer {
+      name: String!
+      value: JSON!
+    }
+
     type ComponentMethod @dontInfer {
       name: String!
       description: String
@@ -47,7 +52,8 @@ exports.sourceNodes = ({ actions }) => {
       description: ComponentDescription! @link
 
       defaultValue: PropDefaultValue
-      doclets: JSON
+      tags: [ComponentTag]!
+
       # The raw comment block leading a propType declaration
       docblock: String
 
@@ -65,11 +71,13 @@ exports.sourceNodes = ({ actions }) => {
     }
 
     type ComponentMetadata implements Node @infer {
-      doclets: JSON
-
       absolutePath: String
+
       description: ComponentDescription! @link
+
       props: [ComponentProp]! @link
+
+      tags: [ComponentTag]!
 
       # A list of additional modules "spread" into this component's propTypes such as:
       #

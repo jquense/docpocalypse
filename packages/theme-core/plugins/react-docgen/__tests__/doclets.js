@@ -1,4 +1,4 @@
-const { applyPropDoclets } = require('../doclets');
+const { applyPropTags } = require('../doclets');
 
 describe(`transformer-react-doc-gen: Doclets`, () => {
   describe(`tsType`, () => {
@@ -10,7 +10,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the tsType (string) definition`, () => {
-          expect(applyPropDoclets({ doclets, tsType })).toHaveProperty(
+          expect(applyPropTags({ doclets, tsType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               ...tsType
@@ -27,7 +27,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the ts Union Type`, () => {
-          expect(applyPropDoclets({ doclets, tsType })).toHaveProperty(
+          expect(applyPropTags({ doclets, tsType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `union`,
@@ -52,7 +52,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the ts Raw Type React.Component<Props>`, () => {
-          expect(applyPropDoclets({ doclets, tsType })).toHaveProperty(
+          expect(applyPropTags({ doclets, tsType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `React.Component<Props>`
@@ -71,7 +71,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`doclet says number, typescript says string, doclet should win as default behavior`, () => {
-          expect(applyPropDoclets({ doclets, tsType })).toHaveProperty(`type`, {
+          expect(applyPropTags({ doclets, tsType })).toHaveProperty(`type`, {
             name: `number`
           });
         });
@@ -85,7 +85,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         const doclets = [{ tag: `type`, value: `{string}` }];
 
         it(`should set { name: "string" } as type`, () => {
-          expect(applyPropDoclets({ doclets })).toHaveProperty(
+          expect(applyPropTags({ doclets })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `string`
@@ -98,7 +98,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         const doclets = [{ tag: `type`, value: `{React.Component<Props>}` }];
 
         it(`should set { name: "React.Component<Props>" } as type`, () => {
-          expect(applyPropDoclets({ doclets })).toHaveProperty(`type`, {
+          expect(applyPropTags({ doclets })).toHaveProperty(`type`, {
             name: `React.Component<Props>`
           });
         });
@@ -108,7 +108,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         const doclets = [{ tag: `type`, value: `{(number | any)}` }];
 
         it(`should set { name: "number | any" } as type`, () => {
-          expect(applyPropDoclets({ doclets })).toHaveProperty(
+          expect(applyPropTags({ doclets })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `union`,
@@ -136,7 +136,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the flowType (string) definition`, () => {
-          expect(applyPropDoclets({ doclets, flowType })).toHaveProperty(
+          expect(applyPropTags({ doclets, flowType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               ...flowType
@@ -153,7 +153,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the ts Union Type`, () => {
-          expect(applyPropDoclets({ doclets, flowType })).toHaveProperty(
+          expect(applyPropTags({ doclets, flowType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `union`,
@@ -178,7 +178,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`should replace the undefined type with the ts Raw Type React.Component<Props>`, () => {
-          expect(applyPropDoclets({ doclets, flowType })).toHaveProperty(
+          expect(applyPropTags({ doclets, flowType })).toHaveProperty(
             `type`,
             expect.objectContaining({
               name: `React.Component<Props>`
@@ -196,12 +196,9 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
         };
 
         it(`doclet says number, typescript says string, doclet should win as default behauvior`, () => {
-          expect(applyPropDoclets({ doclets, flowType })).toHaveProperty(
-            `type`,
-            {
-              name: `number`
-            }
-          );
+          expect(applyPropTags({ doclets, flowType })).toHaveProperty(`type`, {
+            name: `number`
+          });
         });
       });
     });
@@ -212,7 +209,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
       const doclets = [{ tag: `type`, value: `propertyName` }];
       const type = undefined;
 
-      expect(applyPropDoclets({ doclets, type })).toHaveProperty(
+      expect(applyPropTags({ doclets, type })).toHaveProperty(
         `type`,
         expect.objectContaining({
           name: `propertyName`
@@ -223,13 +220,13 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
 
   it(`should apply @required`, () => {
     const doclets = [{ tag: `required`, value: true }];
-    expect(applyPropDoclets({ doclets })).toEqual({
+    expect(applyPropTags({ doclets })).toEqual({
       doclets,
       required: true
     });
   });
 
-  it(`should apply @required`, () => {
+  it('should apply defaultValue', () => {
     const doclets = [
       {
         tag: `defaultValue`,
@@ -237,7 +234,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
       }
     ];
 
-    expect(applyPropDoclets({ doclets })).toEqual({
+    expect(applyPropTags({ doclets })).toEqual({
       doclets,
       defaultValue: {
         value: `() => {}`,
@@ -254,7 +251,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
       }
     ];
 
-    expect(applyPropDoclets({ doclets, type: {} })).toEqual({
+    expect(applyPropTags({ doclets, type: {} })).toEqual({
       doclets,
       type: {
         name: `enum`,
@@ -276,7 +273,7 @@ describe(`transformer-react-doc-gen: Doclets`, () => {
       }
     ];
 
-    expect(applyPropDoclets({ doclets, type: {} })).toEqual({
+    expect(applyPropTags({ doclets, type: {} })).toEqual({
       doclets,
       type: {
         name: `union`,

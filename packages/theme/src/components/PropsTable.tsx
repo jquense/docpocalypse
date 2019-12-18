@@ -9,12 +9,24 @@ export { renderProps };
 
 const tokenMap: TokenMap = dcss`
   .union {
-    & > *:not(:last-child)::after {
-      content: ' | ';
+    & > * {
+      display: block;
+    }
+
+    & :global(.pt-elements)  & > * {
+      padding-left: theme('spacing.3')
+    }
+
+    & > *::before {
+      content: '| ';
+    }
+    & > &::before {
+      content: '';
     }
   }
 `;
 
+/** @public */
 function PropsTable({ metadata }) {
   const props = renderProps(metadata.props || [], {
     tokenMap
@@ -106,7 +118,10 @@ export const metadataFragment = graphql`
     }
     props {
       name
-      doclets
+      tags {
+        name
+        value
+      }
       defaultValue {
         value
         computed

@@ -7,7 +7,7 @@ import { Doclet, docletsToMap, getTypeName } from './utils';
 
 export interface Prop {
   name: string;
-  doclets: Doclet[];
+  tags: Doclet[];
   docblock?: string;
   defaultValue?: {
     value: any;
@@ -49,19 +49,12 @@ export default function renderProps(
     .filter(
       prop =>
         prop.type &&
-        !prop.doclets.find(d => d.tag === 'private' || d.tag === 'ignore')
+        !prop.tags.find(d => d.name === 'private' || d.name === 'ignore')
     )
     .map(propData => {
-      const {
-        name,
-        type,
-        defaultValue,
-        description,
-        doclets,
-        tsType
-      } = propData;
+      const { name, type, defaultValue, description, tags, tsType } = propData;
 
-      const docletMap = docletsToMap(doclets);
+      const docletMap = docletsToMap(tags);
       const typeName = getTypeName(propData);
 
       const descHtml =
@@ -73,20 +66,16 @@ export default function renderProps(
       let renderedType = null;
       if (tsType)
         renderedType = (
-          <TypescriptTypeValue
-            type={tsType}
-            doclets={doclets}
-            tokens={tokenMap}
-          />
+          <TypescriptTypeValue type={tsType} tags={tags} tokens={tokenMap} />
         );
       else if (type)
         renderedType = (
-          <PropTypeValue type={type} doclets={doclets} tokens={tokenMap} />
+          <PropTypeValue type={type} tags={tags} tokens={tokenMap} />
         );
 
       return {
         name,
-        doclets,
+        tags,
         typeName,
         description: descHtml,
         deprecated: docletMap.get('deprecated'),

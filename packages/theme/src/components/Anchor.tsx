@@ -28,6 +28,9 @@ interface Props {
   className?: string;
 }
 
+/**
+ * @shadowable
+ */
 function Anchor({ as: asProp, target, children, className }: Props) {
   return (
     // @ts-ignore

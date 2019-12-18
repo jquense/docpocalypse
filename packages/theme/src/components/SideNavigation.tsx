@@ -6,20 +6,29 @@ import React, { useMemo } from 'react';
 import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
 import SideNavigationHeader from './SideNavigationHeader';
 import SideNavigationLink from './SideNavigationLink';
+import SideNavigationPanel from './SideNavigationPanel';
 
 const NAMES = {
   component: 'Components',
   hook: 'Hooks'
 };
 
+type GroupBy = (node: DocumentationNode) => string;
+
 export interface Props {
   className?: string;
-  groupComponentsBy?: string | ((docNode: DocumentationNode) => string);
+
+  /** @defaultValue "type" */
+  groupComponentsBy?: string | GroupBy;
 }
 
-function SideNav({ className, groupComponentsBy = d => NAMES[d.type] }: Props) {
+/** @public */
+function SideNavigation({
+  className,
+  groupComponentsBy = d => NAMES[d.type]
+}: Props) {
   const data = useStaticQuery(graphql`
-    query SideNavQuery {
+    query {
       allDocpocalypse {
         nodes {
           type
@@ -37,17 +46,7 @@ function SideNav({ className, groupComponentsBy = d => NAMES[d.type] }: Props) {
   );
 
   return (
-    <div
-      className={className}
-      css={dcss`
-        @apply p-4 sticky;
-
-        top: theme('navbar.height');
-        height: calc(100vh - theme('navbar.height'));
-        background-color: theme('side-nav.bg-color');
-        overflow-y: auto;
-      `}
-    >
+    <SideNavigationPanel className={className}>
       <nav>
         <ul>
           {Object.entries(groups).map(([groupName, nodes]) => (
@@ -66,8 +65,12 @@ function SideNav({ className, groupComponentsBy = d => NAMES[d.type] }: Props) {
           ))}
         </ul>
       </nav>
-    </div>
+    </SideNavigationPanel>
   );
 }
 
-export default SideNav;
+SideNavigation.Panel = SideNavigationPanel;
+SideNavigation.Header = SideNavigationHeader;
+SideNavigation.Link = SideNavigationLink;
+
+export default SideNavigation;

@@ -15,12 +15,17 @@ module.exports = {
         reactDocgenConfig: {
           babelrcRoots: true
         },
+        theming: 'minimal',
         tailwindConfig: require.resolve('./src/tailwind.config'),
         typedocConfig: {
           tsconfig: require.resolve('./tsconfig.json'),
           mode: 'modules'
         }
       }
+    },
+    {
+      resolve: 'gatsby-plugin-astroturf',
+      options: { enableCssProp: true }
     }
     // {
     //   resolve: 'gatsby-plugin-typedoc',

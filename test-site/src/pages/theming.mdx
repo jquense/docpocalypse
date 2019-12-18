@@ -1,0 +1,120 @@
+# Theming
+
+Docpocalypse is designed to allow quick bootstraping and developement of documentation sites.
+It comes, Docpocalypsecomes configured with [Tailwindcss](https://tailwindcss.com/), a utility first
+CSS framework. The "batteries included" makes for an excellent fit for building beautiful sites quickly.
+
+## Extending the default theme
+
+The default Docpocalypse theme is basically just the default tailwind thing with some pre-picked
+values for the major theme components (side bar, nav bar, etc).
+Nothing is set in stone, and can be easily adjusted. To begin create
+a `tailwind.config.js` in the root of your docs site and add it to the gatsby-config.js
+
+```js title=gatsby-config.js
+module.exports = {
+  plugins: [
+    {
+      resolve: '@docpocalypse/gatsby-theme',
+      options: {
+        tailwindConfig: require.resolve('./tailwind.config'),
+      }
+    }
+    ...
+  ]
+};
+```
+
+Now any configuration in your theme file will be merged into the base theme.
+
+```js title=tailwind.config.js
+module.exports = {
+  theme: {
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px'
+    }
+  }
+};
+```
+
+_Check out the excellent tailwind [docs](https://tailwindcss.com/docs/theme) for general
+details about extending, and creating a tailwind theme._
+
+### Customizing built-in components
+
+beyond tweaking theme variables, you may want to apply specific styles to particular
+theme components, such as the `<Navbar>`. Most straightforward way to do this is to
+
+<Shadow /> the component you wish to extend and apply a CSS `className` or `style` prop to
+the original component. This approach works great for Bring Your Own CSS Framework situations,
+or when you want to use a component based CSS-in-JS option.
+
+For folks that prefer a more tailwind-esque approach, each major theme component can
+be styled via the tailwind theme using a CSS object syntax.
+
+```js title='./tailwind.config.js'
+module.exports = {
+  ...
+  Navbar: t => ({
+    color: t('colors.gray.800'),
+    backgroundColor: t('colors.blue.200'),
+
+    // can also target nested components
+    '& a:visited': {
+      color: t('colors.blue.400'),
+    }
+  })
+};
+```
+
+## Disabling tailwind
+
+If tailwind isn't you cup of tea, you can opt-out of any extra tailwind utilties or styles
+by configuring a `minimal` theming setup.
+
+```js title=gatsby-config.js
+module.exports = {
+  plugins: [
+    {
+      resolve: '@docpocalypse/gatsby-theme',
+      options: {
+        theming: 'minimal',
+        tailwindConfig: require.resolve('./tailwind.config'),
+      }
+    }
+    ...
+  ]
+};
+```
+
+When set to `minimal` (vs `full`) docpocalypse will only use the the theme for it's own
+components and not output any general or global css classes. You can still
+customize the `tailwind.config.js` to style and tweak the doc theme, or <Shadow /> the
+components and use your own styling solution.
+
+## Custom theming solutions
+
+Docpocalypse supports which CSS, or CSS-in-JS styling solution you wish. Via the
+gatsby plugins ecosystem, you can setup and configure any number of solutions such
+as Sass, Styled Components, PostCSS, etc.
+
+## Syntax Highlighting
+
+Docpocalypse uses `prism-react-renderer` where possible to tokenize and hightlight
+displayed code. The simplest way to control which syntax theme is used is
+to <Shadow /> the `syntax-theme.ts` file and re-export an existing theme.
+
+```js title=./src/@docpocalypse/gatsby-theme/syntax-theme.js
+import nightOwl from '@docpocalypse/gatsby-theme/syntax/night-owl';
+
+export default nightOwl;
+```
+
+You export a custom theme as well if none of the existing ones work well.
+
+### Using traditional Prism themes
+
+`//TODO`

@@ -8,7 +8,7 @@ const {
 } = require('@monastic.panic/react-docgen/dist/parse');
 const { codeFrameColumns } = require('@babel/code-frame');
 const { createDisplayNameHandler } = require('./displayname-handler');
-const { applyPropDoclets, cleanDoclets, parseDoclets } = require('./doclets');
+const { applyPropTags, cleanTags, parseTags } = require('./doclets');
 
 const defaultHandlers = [
   h.propTypeHandler,
@@ -73,17 +73,17 @@ module.exports = function parseMetadata(content, node, options) {
 
   components.forEach(component => {
     component.docblock = component.description || ``;
-    component.doclets = parseDoclets(component);
-    component.description = cleanDoclets(component.description);
+    component.tags = parseTags(component);
+    component.description = cleanTags(component.description);
 
     component.props = Object.keys(component.props || {}).map(propName => {
       const prop = component.props[propName];
       prop.name = propName;
       prop.docblock = prop.description || ``;
-      prop.doclets = parseDoclets(prop, propName);
-      prop.description = cleanDoclets(prop.description);
+      prop.tags = parseTags(prop, propName);
+      prop.description = cleanTags(prop.description);
 
-      applyPropDoclets(prop);
+      applyPropTags(prop);
       return prop;
     });
   });

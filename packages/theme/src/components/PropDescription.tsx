@@ -7,6 +7,7 @@ interface Props {
   mdx?: { body: string };
 }
 
+/** @public */
 function PropDescription({ mdx, html, as: Tag = 'div' }: Props) {
   if (mdx)
     return (

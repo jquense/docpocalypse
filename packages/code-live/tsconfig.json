@@ -5,5 +5,5 @@
     "rootDir": "src",
     "noImplicitAny": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src"]
 }

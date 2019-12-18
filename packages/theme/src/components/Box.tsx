@@ -149,6 +149,7 @@ function getClassName(
   return `${prefix}${bp}${clsPrefix}-${value}`;
 }
 
+/** @ignore */
 function Box<T extends React.ElementType = 'div'>({
   as: asProp,
   className,

@@ -1,0 +1,32 @@
+An example preview and code editor. `<LiveCode>` encapsulates the presentational
+logic around documentation examples. It is a themed consolidation of the `@docpacalypse/code-live`
+package
+
+## Usage
+
+Rendered by the [`<Example>`](/api/Example) component, `<LiveCode>` is passed the
+user configured `exampleCodeScope` as well as any imports extracted
+from the example code block.
+
+```jsx static
+import { LiveCode } from '@docpocalypse/gatsby-theme';
+
+const resolveImports = () =>
+  Promise.resolve(resolve => ({
+    lodash: import('lodash')
+  }));
+
+<LiveCode
+  language="ts"
+  resolveImports={resolveImports}
+  code={`
+    import { capitalize } from 'lodash'
+
+    function greet(name: string) {
+      console.log('Hello! ' + capitalize(name))
+    }
+
+    greet('Jane')
+  `}
+/>;
+```

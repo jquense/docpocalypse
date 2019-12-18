@@ -1,3 +1,4 @@
+import CodeBlock from './CodeBlock';
 import Editor from './Editor';
 import Error from './Error';
 import InfoMessage from './InfoMessage';
@@ -7,4 +8,6 @@ import highlight from './highlight';
 
 export type ImportResolver = _ImportResolver;
 
-export { Error, Editor, Preview, Provider, InfoMessage, highlight };
+export { CodeBlock, Error, Editor, Preview, Provider, InfoMessage, highlight };
+
+export * from './prism';

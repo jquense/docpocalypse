@@ -1,3 +1,5 @@
+import { PluginOptions as BasePluginOptions } from '@docpocalypse/gatsby-theme-core';
+
 export * from '@docpocalypse/gatsby-theme-core';
 
 export { default as ComponentImport } from './src/components/ComponentImport';
@@ -31,5 +33,10 @@ export type Templates = {
   hook: string;
   default: string;
 };
+
+export interface PluginOptions extends BasePluginOptions {
+  theme?: 'full' | 'minimal';
+  tailwindConfig?: string | Record<string, any>;
+}
 
 export declare const templates: Templates;

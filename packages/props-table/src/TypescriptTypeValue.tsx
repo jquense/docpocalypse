@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Doclet, joinElements } from './utils';
+import { Doclet, getDoclet, joinElements } from './utils';
 
 interface TSSimple {
   name: string;
@@ -107,18 +107,14 @@ const isComplex = (t: TSType): t is TSConcreteType =>
 
 interface Props {
   type: TSType;
-  doclets: Doclet[];
+  tags: Doclet[];
   tokens?: TokenMap;
 }
 
-function getType(
-  type: TSType,
-  doclets: Doclet[],
-  tokens?: TokenMap
-): ReactNode {
+function getType(type: TSType, tags: Doclet[], tokens?: TokenMap): ReactNode {
   const concrete = type as TSConcreteType;
 
-  const get = (t: TSType) => getType(t, doclets, tokens);
+  const get = (t: TSType) => getType(t, tags, tokens);
   const t = (token: Token) => tokens?.[token] ?? `pt-token pt-${token}`;
 
   function renderName(name: string) {
@@ -153,6 +149,8 @@ function getType(
       <span className={t('array')}>{get(arrType.elements[0])}[]</span>
     );
   }
+  const userType = getDoclet(tags, 'type');
+  if (userType) return renderName(userType);
 
   switch (concrete.name) {
     case 'literal':
@@ -198,8 +196,8 @@ function getType(
   }
 }
 
-function TypescriptTypeValue({ type, doclets, tokens }: Props) {
-  return <>{getType(type, doclets, tokens)}</>;
+function TypescriptTypeValue({ type, tags, tokens }: Props) {
+  return <>{getType(type, tags, tokens)}</>;
 }
 
 export default TypescriptTypeValue;

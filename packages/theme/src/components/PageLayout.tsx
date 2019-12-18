@@ -11,6 +11,7 @@ export interface Props {
   style?: React.CSSProperties;
 }
 
+/** @public */
 function PageLayout({ children, className, style }: Props) {
   return (
     <div
@@ -40,16 +41,19 @@ function PageLayout({ children, className, style }: Props) {
         />
         <DocumentOutline
           css={dcss`
-            @apply order-2 hidden;
+            @apply hidden;
+            order: 2;
             @screen xl { @apply col-2 block };
           `}
         />
         <main
           css={dcss`
-            @apply col-12 order-1 px-5;
+            @apply col-12 px-10;
 
-            @screen xl { @apply col-8 };
+            order: 1;
+
             @screen md { @apply col-9 };
+            @screen xl { @apply col-8 };
           `}
         >
           {children}

@@ -6,6 +6,7 @@
  *
  * @param foo The input
  * @param options The input
+ * @type {Foo} fasff
  */
 export default function useTest(
   foo: string,

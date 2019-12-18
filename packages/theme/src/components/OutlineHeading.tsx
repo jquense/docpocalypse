@@ -11,6 +11,7 @@ interface HProps {
   children?: ReactNode;
 }
 
+/** @public */
 function OutlineHeading({ h, id, title, className, children }: HProps) {
   const { registerNode } = useContext(DocumentOutlineContext) ?? {};
 
