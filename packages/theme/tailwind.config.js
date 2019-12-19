@@ -26,6 +26,7 @@ module.exports = ({ theming }) => ({
     Heading: true,
     InlineCode: true,
     CodeBlock: true,
+    LiveCode: true,
     Paragraph: true,
 
     Navbar: true,

@@ -6,6 +6,7 @@ import React, {
   useState
 } from 'react';
 import useEventCallback from '@restart/hooks/useEventCallback';
+import { PrismTheme } from './prism';
 import transpile, { removeImports } from './transpile';
 
 const prettierComment = /(\{\s*\/\*\s+prettier-ignore\s+\*\/\s*\})|(\/\/\s+prettier-ignore)/gim;
@@ -18,7 +19,7 @@ Object.entries(React).forEach(([key, value]) => {
 export interface LiveContext {
   code?: string;
   language?: string;
-  theme?: string;
+  theme?: PrismTheme;
   disabled?: boolean;
   error: Error | null;
   element: JSX.Element | null;
@@ -73,7 +74,9 @@ export interface Props<TScope> {
   scope?: TScope;
   children?: ReactNode;
   language?: string;
-  theme?: string;
+
+  theme?: PrismTheme;
+
   showImports?: boolean;
   /**
    * A function that resolves to a hash of import requests to the result

@@ -28,6 +28,8 @@ export { default as Box } from './src/components/Box';
 
 export { components } from './src/wrap-page';
 
+export { default as syntaxTheme } from './src/syntax-theme';
+
 export type Templates = {
   component: string;
   hook: string;

@@ -25,4 +25,6 @@ export { default as Box } from './src/components/Box';
 export { default as templates } from './src/templates';
 export { components } from './src/wrap-page';
 
+export { default as syntaxTheme } from './src/syntax-theme';
+
 export * from '@docpocalypse/gatsby-theme-core';

@@ -1,4 +1,5 @@
-import dstyled from 'astroturf';
+import { css as dcss } from 'astroturf';
+import cn from 'classnames';
 import React from 'react';
 import {
   Editor,
@@ -9,41 +10,38 @@ import {
   PrismTheme,
   Provider
 } from '@docpocalypse/code-live';
+import syntaxTheme from '../syntax-theme';
 
-const StyledError = dstyled(Error)`
-  border-radius: 0;
-  border-width: 0.2rem;
-  margin-bottom: 0;
-`;
+const styles = dcss`
+  @component LiveCode {
+    margin: theme(margin.5) theme(margin.-4);
+    border-radius: theme(borderRadius.default);
+    background-color: theme(colors.gray.100);
+    border: 1px solid theme(colors.gray.300);
 
-const StyledLiveProviderChild = dstyled('div')`
-  background-color: theme('body.bg-color');
-  margin-bottom: 3rem;
-`;
+    & .title {
+      @apply font-medium bg-gray-300 px-5 py-3 font-mono text-sm leading-tight rounded-t;
+    }
 
-const StyledEditor = dstyled(Editor)`
-  font-family: theme('fontFamily');
-  border-radius: 0 0 theme('border-radius') theme('border-radius');
-`;
+    & .content {
+      @apply px-5 py-6 rounded-b;
+    }
 
-const StyledInfoMessage = dstyled(InfoMessage)`
-  font-size: 70%;
-`;
+    & .preview {
+      @apply pb-6;
+    }
 
-const StyledPreview = dstyled(Preview)`
-  position: relative;
-  color: theme('body.bg-color');
-  padding: 1rem;
-  border-style: solid;
-  border-color: rgb(236, 236, 236);
-  margin-right: 0;
-  margin-left: 0;
-  border-width: 0.2rem;
-  border-radius: 8px;
+    & .info {
+      font-size: theme(fontSize.sm);
+    }
 
-  &.showCode {
-    border-width: 0.2rem 0.2rem 0 0.2rem;
-    border-radius: 8px 8px 0 0;
+    & .editor {
+      @apply bg-gray-100 rounded-b;
+
+      textarea {
+        outline: none;
+      }
+    }
   }
 `;
 
@@ -72,8 +70,16 @@ export interface Props<TScope extends {} = {}> {
   /** A CSS class */
   className?: string;
 
+  /** A CSS class passed to the code title component */
+  titleClassName?: string;
+  /** A CSS class passed to the code container wraping Preview and Editor */
+  contentClassName?: string;
+  /** A CSS class passed to the code Editor component */
+  editorClassName?: string;
   /** A CSS class passed to the code Preview component */
-  exampleClassName?: string;
+  previewClassName?: string;
+
+  title?: string;
 
   /**
    * Provides the values for any imports used in code examples. `resolveImports` is
@@ -95,14 +101,27 @@ export interface Props<TScope extends {} = {}> {
   showImports?: boolean;
 }
 
-/** @public */
+function StyledInfoMessage(props) {
+  return (
+    <InfoMessage {...props} className={cn(props.className, styles.info)} />
+  );
+}
+
+/**
+ * @public
+ */
 export default function LiveCode({
   code,
   scope,
   className,
-  exampleClassName,
+  titleClassName,
+  contentClassName,
+  editorClassName,
+  previewClassName,
   resolveImports,
   language,
+  title,
+  theme = syntaxTheme,
   showCode = true,
   showImports = false
 }: Props) {
@@ -111,18 +130,27 @@ export default function LiveCode({
       scope={scope}
       code={code}
       language={language}
+      theme={theme}
       showImports={showImports}
       resolveImports={resolveImports}
     >
-      <StyledLiveProviderChild>
-        <StyledPreview
-          showCode={showCode}
-          className={exampleClassName}
-          infoComponent={StyledInfoMessage}
-        />
-        <StyledError />
-        {showCode && <StyledEditor className={className} />}
-      </StyledLiveProviderChild>
+      <div className={cn(className, styles.LiveCode)}>
+        {title && (
+          <div className={cn(titleClassName, styles.title)}>{title}</div>
+        )}
+
+        <div className={cn(contentClassName, styles.content)}>
+          <Preview
+            className={cn(previewClassName, styles.preview)}
+            infoComponent={StyledInfoMessage}
+          />
+
+          <div className={cn(editorClassName, styles.editor)}>
+            {showCode && <Editor />}
+          </div>
+          <Error className={styles.error} />
+        </div>
+      </div>
     </Provider>
   );
 }

@@ -42,7 +42,12 @@ const Editor = React.forwardRef(
     { style, className, theme, infoComponent: Info = InfoMessage }: Props,
     ref: any
   ) => {
-    const { code: contextCode, language, onChange } = useLiveContext();
+    const {
+      code: contextCode,
+      theme: contextTheme,
+      language,
+      onChange
+    } = useLiveContext();
     const [code, setCode] = useStateFromProp(contextCode);
 
     const mouseDown = useRef(false);
@@ -98,9 +103,13 @@ const Editor = React.forwardRef(
 
     const handleHighlight = useCallback(
       (value: string) => (
-        <CodeBlock theme={theme} code={value} language={language as any} />
+        <CodeBlock
+          theme={theme || contextTheme}
+          code={value}
+          language={language as any}
+        />
       ),
-      [language, theme]
+      [language, theme, contextTheme]
     );
 
     const baseTheme =
