@@ -29,6 +29,7 @@ Now any configuration in your theme file will be merged into the base theme.
 
 ```js title=tailwind.config.js
 const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   theme: {
     extend: {
@@ -55,25 +56,58 @@ or when you want to use a component based CSS-in-JS option.
 For folks that prefer a more tailwind-esque approach, each major theme component can
 be styled via the tailwind theme using a CSS object syntax.
 
+To Override the styles of a built-in component, add a style keyed under it's name in your theme.
+
 ```js title='./tailwind.config.js'
 module.exports = {
   ...
-  Navbar: t => ({
-    color: t('colors.gray.800'),
-    backgroundColor: t('colors.blue.200'),
+  theme: {
+    Navbar: t => ({
+      color: t('colors.gray.800'),
+      backgroundColor: t('colors.blue.200'),
 
-    // can also target nested components
-    '& a:visited': {
-      color: t('colors.blue.400'),
+      // can also target nested components
+      '& a:visited': {
+        color: t('colors.blue.400'),
+      }
+    })
+  }
+};
+```
+
+You can also extend the default styles by nesting your style under the `extend` key.
+
+```js title='./tailwind.config.js'
+module.exports = {
+  ...
+  theme: {
+    extend: {
+      // only change the color
+      Navbar: t => ({
+        color: t('colors.gray.100'),
+      })
     }
-  })
+  }
+};
+```
+
+You can also opt out of default styles on a case by case basic by setting the component to `false`.
+
+```js title='./tailwind.config.js'
+module.exports = {
+  theme: {
+    // Navbar will be completely unstyled
+    Navbar: false
+  }
 };
 ```
 
 ## Disabling tailwind
 
-If tailwind isn't you cup of tea, you can opt-out of any extra tailwind utilties or styles
-by configuring a `minimal` theming setup.
+If you want to use tailwind to style your doc, site. you can opt of theming to the degree
+that suits your project, by setting the `theming` config in your gatsby config.
+
+### "minimal"
 
 ```js title=gatsby-config.js
 module.exports = {
@@ -94,6 +128,12 @@ When set to `minimal` (vs `full`) docpocalypse will only use the the theme for i
 components and not output any general or global css classes. You can still
 customize the `tailwind.config.js` to style and tweak the doc theme, or <Shadow /> the
 components and use your own styling solution.
+
+### "none"
+
+When you want to do everything yourself setting themeing to `'none'` will completely
+disable and remove any built-in styles. If you choose this option, its because you want to
+provide all the styling using your own tools.
 
 ## Custom theming solutions
 

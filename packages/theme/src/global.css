@@ -1,4 +1,6 @@
-@tailwind base;
+@theme full minimal {
+  @tailwind base;
+}
 
 @theme full {
   html {

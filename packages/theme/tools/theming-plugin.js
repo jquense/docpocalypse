@@ -50,13 +50,23 @@ function componentAtRulePlugin(getConfig, theming) {
         throw atRule.error(`Unrecognized component: \`${name}\`.`);
       }
 
-      if (
-        theming === 'none' ||
-        themeValue === false ||
-        (themeValue === true && !hasChildren)
-      ) {
+      if (themeValue === false || (themeValue === true && !hasChildren)) {
         atRule.remove();
         return;
+      }
+
+      if (theming === 'none') {
+        if (isExtending)
+          css.error(
+            `Component ${name} is being extended but the theming config option is set to "none". ` +
+              `Extensions aren't possible when theming is disabled because the default styles don't exist.`
+          );
+
+        // just remove and return for "true" values
+        if (themeValue === true) {
+          atRule.remove();
+          return;
+        }
       }
 
       let defaultStyle = null;
