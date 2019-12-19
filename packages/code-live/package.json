@@ -16,6 +16,11 @@
     "tdd": "jest --watch",
     "test": "jest"
   },
+  "files": [
+    "esm",
+    "lib",
+    "themes"
+  ],
   "publishConfig": {
     "access": "public"
   },
