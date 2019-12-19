@@ -16,8 +16,17 @@ module.exports = {
       className: t('colors.orange.700'),
       method: '#6699cc',
       operator: '#fc929e'
-    })
+    }),
 
+    extend: {
+      fontFamily: {
+        mono: 'Cutive Mono, monospace',
+        brand: 'Marcellus, serif'
+      },
+      Heading: {
+        '@apply font-brand': true
+      }
+    }
     // Navbar: true,
   }
 };

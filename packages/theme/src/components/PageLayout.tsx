@@ -21,11 +21,7 @@ function PageLayout({ children, className, style }: Props) {
         @apply min-h-screen flex flex-col
       `}
     >
-      <Navbar>
-        <div>
-          <Link to="/">Home</Link>
-        </div>
-      </Navbar>
+      <Navbar />
       <div
         css={dcss`
           @apply grid;

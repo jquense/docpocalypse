@@ -28,13 +28,13 @@ module.exports = {
 Now any configuration in your theme file will be merged into the base theme.
 
 ```js title=tailwind.config.js
+const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   theme: {
-    screens: {
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px'
+    extend: {
+      colors: {
+        accent:
+      }
     }
   }
 };
@@ -45,7 +45,7 @@ details about extending, and creating a tailwind theme._
 
 ### Customizing built-in components
 
-beyond tweaking theme variables, you may want to apply specific styles to particular
+Beyond tweaking theme variables, you may want to apply specific styles to particular
 theme components, such as the `<Navbar>`. Most straightforward way to do this is to
 
 <Shadow /> the component you wish to extend and apply a CSS `className` or `style` prop to

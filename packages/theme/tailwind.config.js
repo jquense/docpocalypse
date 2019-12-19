@@ -15,6 +15,7 @@ module.exports = ({ theming }) => ({
     },
     fontFamily: {
       ...(theming === 'full' ? base.fontFamily : {}),
+      brand: base.fontFamily.sans,
       default: base.fontFamily.sans,
       mono: base.fontFamily.mono
     },
@@ -28,7 +29,9 @@ module.exports = ({ theming }) => ({
     Paragraph: true,
 
     Navbar: true,
-    SideNavigationPanel: true
+    SideNavigationPanel: true,
+    SideNavigationHeader: true,
+    SideNavigationLink: true
   },
   ...(theming === 'minimal'
     ? {
@@ -52,6 +55,7 @@ module.exports = ({ theming }) => ({
           'fontSize',
           'fontSmoothing',
           'fontWeight',
+          'letterSpacing',
 
           'borderRadius',
           'backgroundColor',

@@ -1,7 +1,30 @@
 const path = require('path');
 
 module.exports = {
+  siteMetadata: {
+    title: 'Docpocalypse',
+    description: ''
+  },
   plugins: [
+    {
+      resolve: `gatsby-plugin-webfonts`,
+      options: {
+        fonts: {
+          google: [
+            {
+              family: 'Marcellus',
+              subsets: ['latin'],
+              display: 'swap'
+            },
+            {
+              family: 'Cutive+Mono',
+              subsets: ['latin'],
+              display: 'swap'
+            }
+          ]
+        }
+      }
+    },
     {
       resolve: '@docpocalypse/gatsby-theme',
       options: {
