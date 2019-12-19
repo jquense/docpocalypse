@@ -1,7 +1,6 @@
 const postcss = require('postcss');
 const postcssJs = require('postcss-js');
 const merge = require('lodash/merge');
-const postcssNested = require('postcss-nested');
 const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
 const defaultConfig = require('tailwindcss/defaultConfig');
 const formatCSS = require('tailwindcss/lib/lib/formatCSS').default;
@@ -41,7 +40,10 @@ function componentAtRulePlugin(getConfig, theming) {
       const [name, ident = `.${name}`] = postcss.list.space(atRule.params);
 
       const isExtending =
-        userConfig.theme.extend && name in userConfig.theme.extend;
+        userConfig &&
+        userConfig.theme &&
+        userConfig.theme.extend &&
+        name in userConfig.theme.extend;
 
       const hasChildren = atRule.nodes && atRule.nodes.length;
       const themeValue = theme[name];
