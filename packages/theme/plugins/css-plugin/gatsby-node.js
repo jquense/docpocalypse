@@ -38,6 +38,7 @@ exports.onCreateWebpackConfig = (
             onlyLocals: isSSR
           }),
           loaders.postcss({
+            ident: 'docpoc-1',
             parser: require.resolve('postcss-scss'),
             plugins: postcssPlugins
           })
@@ -51,6 +52,7 @@ exports.onCreateWebpackConfig = (
               gatsbyLoaders.miniCssExtract(),
               loaders.css({ importLoaders: 1 }),
               loaders.postcss({
+                ident: 'docpoc-2',
                 parser: require.resolve('postcss-scss'),
                 plugins: postcssPlugins
               })
