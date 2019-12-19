@@ -48,6 +48,7 @@ const Editor = React.forwardRef(
       language,
       onChange
     } = useLiveContext();
+    const userTheme = theme || contextTheme;
     const [code, setCode] = useStateFromProp(contextCode);
 
     const mouseDown = useRef(false);
@@ -103,17 +104,13 @@ const Editor = React.forwardRef(
 
     const handleHighlight = useCallback(
       (value: string) => (
-        <CodeBlock
-          theme={theme || contextTheme}
-          code={value}
-          language={language as any}
-        />
+        <CodeBlock theme={userTheme} code={value} language={language as any} />
       ),
-      [language, theme, contextTheme]
+      [language, userTheme]
     );
 
     const baseTheme =
-      theme && typeof theme.plain === 'object' ? theme.plain : {};
+      userTheme && typeof userTheme.plain === 'object' ? userTheme.plain : {};
 
     return (
       <div ref={ref} style={{ position: 'relative' }}>
