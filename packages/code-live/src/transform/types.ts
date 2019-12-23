@@ -1,3 +1,4 @@
+import { Position } from 'acorn';
 import MagicString from 'magic-string';
 
 export type Node = any;
@@ -22,8 +23,8 @@ export type Plugin = {
     text: string,
     start: number,
     end: number,
-    startLoc?: acorn.Position,
-    endLoc?: acorn.Position
+    startLoc?: Position,
+    endLoc?: Position
   ) => void;
   visitor?: VisitorMap;
 };
