@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+
 import fs from 'fs';
 import path from 'path';
 import { getNamedType, getNullableType } from 'gatsby/graphql';
@@ -20,8 +21,8 @@ type DocNode =
   | T.ContainerReflection;
 
 interface PluginOptions {
-  path: string;
-  [key: string]: string;
+  projects: string[];
+  [key: string]: any;
 }
 
 const resolveWithType = async (obj, args, ctx, info) => {
@@ -157,10 +158,10 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
         children: [TypedocNode]! @link
       }
 
-      type TypedocNode implements Node @dontInfer {
-        kind: TypedocNodeKind!
-        kindString: String!
-      }
+      # type TypedocNode implements Node @dontInfer {
+      #   kind: TypedocNodeKind!
+      #   kindString: String
+      # }
 
       type TypedocNodeRaw implements Node @dontInfer {
         json: JSON!
@@ -302,7 +303,7 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
       extensions: ['donInfer'],
       fields: {
         kind: 'TypedocNodeKind!',
-        kindString: 'String!',
+        kindString: 'String',
         name: 'String!',
         originalName: 'String',
         flags: 'TypedocFlags!',
@@ -323,7 +324,7 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
 
         type: nullableTypeField,
         typeParameter: {
-          type: 'TypedocNode',
+          type: '[TypedocNode!]!',
           resolve: link()
         },
         parameters: {
@@ -345,6 +346,72 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
     })
   ]);
 }
+
+function canParse(node) {
+  return (
+    node &&
+    // TypeScript doesn't really have a mime type and .ts files are a media file :/
+    (node.internal.mediaType === `application/typescript` ||
+      node.internal.mediaType === `text/tsx` ||
+      node.extension === `tsx` ||
+      node.extension === `ts`)
+  );
+}
+
+// export function onCreateNode({
+//   node,
+//   actions,
+//   createNodeId,
+//   createContentDigest,
+//   reporter
+// }) {
+//   if (node.type === 'File') console.log(node);
+//   if (node.internal.type !== 'File' || !canParse(node)) {
+//     return;
+//   }
+
+//   const src = node.absolutePath;
+
+//   const tsconfig = findConfigFile(src, sys.fileExists);
+//   const { config, error } = readConfigFile(tsconfig!, sys.readFile);
+//   reporter.info(tsconfig!, src);
+
+//   if (error) {
+//     reporter.error(error);
+//     if (!config) return;
+//   }
+
+//   const app = new Application({
+//     // ...pluginOptions,
+//     mode: 'modules',
+//     // excludeNotExported: true,
+//     tsconfig
+//   });
+
+//   const project = app.convert([src]);
+
+//   if (!project) {
+//     reporter.error('There was a problem building your typedoc project');
+//     return;
+//   }
+
+//   const data = app.serializer.projectToObject(project);
+
+//   const nodeId = createNodeId(`typedoc-${data.name || 'default'}`);
+//   const nodeContent = JSON.stringify(data);
+
+//   const nodeData = {
+//     id: nodeId,
+//     json: data,
+//     internal: {
+//       type: 'TypedocNodeRaw',
+//       content: nodeContent,
+//       contentDigest: createContentDigest(data)
+//     }
+//   };
+
+//   actions.createNode(nodeData);
+// }
 
 export function sourceNodes(
   { actions, createNodeId, createContentDigest, reporter },
@@ -377,6 +444,8 @@ export function sourceNodes(
     const find = (t?: T.SomeType) => findDeclarations(t, parent);
     if (type) {
       if ('declaration' in type && type.declaration) {
+        if (Array.isArray(type.declaration))
+          console.log('HERE', type.declaration);
         return [
           // pointer
           !('name' in type.declaration)
@@ -407,9 +476,10 @@ export function sourceNodes(
     const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
     const signatures = dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
     const parameters = dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
+
     const typeParameter = dnode.typeParameter
-      ? traverse(dnode.typeParameter, nodeId)?.id
-      : null;
+      ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
+      : [];
 
     [
       'type',
@@ -421,6 +491,8 @@ export function sourceNodes(
       'implementedBy',
       'implementationOf'
     ].forEach(field => findDeclarations((docNode as any)[field], nodeId));
+
+    // if (!docNode.kindString) console.log(docNode, parent);
 
     const node: any = {
       ...docNode,
@@ -455,45 +527,61 @@ export function sourceNodes(
     return node;
   }
 
-  const { project: root, ...typedocOptions } = pluginOptions;
-  const isFile = fs.statSync(root).isFile();
+  const { projects, ...typedocOptions } = pluginOptions;
 
-  const tsconfig = isFile ? root : findConfigFile(root, sys.fileExists);
+  const roots = ([] as string[]).concat(projects);
 
-  const { config, error } = readConfigFile(tsconfig!, sys.readFile);
+  roots.forEach(root => {
+    const isFile = fs.statSync(root).isFile();
 
-  if (error) {
-    reporter.error(error);
-    if (!config) return;
-  }
-  const app = new Application({
-    ...typedocOptions,
-    mode: 'modules',
-    // excludeNotExported: true,
-    tsconfig
+    const tsconfig = isFile ? root : findConfigFile(root, sys.fileExists);
+
+    if (!tsconfig) {
+      reporter.info(
+        `No typescript project detected for source ${root} skipping`
+      );
+      return;
+    }
+    reporter.info(
+      `Typescript config found for source ${root}, generating type information`
+    );
+
+    const { config, error } = readConfigFile(tsconfig, sys.readFile);
+
+    if (error) {
+      reporter.error(error);
+      if (!config) return;
+    }
+
+    const app = new Application({
+      ...typedocOptions,
+      mode: 'modules',
+      // excludeNotExported: true,
+      tsconfig
+    });
+
+    const rootDir = path.join(
+      path.dirname(tsconfig),
+      config.compilerOptions?.rootDir ?? ''
+    );
+
+    const project = app.convert(app.expandInputFiles([rootDir]));
+
+    if (!project) {
+      reporter.error('There was a problem building your typedoc project');
+      return;
+    }
+
+    const data = app.serializer.projectToObject(project);
+
+    // console.log(data);
+
+    if (data) {
+      traverse(data);
+      nodes.clear();
+      createNode(processTypeDocRaw(data));
+    } else {
+      reporter.error('Failed to generate TypeDoc');
+    }
   });
-
-  const rootDir = path.join(
-    path.dirname(tsconfig!),
-    config.compilerOptions?.rootDir ?? ''
-  );
-
-  const project = app.convert(app.expandInputFiles([rootDir]));
-
-  if (!project) {
-    reporter.error('There was a problem building your typedoc project');
-    return;
-  }
-
-  const data = app.serializer.projectToObject(project);
-
-  // console.log(data);
-
-  if (data) {
-    traverse(data);
-    nodes.clear();
-    createNode(processTypeDocRaw(data));
-  } else {
-    reporter.error('Failed to generate TypeDoc');
-  }
 }

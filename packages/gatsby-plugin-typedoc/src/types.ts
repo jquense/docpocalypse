@@ -8,6 +8,8 @@ import {
   SourceReferenceWrapper
 } from 'typedoc/dist/lib/serialization/serializers';
 
+export const Kind = M.ReflectionKind;
+
 /**
  * Describes the mapping from Model types to the corresponding JSON output type.
  */
