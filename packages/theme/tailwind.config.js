@@ -24,6 +24,7 @@ module.exports = ({ theming }) => ({
       navbar: t('spacing.16')
     }),
     Heading: true,
+    LinkedHeading: true,
     InlineCode: true,
     CodeBlock: true,
     LiveCode: true,
