@@ -1,6 +1,6 @@
 const findPkg = require('find-pkg');
 const path = require('path');
-
+const { Kind } = require('gatsby-plugin-typedoc/types');
 const parseCodeBlocks = require('./parse-code-blocks');
 
 const isComponent = node => node.internal.type === 'ComponentMetadata';
@@ -40,7 +40,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
     schema.buildObjectType({
       name: 'Docpocalypse',
       interfaces: ['Node'],
-      extensions: ['dontInfer'],
+      // extensions: ['dontInfer'],
       fields: {
         type: 'String!',
         name: 'String!',
@@ -59,6 +59,14 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
               id: source.metadata___NODE
             })
         },
+        // typedoc: {
+        //   type: 'TypedocNode',
+        //   resolve: (source, _, context) =>
+        //     context.nodeModel.getNodeById({
+        //       type: 'TypedocNode',
+        //       id: source.typedoc___NODE
+        //     })
+        // },
         documentation: {
           type: 'DocumentationJs',
           resolve: (source, _, context) =>
@@ -112,21 +120,22 @@ exports.onCreateNode = async function onCreateNode(
     if (!srcFile || !srcFile.sourceInstanceName.match(/^@docs::source/)) {
       return;
     }
-    const displayName = isComp ? node.displayName : node.name;
-
-    const typeNode = getNodesByType('TypedocNode').find(n => {
-      return (
-        n.kind === 1 &&
-        n.sources.some(s => path.basename(s.fileName) === srcFile.base)
-      );
-    });
 
     let pkgJson = await findPkg(srcFile.dir);
     const rootDir = pkgJson && path.dirname(pkgJson);
 
     pkgJson = pkgJson && require(pkgJson);
 
+    const displayName = isComp ? node.displayName : node.name;
+
     const name = displayName || srcFile.name;
+
+    const typeNode = isComp
+      ? null
+      : getNodesByType('TypedocNode').find(
+          n => n.kind === Kind.Function && n.name === name
+        );
+
     const docNode = {
       name,
       rootDir,

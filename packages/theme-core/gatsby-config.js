@@ -52,10 +52,9 @@ module.exports = (options = {}) => {
         }
       }
       // {
-      //   resolve: require.resolve('./plugins/typedoc'),
+      //   resolve: 'gatsby-plugin-typedoc',
       //   options: {
-      //     src: sources,
-      //     typedoc: typedocConfig
+      //     projects: sources
       //   }
       // }
     ].filter(Boolean)
