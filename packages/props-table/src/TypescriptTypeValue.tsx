@@ -177,7 +177,11 @@ function getType(type: TSType, tags: Doclet[], tokens?: TokenMap): ReactNode {
         </span>
       );
     case 'union':
-      return <span className={t('union')}>{concrete.elements.map(get)}</span>;
+      return (
+        <span className={t('union')}>
+          {joinElements(concrete.elements, null, get)}
+        </span>
+      );
     case 'tuple': {
       return (
         <span className={t('tuple')}>
@@ -187,7 +191,9 @@ function getType(type: TSType, tags: Doclet[], tokens?: TokenMap): ReactNode {
     }
     case 'intersect':
       return (
-        <span className={t('intersect')}>{concrete.elements.map(get)}</span>
+        <span className={t('intersect')}>
+          {joinElements(concrete.elements, null, get)}
+        </span>
       );
     default:
       if (isArray(type)) return renderArray(type);
