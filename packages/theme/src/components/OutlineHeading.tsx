@@ -22,22 +22,7 @@ function OutlineHeading({ h, id, title, className, children }: HProps) {
   }, [h, registerNode, title, id]);
 
   return (
-    <Heading
-      id={id}
-      level={h}
-      css={dcss`
-        position: relative;
-        pointer-events: none;
-
-        &:before {
-          display: block;
-          height: theme('navbar.height');
-          margin-top: calc(theme('navbar.height') * -1);
-          visibility: hidden;
-          content: '';
-        }
-      `}
-    >
+    <Heading id={id} level={h}>
       <div
         className={className}
         css={dcss`
