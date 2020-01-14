@@ -4,7 +4,6 @@ import dstyled, { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React, { ReactNode } from 'react';
-import Box from './Box';
 import ExamplesBlock from './DocExamples';
 import Params from './DocParams';
 import ReturnBlock from './DocReturns';
