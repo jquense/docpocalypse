@@ -11,7 +11,10 @@ export { default as DocBlock } from './src/components/DocBlock';
 export { default as Pre } from './src/components/Pre';
 
 export { default as PageLayout } from './src/components/PageLayout';
+export { default as ComponentPage } from './src/components/ComponentPage';
+export { default as HookPage } from './src/components/HookPage';
 
+export { default as DocumentOutline } from './src/components/DocumentOutline';
 export { default as SideNavigation } from './src/components/SideNavigation';
 export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
 export { default as SideNavigationLink } from './src/components/SideNavigationLink';
@@ -24,6 +27,7 @@ export { default as OutlineHeading } from './src/components/OutlineHeading';
 export { default as LinkedHeading } from './src/components/LinkedHeading';
 
 export { MDXProvider } from '@mdx-js/react';
+export { MDXRenderer } from 'gatsby-plugin-mdx';
 export { default as Box } from './src/components/Box';
 
 export { components } from './src/wrap-page';
