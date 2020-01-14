@@ -12,7 +12,7 @@ interface HProps {
 }
 
 /** @public */
-function OutlineHeading({ h, id, title, className, children }: HProps) {
+function OutlineHeading({ h, id, title, children }: HProps) {
   const { registerNode } = useContext(DocumentOutlineContext) ?? {};
 
   useEffect(() => {
@@ -23,14 +23,7 @@ function OutlineHeading({ h, id, title, className, children }: HProps) {
 
   return (
     <Heading id={id} level={h}>
-      <div
-        className={className}
-        css={dcss`
-          pointer-events: auto;
-        `}
-      >
-        {children}
-      </div>
+      {children}
     </Heading>
   );
 }
