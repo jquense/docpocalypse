@@ -6,6 +6,7 @@ exports.onCreateWebpackConfig = ({ actions }) => {
           test: /\.(j|t)sx?$/,
           include: [
             /packages\/theme\/src\/.*/,
+            /.yalc\/@docpocalypse\/gatsby-theme.*\/src\/.*/,
             /node_modules\/@docpocalypse\/gatsby-theme.*\/src\/.*/
           ],
           use: [
