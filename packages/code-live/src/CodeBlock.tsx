@@ -13,7 +13,7 @@ export const defaultHighligher = ({
       <div {...getLineProps({ line, key: String(i) })}>
         {line.map((token, ii) => (
           // eslint-disable-next-line react/no-array-index-key
-          <span key={ii} {...getTokenProps({ token, key: String(i) })} />
+          <span key={ii} {...getTokenProps({ token, key: String(ii) })} />
         ))}
       </div>
     ))}
