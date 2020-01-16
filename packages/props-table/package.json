@@ -5,7 +5,7 @@
   "module": "esm/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/4Catalyzer/theme.git",
+    "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/props-table"
   },
   "author": "4Catalyzer",

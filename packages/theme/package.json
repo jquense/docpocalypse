@@ -4,7 +4,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/4Catalyzer/theme.git",
+    "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/theme"
   },
   "author": "4Catalyzer",
