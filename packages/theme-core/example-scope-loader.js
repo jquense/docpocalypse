@@ -1,5 +1,6 @@
 const { promisify } = require('util');
 const path = require('path');
+const fs = require('fs');
 
 const helpers = `
 const d = (obj) => obj && obj.__esModule ? obj.default : obj;
@@ -20,9 +21,25 @@ const allValues = obj => {
 const Imports = new Map();
 const BaseModules = new Map();
 
+function getEntry(loader) {
+  // eslint-disable-next-line no-underscore-dangle
+  const srcDir = path.join(loader._compiler.context, 'src');
+
+  try {
+    const entryFile = fs.readdirSync(srcDir).find(f => f.startsWith('entry'));
+    console.log(fs.readdirSync(srcDir), entryFile);
+
+    return entryFile && path.join(srcDir, entryFile);
+  } catch {
+    return null;
+  }
+}
+
 function exampleScopeLoader(src) {
   const { exampleCodeScope } = this.query || {};
   const resolve = promisify(this.resolve);
+
+  const entryFile = getEntry(this);
 
   // This file changes every time there is an update to imports
   // so it triggers a rebuild of the page
@@ -52,6 +69,8 @@ function exampleScopeLoader(src) {
       )
     );
 
+    const entryRequire = entryFile ? `require('${entryFile}');\n` : '';
+
     const imports = `const IMPORTS = {\n${keys.join('\n')}\n};\n`;
 
     const requires = exampleCodeScope
@@ -62,7 +81,7 @@ function exampleScopeLoader(src) {
 
     const scope = `const SCOPE = ${requires};\n`;
 
-    return `${helpers}${imports}${scope}${src}`;
+    return `${entryRequire}${helpers}${scope}${imports}${src}`;
   };
 
   process().then(result => done(null, result), done);
