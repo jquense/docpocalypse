@@ -30,7 +30,7 @@ const Preview = ({ className, holderTheme }: any) => {
 
   // prevent links in examples from navigating
   const handleClick = (e: any) => {
-    if (e.target.tagName === 'A') e.preventDefault();
+    if (e.target.tagName === 'A' || e.target.closest('a')) e.preventDefault();
   };
 
   return error ? null : (
