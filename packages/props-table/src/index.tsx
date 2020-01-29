@@ -57,11 +57,7 @@ export default function renderProps(
       const docletMap = docletsToMap(tags);
       const typeName = getTypeName(propData);
 
-      const descHtml =
-        (description &&
-          description.childMarkdownRemark &&
-          description.childMarkdownRemark.html) ||
-        '';
+      const descHtml = description?.markdownRemark?.html || '';
 
       let renderedType = null;
       if (tsType)
