@@ -24,6 +24,7 @@
     "@babel/types": "^7.7.2",
     "ast-types": "^0.13.2",
     "common-tags": "^1.8.0",
+    "lodash": "^4.17.11",
     "@monastic.panic/react-docgen": "^5.0.0-beta.3"
   },
   "devDependencies": {

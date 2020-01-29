@@ -1,96 +1,140 @@
 const path = require('path');
+const camelCase = require('lodash/camelCase');
 const parseMetadata = require('./parse');
+const DataUtils = require('../../data-utils');
 
 const propsId = (parentId, name) => `${parentId}--ComponentProp-${name}`;
 const descId = parentId => `${parentId}--ComponentDescription`;
 const withoutExtension = p =>
   path.join(path.dirname(p), path.basename(p, path.extname(p)));
 
-exports.sourceNodes = ({ actions }) => {
+exports.sourceNodes = ({ actions, schema }) => {
   const { createTypes } = actions;
 
-  createTypes(/* GraphQL */ `
-    type PropDefaultValue @dontInfer {
-      value: String
-      computed: Boolean
-    }
+  createTypes([
+    /* GraphQL */ `
+      type PropDefaultValue @dontInfer {
+        value: String
+        computed: Boolean
+      }
 
-    type PropTypeValue @dontInfer {
-      name: String!
-      value: JSON
-      raw: String
-    }
+      type PropTypeValue @dontInfer {
+        name: String!
+        value: JSON
+        raw: String
+      }
 
-    type ComponentMethodParams @dontInfer {
-      name: String
-      type: JSON
-    }
+      type ComponentMethodParams @dontInfer {
+        name: String
+        type: JSON
+      }
 
-    type ComponentTag @dontInfer {
-      name: String!
-      value: JSON!
-    }
+      type ComponentTag @dontInfer {
+        name: String!
+        value: JSON!
+      }
 
-    type ComponentMethod @dontInfer {
-      name: String!
-      description: String
+      type ComponentMethod @dontInfer {
+        name: String!
+        description: String
 
-      # The raw comment block leading a method declaration
-      docblock: String
+        # The raw comment block leading a method declaration
+        docblock: String
 
-      # Modifiers describing the kind and sort of method e.g. "static", "generator", or "async".
-      modifiers: [String]
+        # Modifiers describing the kind and sort of method e.g. "static", "generator", or "async".
+        modifiers: [String]
 
-      params: [ComponentMethodParams]
-      returns: JSON
-    }
+        params: [ComponentMethodParams]
+        returns: JSON
+      }
 
-    type ComponentProp implements Node @infer {
-      type: PropTypeValue
-      flowType: JSON
-      tsType: JSON
-      description: ComponentDescription! @link
+      type ComponentProp implements Node @infer {
+        name: String
+        type: PropTypeValue
+        flowType: JSON
+        tsType: JSON
+        description: ComponentDescription! @link
 
-      defaultValue: PropDefaultValue
-      tags: [ComponentTag]!
+        defaultValue: PropDefaultValue
+        tags: [ComponentTag]!
 
-      # The raw comment block leading a propType declaration
-      docblock: String
+        # The raw comment block leading a propType declaration
+        docblock: String
 
-      # Describes whether or not the propType is required, i.e. not \`null\`
-      required: Boolean!
-    }
+        # Describes whether or not the propType is required, i.e. not \`null\`
+        required: Boolean!
+      }
 
-    type ComponentDescription implements Node @infer {
-      text: String!
-    }
-
-    type ComponentComposes @dontInfer {
-      path: String!
-      metadata: ComponentMetadata
-    }
-
-    type ComponentMetadata implements Node @infer {
-      absolutePath: String
-
-      description: ComponentDescription! @link
-
-      props: [ComponentProp]! @link
-
-      tags: [ComponentTag]!
-
-      # A list of additional modules "spread" into this component's propTypes such as:
-      #
-      # propTypes = {
-      #   name: PropTypes.string,
-      #   ...AnotherComponent.propTypes,
+      # type ComponentDescription implements Node @dontInfer {
+      #   text: String!
+      #   mdx: MdxDescription @link
       # }
-      composes: [ComponentComposes!]!
 
-      # Component methods
-      methods: [ComponentMethod]
-    }
-  `);
+      type ComponentComposes @dontInfer {
+        path: String!
+        metadata: ComponentMetadata
+      }
+
+      type ComponentMetadata implements Node @infer {
+        displayName: String
+
+        absolutePath: String
+
+        description: ComponentDescription! @link
+
+        props: [ComponentProp]! @link
+
+        tags: [ComponentTag]!
+
+        # A list of additional modules "spread" into this component's propTypes such as:
+        #
+        # propTypes = {
+        #   name: PropTypes.string,
+        #   ...AnotherComponent.propTypes,
+        # }
+        composes: [ComponentComposes!]!
+
+        # Component methods
+        methods: [ComponentMethod]
+      }
+    `,
+    schema.buildObjectType({
+      name: `MdxDescription`,
+      interfaces: ['Node'],
+      extensions: ['dontInfer'],
+      fields: {
+        id: 'ID!',
+        html: DataUtils.passThroughType('String', 'Mdx'),
+        body: DataUtils.passThroughType('String!', 'Mdx'),
+        mdxAST: DataUtils.passThroughType('JSON', 'Mdx')
+      }
+    }),
+    schema.buildObjectType({
+      name: `MarkdownRemarkDescription`,
+      interfaces: ['Node'],
+      extensions: ['dontInfer'],
+      fields: {
+        id: 'ID!',
+        html: DataUtils.passThroughType('String', 'MarkdownRemark')
+      }
+    }),
+    schema.buildObjectType({
+      name: `ComponentDescription`,
+      interfaces: ['Node'],
+      extensions: ['dontInfer'],
+      fields: {
+        text: 'String!',
+        markdownRemark: {
+          type: 'MarkdownRemarkDescription',
+          resolve: DataUtils.link()
+        },
+        mdx: {
+          type: 'MdxDescription',
+          resolve: DataUtils.link()
+        }
+      }
+    })
+  ]);
 };
 
 exports.createResolvers = ({ createResolvers }) => {
@@ -225,11 +269,43 @@ function createPropNodes(
   return node;
 }
 
+function createPassthrough(node, actions, getNode, createNodeId) {
+  const { createNode } = actions;
+
+  const parentNode = node.parent && getNode(node.parent);
+
+  if (!parentNode || parentNode.internal.type !== 'ComponentDescription') {
+    return false;
+  }
+
+  const { type } = node.internal;
+  switch (type) {
+    case 'Mdx':
+    case 'MarkdownRemark': {
+      const id = createNodeId(`${node.id}--${type}Description`);
+      // HERE BE DRAGONS, Not supposed to mutate this, but it's the easiest way
+      parentNode[camelCase(type)] = id;
+      createNode({
+        id,
+        parent: node.id,
+        internal: {
+          contentDigest: node.internal.contentDigest,
+          type: `${type}Description`
+        }
+      });
+      return true;
+    }
+    default:
+      return false;
+  }
+}
+
 exports.onCreateNode = async (
   {
     node,
     loadNodeContent,
     actions,
+    getNode,
     createNodeId,
     reporter,
     createContentDigest
@@ -238,6 +314,9 @@ exports.onCreateNode = async (
 ) => {
   const { createNode, createParentChildLink } = actions;
 
+  if (createPassthrough(node, actions, getNode, createNodeId)) {
+    return;
+  }
   if (!canParse(node)) return;
 
   const content = await loadNodeContent(node);

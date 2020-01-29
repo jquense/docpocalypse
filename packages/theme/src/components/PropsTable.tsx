@@ -94,9 +94,12 @@ function PropsTable({ metadata }) {
 }
 
 export const metadataFragment = graphql`
-  fragment PropsTableDescription_mdx on ComponentDescription {
-    childMdx {
+  fragment PropsTable_description on ComponentDescription {
+    mdx {
       body
+    }
+    markdownRemark {
+      html
     }
   }
   fragment PropsTableDescription_markdown on ComponentDescription {
@@ -113,8 +116,7 @@ export const metadataFragment = graphql`
     }
     displayName
     description {
-      ...PropsTableDescription_mdx
-      ...PropsTableDescription_markdown
+      ...PropsTable_description
     }
     props {
       name
@@ -127,8 +129,7 @@ export const metadataFragment = graphql`
         computed
       }
       description {
-        ...PropsTableDescription_mdx
-        ...PropsTableDescription_markdown
+        ...PropsTable_description
       }
       required
       tsType
