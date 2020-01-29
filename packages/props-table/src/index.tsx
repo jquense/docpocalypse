@@ -14,8 +14,8 @@ export interface Prop {
     computed: boolean;
   };
   description?: {
-    childMdx?: { body: string };
-    childMarkdownRemark?: { html: string };
+    mdx?: { body: string };
+    markdownRemark?: { html: string };
   };
   required: boolean;
   type: null | PropType;

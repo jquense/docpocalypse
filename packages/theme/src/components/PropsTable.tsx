@@ -75,7 +75,7 @@ function PropsTable({ metadata }) {
               <PropDescription
                 as="td"
                 html={prop.description}
-                mdx={prop.propData.description?.childMdx}
+                mdx={prop.propData.description?.mdx}
               />
             </tr>
           ))}
@@ -102,11 +102,7 @@ export const metadataFragment = graphql`
       html
     }
   }
-  fragment PropsTableDescription_markdown on ComponentDescription {
-    childMarkdownRemark {
-      html
-    }
-  }
+
   fragment PropsTable_metadata on ComponentMetadata {
     composes {
       path

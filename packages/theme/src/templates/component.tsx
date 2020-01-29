@@ -18,9 +18,7 @@ export const pageQuery = graphql`
       metadata {
         id
         description {
-          childMdx {
-            body
-          }
+          ...PropsTable_description
         }
         ...PropsTable_metadata
       }
