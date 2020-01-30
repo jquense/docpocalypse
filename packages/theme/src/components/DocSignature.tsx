@@ -27,6 +27,8 @@ const TypeComponent = ({ children }) => (
 );
 
 const typeExpression = (type): string => {
+  if (!type) return '';
+
   if (type.type === `RecordType`) {
     return 'object';
   }

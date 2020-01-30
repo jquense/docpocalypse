@@ -99,23 +99,18 @@ exports.sourceNodes = ({ actions, schema }) => {
       }
     `,
     schema.buildObjectType({
-      name: `MdxDescription`,
-      interfaces: ['Node'],
+      name: `ComponentMdx`,
       extensions: ['dontInfer'],
       fields: {
-        id: 'ID!',
-        html: DataUtils.passThroughType('String', 'Mdx'),
-        body: DataUtils.passThroughType('String!', 'Mdx'),
-        mdxAST: DataUtils.passThroughType('JSON', 'Mdx')
+        body: 'String!',
+        mdxAST: 'JSON'
       }
     }),
     schema.buildObjectType({
-      name: `MarkdownRemarkDescription`,
-      interfaces: ['Node'],
+      name: `ComponentMarkdownRemark`,
       extensions: ['dontInfer'],
       fields: {
-        id: 'ID!',
-        html: DataUtils.passThroughType('String', 'MarkdownRemark')
+        html: 'String'
       }
     }),
     schema.buildObjectType({
@@ -125,12 +120,12 @@ exports.sourceNodes = ({ actions, schema }) => {
       fields: {
         text: 'String!',
         markdownRemark: {
-          type: 'MarkdownRemarkDescription',
-          resolve: DataUtils.link()
+          type: 'ComponentMarkdownRemark',
+          resolve: DataUtils.proxyToNode('fields.markdownRemark')
         },
         mdx: {
-          type: 'MdxDescription',
-          resolve: DataUtils.link()
+          type: 'ComponentMdx',
+          resolve: DataUtils.proxyToNode('fields.mdx')
         }
       }
     })
@@ -269,8 +264,8 @@ function createPropNodes(
   return node;
 }
 
-function createPassthrough(node, actions, getNode, createNodeId) {
-  const { createNode } = actions;
+function createPassthrough(node, actions, getNode) {
+  const { createNodeField } = actions;
 
   const parentNode = node.parent && getNode(node.parent);
 
@@ -282,16 +277,10 @@ function createPassthrough(node, actions, getNode, createNodeId) {
   switch (type) {
     case 'Mdx':
     case 'MarkdownRemark': {
-      const id = createNodeId(`${node.id}--${type}Description`);
-      // HERE BE DRAGONS, Not supposed to mutate this, but it's the easiest way
-      parentNode[camelCase(type)] = id;
-      createNode({
-        id,
-        parent: node.id,
-        internal: {
-          contentDigest: node.internal.contentDigest,
-          type: `${type}Description`
-        }
+      createNodeField({
+        node: parentNode,
+        name: camelCase(type),
+        value: node.id
       });
       return true;
     }
@@ -314,7 +303,7 @@ exports.onCreateNode = async (
 ) => {
   const { createNode, createParentChildLink } = actions;
 
-  if (createPassthrough(node, actions, getNode, createNodeId)) {
+  if (createPassthrough(node, actions, getNode)) {
     return;
   }
   if (!canParse(node)) return;

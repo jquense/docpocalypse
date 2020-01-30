@@ -88,6 +88,7 @@ export interface Props<TScope> {
    * ```
    *
    * @default undefined
+   * @type {geyt} getfffy
    */
   resolveImports?: ImportResolver;
 }
