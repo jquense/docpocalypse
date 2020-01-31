@@ -3,7 +3,6 @@
 import fs from 'fs';
 import path from 'path';
 import { getNamedType, getNullableType } from 'gatsby/graphql';
-import upperFirst from 'lodash/upperFirst';
 import { Application } from 'typedoc';
 import { findConfigFile, readConfigFile, sys } from 'typescript';
 import * as T from './types';
@@ -74,18 +73,18 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
     return value;
   };
 
-  const typeField = {
-    type: 'TypedocType!',
-    resolve: link(typeResolver)
-  };
+  // const typeField = {
+  //   type: 'TypedocType!',
+  //   resolve: link(typeResolver)
+  // };
   const nullableTypeField = {
     type: 'TypedocType',
     resolve: link(typeResolver)
   };
-  const typeArrayField = {
-    type: '[TypedocType!]!',
-    resolve: link(typeResolver)
-  };
+  // const typeArrayField = {
+  //   type: '[TypedocType!]!',
+  //   resolve: link(typeResolver)
+  // };
   const nullableTypeArrayField = {
     type: '[TypedocType!]',
     resolve: link(typeResolver)
@@ -167,54 +166,102 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
         json: JSON!
       }
     `,
+    // schema.buildObjectType({
+    //   name: 'TypedocArrayType',
+    //   fields: {
+    //     type: 'String!',
+    //     elementType: typeField
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocUnionOrIntersectionType',
+    //   fields: {
+    //     type: 'String!',
+    //     types: typeArrayField
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocIntrinsicType',
+    //   fields: {
+    //     type: 'String!',
+    //     name: 'String!'
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocIntrinsicType',
+    //   fields: {
+    //     type: 'String!',
+    //     name: 'String!'
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocReferenceType',
+    //   fields: {
+    //     type: 'String!',
+    //     name: 'String!',
+    //     typeArguments: typeArrayField
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocReflectionType',
+    //   fields: {
+    //     type: 'String!',
+    //     declaration: {
+    //       type: 'TypedocNode',
+    //       resolve: ({ declaration }, _, context) => {
+    //         if (!declaration) return null;
+
+    //         const node = context.nodeModel.getNodeById(
+    //           {
+    //             id: createNodeId(`TypedocNode:${declaration.id}`),
+    //             type: 'TypedocNode'
+    //           },
+    //           { path: context.path }
+    //         );
+    //         return node;
+    //       }
+    //     }
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocStringLiteralType',
+    //   fields: {
+    //     type: 'String!',
+    //     value: 'String!'
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocTupleType',
+    //   fields: {
+    //     type: 'String!',
+    //     elements: typeArrayField
+    //   }
+    // }),
     schema.buildObjectType({
-      name: 'TypedocArrayType',
+      name: 'TypedocType',
+      extensions: ['donInfer'],
       fields: {
         type: 'String!',
-        elementType: typeField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocUnionOrIntersectionType',
-      fields: {
-        type: 'String!',
-        types: typeArrayField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocIntrinsicType',
-      fields: {
-        type: 'String!',
-        name: 'String!'
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocIntrinsicType',
-      fields: {
-        type: 'String!',
-        name: 'String!'
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocReferenceType',
-      fields: {
-        type: 'String!',
-        name: 'String!',
-        typeArguments: typeArrayField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocReflectionType',
-      fields: {
-        type: 'String!',
+        name: 'String',
+        value: 'String',
+        operator: 'String',
+        target: nullableTypeField,
+        constraint: nullableTypeField,
+        elementType: nullableTypeField,
+        types: nullableTypeArrayField,
+        elements: nullableTypeArrayField,
+        typeArguments: nullableTypeArrayField,
+        // We also turn bare doc nodes here into typedocs if we can
         declaration: {
           type: 'TypedocNode',
-          resolve: ({ declaration }, _, context) => {
-            if (!declaration) return null;
+          resolve: ({ declaration, type, ...src }, _, context) => {
+            if (!declaration && !src.id) return null;
+
+            const id = type === 'reference' && src.id ? src.id : declaration.id;
 
             const node = context.nodeModel.getNodeById(
               {
-                id: createNodeId(`TypedocNode:${declaration.id}`),
+                id: createNodeId(`TypedocNode:${id}`),
                 type: 'TypedocNode'
               },
               { path: context.path }
@@ -224,79 +271,57 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
         }
       }
     }),
-    schema.buildObjectType({
-      name: 'TypedocStringLiteralType',
-      fields: {
-        type: 'String!',
-        value: 'String!'
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocTupleType',
-      fields: {
-        type: 'String!',
-        elements: typeArrayField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocTypeOperatorType',
-      fields: {
-        type: 'String!',
-        operator: 'String!',
-        target: typeField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocTypeParameterType',
-      fields: {
-        type: 'String!',
-        name: 'String!',
-        constraint: typeField
-      }
-    }),
-    schema.buildObjectType({
-      name: 'TypedocUnknownType',
-      fields: {
-        type: 'String!',
-        name: 'String!'
-      }
-    }),
-    schema.buildUnionType({
-      name: 'TypedocType',
-      types: [
-        'TypedocArrayType',
-        'TypedocUnionOrIntersectionType',
-        'TypedocIntrinsicType',
-        'TypedocReferenceType',
-        'TypedocReflectionType',
-        'TypedocStringLiteralType',
-        'TypedocTupleType',
-        'TypedocTypeOperatorType',
-        'TypedocTypeParameterType',
-        'TypedocUnknownType',
-        'TypedocNode'
-      ],
-      resolveType(src) {
-        switch (src.type) {
-          case 'reference': {
-            if (src.id) return 'TypedocNode';
-            return 'TypedocReferenceType';
-          }
-          case 'intersection':
-          case 'union':
-            return 'TypedocUnionOrIntersectionType';
-          default:
-            console.log(
-              'TYPE:  ',
-              `Typedoc${upperFirst(src.type)}Type`,
-              '\n\n',
-              src,
-              '\n\n'
-            );
-            return src.internal?.type ?? `Typedoc${upperFirst(src.type)}Type`;
-        }
-      }
-    }),
+    // schema.buildObjectType({
+    //   name: 'TypedocTypeParameterType',
+    //   fields: {
+    //     type: 'String!',
+    //     name: 'String!',
+    //     constraint: typeField
+    //   }
+    // }),
+    // schema.buildObjectType({
+    //   name: 'TypedocUnknownType',
+    //   fields: {
+    //     type: 'String!',
+    //     name: 'String!'
+    //   }
+    // }),
+    // schema.buildUnionType({
+    //   name: 'TypedocType',
+    //   types: [
+    //     'TypedocArrayType',
+    //     'TypedocUnionOrIntersectionType',
+    //     'TypedocIntrinsicType',
+    //     'TypedocReferenceType',
+    //     'TypedocReflectionType',
+    //     'TypedocStringLiteralType',
+    //     'TypedocTupleType',
+    //     'TypedocTypeOperatorType',
+    //     'TypedocTypeParameterType',
+    //     'TypedocUnknownType',
+    //     'TypedocNode'
+    //   ],
+    //   resolveType(src) {
+    //     switch (src.type) {
+    //       case 'reference': {
+    //         if (src.id) return 'TypedocNode';
+    //         return 'TypedocReferenceType';
+    //       }
+    //       case 'intersection':
+    //       case 'union':
+    //         return 'TypedocUnionOrIntersectionType';
+    //       default:
+    //         console.log(
+    //           'TYPE:  ',
+    //           `Typedoc${upperFirst(src.type)}Type`,
+    //           '\n\n',
+    //           src,
+    //           '\n\n'
+    //         );
+    //         return src.internal?.type ?? `Typedoc${upperFirst(src.type)}Type`;
+    //     }
+    //   }
+    // }),
     schema.buildObjectType({
       name: 'TypedocNode',
       interfaces: ['Node'],
@@ -347,16 +372,16 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
   ]);
 }
 
-function canParse(node) {
-  return (
-    node &&
-    // TypeScript doesn't really have a mime type and .ts files are a media file :/
-    (node.internal.mediaType === `application/typescript` ||
-      node.internal.mediaType === `text/tsx` ||
-      node.extension === `tsx` ||
-      node.extension === `ts`)
-  );
-}
+// function canParse(node) {
+//   return (
+//     node &&
+//     // TypeScript doesn't really have a mime type and .ts files are a media file :/
+//     (node.internal.mediaType === `application/typescript` ||
+//       node.internal.mediaType === `text/tsx` ||
+//       node.extension === `tsx` ||
+//       node.extension === `ts`)
+//   );
+// }
 
 // export function onCreateNode({
 //   node,
