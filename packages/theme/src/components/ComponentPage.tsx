@@ -8,7 +8,7 @@ import PageLayout from './PageLayout';
 import PropsTable from './PropsTable';
 
 function ComponentPage({ data }) {
-  const { metadata, importName, name, example } = data.docpocalypse;
+  const { description, importName, name, example } = data.docpocalypse;
 
   return (
     <PageLayout>
@@ -32,14 +32,12 @@ function ComponentPage({ data }) {
         )}
       </div>
 
-      {metadata.description && metadata.description.childMdx && (
+      {description?.mdx && (
         <div>
-          <MDXRenderer scope={{ React }}>
-            {metadata.description.childMdx.body}
-          </MDXRenderer>
+          <MDXRenderer scope={{ React }}>{description.mdx.body}</MDXRenderer>
         </div>
       )}
-      <PropsTable metadata={metadata} />
+      <PropsTable metadata={data.docpocalypse} />
     </PageLayout>
   );
 }

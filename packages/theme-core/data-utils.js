@@ -19,25 +19,35 @@ function link(resolver = defaultLinkResolver) {
   };
 }
 
-function getNodeById(src, path, ctx) {
-  return ctx.nodeModel.getNodeById({
-    id: get(src, path)
-  });
+function getNodeById(src, idPath, { nodeModel, path }) {
+  const ids = get(src, idPath);
+  if (!ids) return null;
+
+  return Array.isArray(ids)
+    ? nodeModel.getNodesByIds({ ids }, { path })
+    : nodeModel.getNodeById({ id: ids }, { path });
 }
+
 function passThroughResolver({ type, fieldName, parentId = 'parent' }) {
-  return async (src, args, ctx, info) => {
-    const node = getNodeById(src, parentId, ctx);
+  return (src, args, ctx, info) => {
+    async function resolve(node) {
+      fieldName = fieldName || info.fieldName;
 
-    fieldName = fieldName || info.fieldName;
+      const resolver = info.schema.getType(type).getFields()[fieldName].resolve;
+      const result = await resolver(node, args, ctx, {
+        ...info,
+        fieldName
+      });
+      return result == null ? null : result;
+    }
 
-    const resolver = info.schema.getType(type).getFields()[fieldName].resolve;
-    // console.log('HI', node && !node[fieldName], fieldName, resolver);
+    const nodes = getNodeById(src, parentId, ctx);
 
-    const result = await resolver(node, args, ctx, {
-      ...info,
-      fieldName
-    });
-    return result || [];
+    if (nodes === null) return null;
+
+    return Array.isArray(nodes)
+      ? Promise.all(nodes.map(resolve))
+      : resolve(nodes);
   };
 }
 
@@ -56,17 +66,31 @@ function isUUID(str) {
 
 function resolveNodePath(obj, path, ctx) {
   const parts = path.split('.');
+
+  const resolveId = id => {
+    if (typeof id === 'string' && isUUID(id)) {
+      return ctx.nodeModel.getNodeById({ id });
+    }
+    return id;
+  };
+
   while (parts.length) {
     const part = parts.shift();
-    obj = obj[part];
-    if (typeof obj === 'string' && isUUID(obj)) {
-      obj = ctx.nodeModel.getNodeById({ id: obj });
-    }
+
+    obj = Array.isArray(obj)
+      ? obj.flatMap(o => resolveId(o)[part])
+      : resolveId(obj)[part];
   }
 
   return obj;
 }
 
+/**
+ * Proxies all the fields of the current type to another node's type. Helpful
+ * for wrapping and exposing a plugin's types without relying on them being there;
+ *
+ * @param {*} idPath path to id of original node
+ */
 function proxyToNode(idPath) {
   return async (src, _, ctx, info) => {
     if (!get(src, idPath)) return null;

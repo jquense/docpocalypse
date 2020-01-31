@@ -5,37 +5,19 @@ import React, { useMemo } from 'react';
 import SideNavigation from '@docpocalypse/gatsby-theme/src/components/SideNavigation';
 
 function AppSideNavigation(props) {
-  const { components, hooks } = useStaticQuery(graphql`
+  const { allDocpocalypse } = useStaticQuery(graphql`
     fragment SideNav_docs on Docpocalypse {
       type
       name
       packageName
-      metadata {
-        tags {
-          name
-        }
-      }
-      documentation {
-        tags {
-          name
-        }
+      tags {
+        name
       }
     }
 
     query {
-      components: allDocpocalypse(
-        filter: {
-          metadata: { tags: { elemMatch: { name: { eq: "public" } } } }
-        }
-      ) {
-        nodes {
-          ...SideNav_docs
-        }
-      }
-      hooks: allDocpocalypse(
-        filter: {
-          documentation: { tags: { elemMatch: { name: { eq: "public" } } } }
-        }
+      allDocpocalypse(
+        filter: { tags: { elemMatch: { name: { eq: "public" } } } }
       ) {
         nodes {
           ...SideNav_docs
@@ -46,13 +28,13 @@ function AppSideNavigation(props) {
 
   const groups = useMemo(
     () =>
-      groupBy(sortBy([...components.nodes, ...hooks.nodes], 'name'), d =>
+      groupBy(sortBy(allDocpocalypse.nodes, 'name'), d =>
         d.packageName.replace(/@.+\//, '')
       ),
-    [components, hooks]
+    [allDocpocalypse]
   );
   const { 'gatsby-theme': main, ...rest } = groups;
-
+  console.log(groups);
   return (
     <SideNavigation.Panel {...props}>
       <nav>

@@ -26,7 +26,7 @@ export default function Example({ example, name }: Props) {
 }
 
 export const fragment = graphql`
-  fragment Example_example on Mdx {
+  fragment Example_example on DocpocalypseExample {
     body
   }
 `;

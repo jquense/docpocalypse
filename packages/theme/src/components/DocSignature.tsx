@@ -35,6 +35,9 @@ const typeExpression = (type): string => {
   if (type.type === `NameExpression`) {
     return type.name;
   }
+  if (type.type === `VoidLiteral`) {
+    return 'void';
+  }
   if (type.type === `NullLiteral`) {
     return 'null';
   }

@@ -48,9 +48,11 @@ interface Props {
   showSignature?: boolean;
   showSignatureNextToTitle?: boolean;
   ignoreParams?: string[];
+  className?: string;
 }
 
 const DocBlock = ({
+  className,
   definition,
   level = 2,
   title = null,
@@ -70,8 +72,8 @@ const DocBlock = ({
   const nextLevel: HeadingLevel = (level + 1) as any;
 
   return (
-    <div>
-      <Heading level={level} css={dcss`font-size: inherit; margin: 0;`}>
+    <div className={className}>
+      <Heading level={level}>
         <div
           css={dcss`
             @apply inline-block mr-3;

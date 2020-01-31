@@ -103,14 +103,14 @@ export const metadataFragment = graphql`
     }
   }
 
-  fragment PropsTable_metadata on ComponentMetadata {
+  fragment PropsTable_metadata on Docpocalypse {
     composes {
       path
       metadata {
         displayName
       }
     }
-    displayName
+    name
     description {
       ...PropsTable_description
     }

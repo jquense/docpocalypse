@@ -13,10 +13,11 @@ export const pageQuery = graphql`
     docpocalypse(id: { eq: $nodeId }) {
       id
       name
+      importName
       example {
         ...Example_example
       }
-      documentation {
+      signatures {
         ...DocumentationFragment
       }
     }

@@ -15,13 +15,10 @@ export const pageQuery = graphql`
       example {
         ...Example_example
       }
-      metadata {
-        id
-        description {
-          ...PropsTable_description
-        }
-        ...PropsTable_metadata
+      description {
+        ...PropsTable_description
       }
+      ...PropsTable_metadata
     }
   }
 `;

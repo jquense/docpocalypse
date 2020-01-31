@@ -1,19 +1,39 @@
 const findPkg = require('find-pkg');
 const path = require('path');
-const DataUtils = require('./data-utils');
+const {
+  resolveNodePath,
+  getNodeById,
+  passThroughResolver
+} = require('./data-utils');
+
+const mdxType = (type, fieldName) => ({
+  type,
+  resolve: passThroughResolver({
+    fieldName,
+    type: 'Mdx'
+  })
+});
 
 const metadataType = (type, fieldName) => ({
   type,
-  resolve: DataUtils.passThroughResolver({
+  resolve: passThroughResolver({
     fieldName,
     type: 'ComponentMetadata',
     parentId: 'fields.metadataId'
   })
 });
+// const docJsType = (type, fieldName) => ({
+//   type,
+//   resolve: passThroughResolver({
+//     fieldName,
+//     type: 'DocumentationJs',
+//     parentId: 'fields.docJsIds'
+//   })
+// });
 
-const findByParent = (type, parentId, ctx) => {
-  return ctx.nodeModel.getAllNodes({ type }).find(nn => nn.parent === parentId);
-};
+// const findByParent = (type, parentId, ctx) => {
+//   return ctx.nodeModel.getAllNodes({ type }).find(nn => nn.parent === parentId);
+// };
 
 // const { Kind } = require('gatsby-plugin-typedoc/types');
 const parseCodeBlocks = require('./parse-code-blocks');
@@ -25,54 +45,61 @@ const isHook = node =>
   node.name &&
   node.name.match(/^use[A-Z]/);
 
-exports.createResolvers = ({ createResolvers }) => {
-  createResolvers({
-    Mdx: {
-      codeBlockImports: {
-        type: ['CodeBlockImport'],
-        resolve: parseCodeBlocks
-      }
-    }
-  });
+// exports.createResolvers = ({ createResolvers }) => {
+//   createResolvers({
+//     Mdx: {
+//       codeBlockImports: {
+//         type: ['CodeBlockImport'],
+//         resolve: parseCodeBlocks
+//       }
+//     }
+//   });
+// };
+
+// function resolveDescriptionFromMetadata(src, ctx) {
+//   const descNode = resolveNodePath(src, 'fields.metadataId.description', ctx);
+
+//   if (!descNode) return null;
+
+//   return {
+//     text: descNode.text,
+//     mdx: descNode.fields.mdx,
+//     markdownRemark: descNode.fields.markdownRemark
+//   };
+// }
+
+// function resolveDescriptionFromDocJs(docId, ctx) {
+//   const descNode = findByParent(
+//     'DocumentationJSComponentDescription',
+//     docId,
+//     ctx
+//   );
+
+//   if (!descNode) return null;
+
+//   const nodes = ctx.nodeModel.getNodesByIds({
+//     ids: descNode.children
+//   });
+//   const mdx = nodes.find(d => d.internal.type === 'Mdx');
+//   const md = nodes.find(d => d.internal.type === 'MarkdownRemark');
+
+//   return {
+//     text: descNode.internal.content,
+//     mdx: mdx && mdx.id,
+//     markdownRemark: md && md.id
+//   };
+// }
+
+const interfaceFields = {
+  type: 'String!',
+  name: 'String!',
+  fileName: 'String!',
+  absolutePath: 'String!',
+  rootDir: 'String',
+  package: 'JSON',
+  packageName: 'String',
+  importName: 'String'
 };
-
-function resolveDescriptionFromMetadata(src, ctx) {
-  const descNode = DataUtils.resolveNodePath(
-    src,
-    'fields.metadataId.description',
-    ctx
-  );
-  console.log('HI', descNode);
-  if (!descNode) return null;
-
-  return {
-    text: descNode.text,
-    mdx: descNode.fields.mdx,
-    markdownRemark: descNode.fields.markdownRemark
-  };
-}
-
-function resolveDescriptionFromDocJs(docId, ctx) {
-  const descNode = findByParent(
-    'DocumentationJSComponentDescription',
-    docId,
-    ctx
-  );
-
-  if (!descNode) return null;
-
-  const nodes = ctx.nodeModel.getNodesByIds({
-    ids: descNode.children
-  });
-  const mdx = nodes.find(d => d.internal.type === 'Mdx');
-  const md = nodes.find(d => d.internal.type === 'MarkdownRemark');
-
-  return {
-    text: descNode.internal.content,
-    mdx: mdx && mdx.id,
-    markdownRemark: md && md.id
-  };
-}
 
 exports.createSchemaCustomization = ({ actions, schema }) => {
   const { createTypes } = actions;
@@ -100,121 +127,96 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
         markdownRemark: MarkdownRemark @link
         mdx: Mdx @link
       }
+
+      # interface DocpocalypseEntity {
+      #   type: String!
+      #   name: String!
+      #   fileName: String!
+      #   absolutePath: String!
+      #   rootDir: String
+      #   package: JSON
+      #   packageName: String
+      #   importName: String
+      #   tags: [DocpocalypseTag]!
+      # }
     `,
+    // schema.buildObjectType({
+    //   name: 'DocpocalypseHookSignature',
+    //   extensions: ['dontInfer'],
+    //   fields: {}
+    // }),
     schema.buildObjectType({
-      name: 'Docpocalypse2',
+      name: 'DocpocalypseExample',
       interfaces: ['Node'],
       extensions: ['dontInfer'],
       fields: {
-        type: 'String!',
-        name: 'String!',
-        fileName: 'String!',
         absolutePath: 'String!',
-        rootDir: 'String',
-        package: 'JSON',
-        packageName: 'String',
-        importName: 'String',
-        description: {
-          type: 'DocpocalypseDescription',
-          resolve: (src, _, ctx) => {
-            const { metadataId, documentationJsId } = src.fields;
-            if (metadataId) return resolveDescriptionFromMetadata(src, ctx);
-            if (documentationJsId)
-              return resolveDescriptionFromDocJs(documentationJsId, ctx);
-            return null;
-          }
-        },
-        props: metadataType('[ComponentProp]'),
-        composes: metadataType('[ComponentComposes]'),
-        tags: {
-          type: '[DocpocalypseTag]!',
-          resolve: (src, _, ctx) => {
-            if (src.fields.metadataId) {
-              const node = DataUtils.getNodeById(src, 'fields.metadataId', ctx);
-              return !node ? [] : node.tags;
-            }
-
-            if (src.fields.documentationJsId) {
-              const node = DataUtils.getNodeById(
-                src,
-                'fields.documentationJsId',
-                ctx
-              );
-
-              return !node
-                ? []
-                : node.tags.map(({ title, description }) => ({
-                    name: title,
-                    value: description
-                  }));
-            }
-            return [];
-          }
+        headings: mdxType('[MdxHeadingMdx]'),
+        frontmatter: mdxType('MdxFrontmatter'),
+        body: mdxType('String'),
+        codeBlockImports: {
+          type: ['CodeBlockImport'],
+          resolve: (src, _, ctx) =>
+            parseCodeBlocks(getNodeById(src, 'parent', ctx))
         }
       }
     }),
     schema.buildObjectType({
       name: 'Docpocalypse',
       interfaces: ['Node'],
-      // extensions: ['dontInfer'],
+      extensions: ['dontInfer'],
       fields: {
-        type: 'String!',
-        name: 'String!',
-        fileName: 'String!',
-        absolutePath: 'String!',
-        rootDir: 'String',
-        package: 'JSON',
-        packageName: 'String',
-        importName: 'String',
-
-        metadata: {
-          type: 'ComponentMetadata',
-          resolve: (source, _, context) =>
-            context.nodeModel.getNodeById({
-              type: 'ComponentMetadata',
-              id: source.metadata___NODE
-            })
-        },
-        // typedoc: {
-        //   type: 'TypedocNode',
-        //   resolve: (source, _, context) =>
-        //     context.nodeModel.getNodeById({
-        //       type: 'TypedocNode',
-        //       id: source.typedoc___NODE
-        //     })
-        // },
-        documentation: {
-          type: 'DocumentationJs',
-          resolve: (source, _, context) =>
-            context.nodeModel.getNodeById({
-              type: 'DocumentationJs',
-              id: source.documentation___NODE
-            })
-        },
+        ...interfaceFields,
         example: {
-          type: 'Mdx',
+          type: 'DocpocalypseExample',
           resolve: (source, args, context) => {
-            // console.log(source);
             return context.nodeModel
               .getAllNodes(
-                { type: 'Mdx' },
-                { path: context.path, connectionType: 'Mdx ' }
+                { type: 'DocpocalypseExample' },
+                { path: context.path, connectionType: 'DocpocalypseExample' }
               )
-              .find(example => {
-                const exampleFile =
-                  example.parent &&
-                  context.nodeModel.getNodeById({
-                    type: 'File',
-                    id: example.parent
-                  });
+              .find(
+                example =>
+                  example.fileName === source.name ||
+                  example.fileName === source.fileName
+              );
+          }
+        },
+        description: metadataType('ComponentDescription'),
+        // description: {
+        //   type: 'DocpocalypseDescription',
+        //   resolve: (src, _, ctx) => {
+        //     const { metadataId } = src.fields;
+        //     return metadataId ? resolveDescriptionFromMetadata(src, ctx) : null;
+        //   }
+        // },
+        props: metadataType('[ComponentProp]'),
+        composes: metadataType('[ComponentComposes]'),
+        signatures: {
+          type: '[DocumentationJs]!',
+          resolve: (src, _, ctx) => {
+            return getNodeById(src, 'fields.docJsIds', ctx) || [];
+          }
+        },
+        tags: {
+          type: '[DocpocalypseTag]!',
+          resolve: (src, _, ctx) => {
+            switch (src.type) {
+              case 'component': {
+                const node = getNodeById(src, 'fields.metadataId', ctx);
+                return !node ? [] : node.tags;
+              }
+              case 'hook': {
+                const tags = resolveNodePath(src, 'fields.docJsIds.tags', ctx);
 
-                return (
-                  exampleFile &&
-                  exampleFile.sourceInstanceName === '@docs::examples' &&
-                  (exampleFile.name === source.name ||
-                    exampleFile.name === source.fileName)
-                );
-              });
+                return (tags || []).map(({ title, description }) => ({
+                  name: title,
+                  value: description
+                }));
+              }
+              default:
+                return [];
+            }
           }
         }
       }
@@ -222,9 +224,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
   ]);
 };
 
-function createNodeFromMetadata(srcFile, api, pluginOptions) {}
-
-exports.onCreateNode = async function onCreateNode(
+async function createDocpocalypseNode(
   { node, getNode, getNodesByType, actions, createNodeId, createContentDigest },
   pluginOptions
 ) {
@@ -232,70 +232,124 @@ exports.onCreateNode = async function onCreateNode(
   const { createNode, createNodeField } = actions;
   const isComp = isComponent(node);
 
-  if (!isHook(node) && !isComp) return;
-
+  const type = isComp ? 'component' : 'hook';
   const srcFile = getNode(node.parent);
 
   if (!srcFile || !srcFile.sourceInstanceName.match(/^@docs::source/)) {
     return;
   }
 
-  // function createHookNode(docNode) {
-  //   return Object.assign(docNode, {
-  //     tags: node.tags.map(({ title, description }) => ({
-  //       name: title,
-  //       value: description
-  //     }))
-  //   });
-  // }
+  function createBaseNode() {
+    const displayName = isComp ? node.displayName : node.name;
+    const name = displayName || srcFile.name;
+    const nodeType = 'Docpocalypse';
 
-  let pkgJson = await findPkg(srcFile.dir);
-  const rootDir = pkgJson && path.dirname(pkgJson);
+    let currentNode = getNodesByType(nodeType).find(
+      n => n.name === name && n.absolutePath === srcFile.absolutePath
+    );
 
-  pkgJson = pkgJson && require(pkgJson);
+    if (!currentNode) {
+      let pkgJson = findPkg.sync(srcFile.dir);
 
-  const displayName = isComp ? node.displayName : node.name;
+      const rootDir = pkgJson && path.dirname(pkgJson);
 
-  const name = displayName || srcFile.name;
+      pkgJson = pkgJson && require(pkgJson);
 
-  let currentNode = getNodesByType('Docpocalypse2').find(
-    n => n.name === name && n.absolutePath === srcFile.absolutePath
-  );
+      currentNode = {
+        type,
+        name,
+        rootDir,
+        parent: srcFile.id,
+        fileName: srcFile.name,
+        absolutePath: srcFile.absolutePath,
+        id: createNodeId(`${srcFile.absolutePath}-${name}`),
+        children: [node.id, srcFile.id],
+        package: pkgJson,
+        packageName: pkgJson && pkgJson.name,
+        file___NODE: srcFile.id,
+        internal: {
+          contentDigest: createContentDigest(`${node.id}-${name}`),
+          type: nodeType
+        }
+      };
 
-  console.log('current!', currentNode);
-  if (!currentNode) {
-    currentNode = {
-      name,
-      rootDir,
-      parent: srcFile.id,
-      fileName: srcFile.name,
-      absolutePath: srcFile.absolutePath,
-      type: isComp ? 'component' : 'hook',
-      id: createNodeId(`${node.id}-${name}`),
-      children: [node.id, srcFile.id],
-      package: pkgJson,
-      packageName: pkgJson && pkgJson.name,
-      file___NODE: srcFile.id,
-      internal: {
-        contentDigest: createContentDigest(`${node.id}-${name}`),
-        type: `Docpocalypse2`
+      currentNode.importName = getImportName
+        ? getImportName(currentNode, srcFile)
+        : '';
+
+      if (ignore && ignore(currentNode)) {
+        return null;
       }
-    };
 
-    currentNode.importName = getImportName
-      ? getImportName(currentNode, srcFile)
-      : '';
-
-    if (ignore && ignore(currentNode)) {
-      return;
+      createNode(currentNode);
     }
 
-    createNode(currentNode);
+    return currentNode;
+  }
+
+  function addComponentFields(docNode) {
     createNodeField({
-      node: currentNode,
-      name: isComp ? 'metadataId' : 'documentationJsId',
+      node: docNode,
+      name: 'metadataId',
       value: node.id
     });
-  } else {
+  }
+
+  function addHookFields(docNode) {
+    const others = (docNode.fields && docNode.fields.docJsIds) || [];
+    createNodeField({
+      node: docNode,
+      name: 'docJsIds',
+      value: [...others, node.id]
+    });
+  }
+
+  const baseNode = await createBaseNode();
+
+  if (!baseNode) return;
+  switch (baseNode.type) {
+    case 'component':
+      addComponentFields(baseNode);
+      return;
+    case 'hook':
+      addHookFields(baseNode);
+      return;
+    default:
+      throw new Error('this is weird');
+  }
+}
+
+function createExampleNode({ node, actions, getNode, createNodeId }) {
+  const { createNode } = actions;
+  const srcFile = getNode(node.parent);
+
+  createNode({
+    parent: node.id,
+    id: createNodeId(`${srcFile.absolutePath}-example`),
+    fileName: srcFile.name,
+    absolutePath: srcFile.absolutePath,
+    internal: {
+      type: 'DocpocalypseExample',
+      contentDigest: node.internal.contentDigest
+    }
+  });
+}
+
+exports.onCreateNode = async function onCreateNode(api, pluginOptions) {
+  const { node, getNode } = api;
+
+  if (node.internal.type === 'Mdx') {
+    const parentFile = node.parent && getNode(node.parent);
+
+    if (parentFile && parentFile.sourceInstanceName === '@docs::examples') {
+      createExampleNode(api, pluginOptions);
+    }
+
+    return;
+  }
+
+  if (isHook(node) || isComponent(node)) {
+    await createDocpocalypseNode(api, pluginOptions);
+    // return;
   }
 };
