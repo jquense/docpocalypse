@@ -49,12 +49,13 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-astroturf',
       options: { enableCssProp: true }
+    },
+    {
+      resolve: 'gatsby-plugin-typedoc',
+      options: {
+        debugRaw: true,
+        projects: [path.resolve(__dirname, '../packages/code-live')]
+      }
     }
-    // {
-    //   resolve: 'gatsby-plugin-typedoc',
-    //   options: {
-    //     project: path.resolve(__dirname, '../packages/code-live')
-    //   }
-    // }
   ]
 };

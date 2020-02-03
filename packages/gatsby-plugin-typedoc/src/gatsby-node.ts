@@ -1,100 +1,45 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import fs from 'fs';
-import path from 'path';
-import { getNamedType, getNullableType } from 'gatsby/graphql';
-import { Application } from 'typedoc';
+import { dirname, join } from 'path';
+import { CreateSchemaCustomizationArgs } from 'gatsby';
+import {
+  Application,
+  JSONOutput,
+  ProjectReflection,
+  TSConfigReader
+} from 'typedoc';
 import { findConfigFile, readConfigFile, sys } from 'typescript';
-import * as T from './types';
+import { GatsbyResolverContext } from '@docpocalypse/gatsby-data-utils';
+import resolveNodes, { DocNode } from './lib/resolveNode';
+import * as T from './lib/types';
+
+// class MySourceReferenceContainerSerializer extends SourceReferenceContainerSerializer {
+//   toObject(arg: any, obj: any) {
+//     console.log('HERE', arg.file, obj);
+//     return obj;
+//   }
+// }
 
 interface GatsbyNode {
   id: string;
 }
-
-type DocNode =
-  | T.SignatureReflection
-  | T.ParameterReflection
-  | T.DeclarationReflection
-  | T.TypeParameterReflection
-  | T.ProjectReflection
-  | T.ContainerReflection;
 
 interface PluginOptions {
   projects: string[];
   [key: string]: any;
 }
 
-const resolveWithType = async (obj, args, ctx, info) => {
-  const fieldValue = await ctx.defaultFieldResolver(obj, args, ctx, info);
-  const type = getNamedType(getNullableType(info.returnType));
-  return [fieldValue, type];
-};
-
-const defaultLinkResolver = <T>([fieldValue, type]: [T | T[], string], ctx) =>
-  Array.isArray(fieldValue)
-    ? ctx.nodeModel.getNodesByIds({ ids: fieldValue, type }, { path: ctx.path })
-    : ctx.nodeModel.getNodeById({ id: fieldValue, type }, { path: ctx.path });
-
-const link = (resolver: Function = defaultLinkResolver) => async (
-  obj,
-  args,
-  context,
-  info
-) => {
-  return resolver(await resolveWithType(obj, args, context, info), context);
-};
-
-export function createSchemaCustomization({ actions, createNodeId, schema }) {
-  const { createTypes } = actions;
-
-  const typeResolver = ([value, type], context) => {
-    if (!value) return null;
-
-    if (Array.isArray(value)) {
-      return Promise.all(value?.map(v => typeResolver([v, type], context)));
-    }
-
-    if (value.type === 'reference') {
-      const id = value.id ?? value.declaration?.id;
-
-      if (id) {
-        const node = context.nodeModel.getNodeById(
-          {
-            id: createNodeId(`TypedocNode:${id}`),
-            type: 'TypedocNode'
-          },
-          { path: context.path }
-        );
-        // console.log(type.type, node);
-        return node;
-      }
-    }
-
-    return value;
-  };
-
-  // const typeField = {
-  //   type: 'TypedocType!',
-  //   resolve: link(typeResolver)
-  // };
-  const nullableTypeField = {
-    type: 'TypedocType',
-    resolve: link(typeResolver)
-  };
-  // const typeArrayField = {
-  //   type: '[TypedocType!]!',
-  //   resolve: link(typeResolver)
-  // };
-  const nullableTypeArrayField = {
-    type: '[TypedocType!]',
-    resolve: link(typeResolver)
-  };
-
-  createTypes([
+export function createSchemaCustomization({
+  actions,
+  schema
+}: CreateSchemaCustomizationArgs) {
+  actions.createTypes([
     schema.buildEnumType({
       name: 'TypedocNodeKind',
       extensions: ['dontInfer'],
       values: {
+        CircularReference: { value: -1 },
         Global: { value: 0 },
         ExternalModule: { value: 1 },
         Module: { value: 2 },
@@ -151,412 +96,145 @@ export function createSchemaCustomization({ actions, createNodeId, schema }) {
         character: Int
       }
 
+      type TypedocTag @dontInfer {
+        tag: String
+        text: String
+      }
+
+      type TypedocComment @dontInfer {
+        text: String
+        shortText: String
+        tags: [TypedocTag]
+      }
+
       type TypedocGroup @dontInfer {
         title: String!
         kind: TypedocNodeKind!
         children: [TypedocNode]! @link
       }
 
-      # type TypedocNode implements Node @dontInfer {
-      #   kind: TypedocNodeKind!
-      #   kindString: String
-      # }
-
       type TypedocNodeRaw implements Node @dontInfer {
         json: JSON!
       }
-    `,
-    // schema.buildObjectType({
-    //   name: 'TypedocArrayType',
-    //   fields: {
-    //     type: 'String!',
-    //     elementType: typeField
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocUnionOrIntersectionType',
-    //   fields: {
-    //     type: 'String!',
-    //     types: typeArrayField
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocIntrinsicType',
-    //   fields: {
-    //     type: 'String!',
-    //     name: 'String!'
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocIntrinsicType',
-    //   fields: {
-    //     type: 'String!',
-    //     name: 'String!'
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocReferenceType',
-    //   fields: {
-    //     type: 'String!',
-    //     name: 'String!',
-    //     typeArguments: typeArrayField
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocReflectionType',
-    //   fields: {
-    //     type: 'String!',
-    //     declaration: {
-    //       type: 'TypedocNode',
-    //       resolve: ({ declaration }, _, context) => {
-    //         if (!declaration) return null;
 
-    //         const node = context.nodeModel.getNodeById(
-    //           {
-    //             id: createNodeId(`TypedocNode:${declaration.id}`),
-    //             type: 'TypedocNode'
-    //           },
-    //           { path: context.path }
-    //         );
-    //         return node;
-    //       }
-    //     }
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocStringLiteralType',
-    //   fields: {
-    //     type: 'String!',
-    //     value: 'String!'
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocTupleType',
-    //   fields: {
-    //     type: 'String!',
-    //     elements: typeArrayField
-    //   }
-    // }),
-    schema.buildObjectType({
-      name: 'TypedocType',
-      extensions: ['donInfer'],
-      fields: {
-        type: 'String!',
-        name: 'String',
-        value: 'String',
-        operator: 'String',
-        target: nullableTypeField,
-        constraint: nullableTypeField,
-        elementType: nullableTypeField,
-        types: nullableTypeArrayField,
-        elements: nullableTypeArrayField,
-        typeArguments: nullableTypeArrayField,
-        // We also turn bare doc nodes here into typedocs if we can
-        declaration: {
-          type: 'TypedocNode',
-          resolve: ({ declaration, type, ...src }, _, context) => {
-            if (!declaration && !src.id) return null;
+      type TypedocType @dontInfer {
+        type: String!
+        name: String
+        value: String
+        operator: String
+        target: TypedocType
+        constraint: TypedocType
+        elementType: TypedocType
 
-            const id = type === 'reference' && src.id ? src.id : declaration.id;
+        targetType: TypedocType
+        checkType: TypedocType
+        extendsType: TypedocType
+        trueType: TypedocType
+        falseType: TypedocType
 
-            const node = context.nodeModel.getNodeById(
-              {
-                id: createNodeId(`TypedocNode:${id}`),
-                type: 'TypedocNode'
-              },
-              { path: context.path }
-            );
-            return node;
-          }
-        }
+        types: [TypedocType]
+        elements: [TypedocType]
+        typeArguments: [TypedocType]
+
+        reference: TypedocNode @link
+        declaration: TypedocNode @link
+
+        sources: [TypedocSource!]!
+        groups: [TypedocGroup!]!
       }
-    }),
-    // schema.buildObjectType({
-    //   name: 'TypedocTypeParameterType',
-    //   fields: {
-    //     type: 'String!',
-    //     name: 'String!',
-    //     constraint: typeField
-    //   }
-    // }),
-    // schema.buildObjectType({
-    //   name: 'TypedocUnknownType',
-    //   fields: {
-    //     type: 'String!',
-    //     name: 'String!'
-    //   }
-    // }),
-    // schema.buildUnionType({
-    //   name: 'TypedocType',
-    //   types: [
-    //     'TypedocArrayType',
-    //     'TypedocUnionOrIntersectionType',
-    //     'TypedocIntrinsicType',
-    //     'TypedocReferenceType',
-    //     'TypedocReflectionType',
-    //     'TypedocStringLiteralType',
-    //     'TypedocTupleType',
-    //     'TypedocTypeOperatorType',
-    //     'TypedocTypeParameterType',
-    //     'TypedocUnknownType',
-    //     'TypedocNode'
-    //   ],
-    //   resolveType(src) {
-    //     switch (src.type) {
-    //       case 'reference': {
-    //         if (src.id) return 'TypedocNode';
-    //         return 'TypedocReferenceType';
-    //       }
-    //       case 'intersection':
-    //       case 'union':
-    //         return 'TypedocUnionOrIntersectionType';
-    //       default:
-    //         console.log(
-    //           'TYPE:  ',
-    //           `Typedoc${upperFirst(src.type)}Type`,
-    //           '\n\n',
-    //           src,
-    //           '\n\n'
-    //         );
-    //         return src.internal?.type ?? `Typedoc${upperFirst(src.type)}Type`;
-    //     }
-    //   }
-    // }),
-    schema.buildObjectType({
-      name: 'TypedocNode',
-      interfaces: ['Node'],
-      extensions: ['donInfer'],
-      fields: {
-        kind: 'TypedocNodeKind!',
-        kindString: 'String',
-        name: 'String!',
-        originalName: 'String',
-        flags: 'TypedocFlags!',
-        signatures: {
-          type: '[TypedocNode!]',
-          resolve: link()
-        },
-        typedocs: {
-          type: '[TypedocNode!]',
-          resolve: link()
-        },
-        childrenTypedocNode: {
-          type: '[TypedocNode!]',
-          resolve: link()
-        },
-        sources: '[TypedocSource!]!',
-        groups: '[TypedocGroup!]!',
 
-        type: nullableTypeField,
-        typeParameter: {
-          type: '[TypedocNode!]!',
-          resolve: link()
-        },
-        parameters: {
-          type: '[TypedocNode!]',
-          resolve: link()
-        },
+      type TypedocNode implements Node @dontInfer {
+        rootDir: String
+        file: File
+        tsconfig: String
 
-        defaultValue: 'String',
-        overwrites: nullableTypeField,
-        inheritedFrom: nullableTypeField,
+        kind: TypedocNodeKind!
+        kindString: String
+        name: String!
+        originalName: String
+        defaultValue: String
+        flags: TypedocFlags!
 
-        extendedTypes: nullableTypeArrayField,
-        extendedBy: nullableTypeArrayField,
+        signatures: [TypedocNode!] @link
+        typedocs: [TypedocNode!] @link
+        # childrenTypedocNode: [TypedocNode!] @link
 
-        implementationOf: nullableTypeField,
-        implementedBy: nullableTypeArrayField,
-        implementedTypes: nullableTypeArrayField
+        indexSignature: [TypedocNode!] @link
+        typeParameter: [TypedocNode!] @link
+        parameters: [TypedocNode!] @link
+
+        type: TypedocType
+        overwrites: TypedocType
+        inheritedFrom: TypedocType
+
+        extendedTypes: [TypedocType]
+        extendedBy: [TypedocType]
+
+        implementationOf: TypedocType
+        implementedBy: [TypedocType]
+        implementedTypes: [TypedocType]
+
+        sources: [TypedocSource!]!
+        groups: [TypedocGroup!]!
       }
-    })
-  ]);
+    `
+    // gatsby type is wrong
+  ] as any);
 }
 
-// function canParse(node) {
-//   return (
-//     node &&
-//     // TypeScript doesn't really have a mime type and .ts files are a media file :/
-//     (node.internal.mediaType === `application/typescript` ||
-//       node.internal.mediaType === `text/tsx` ||
-//       node.extension === `tsx` ||
-//       node.extension === `ts`)
-//   );
-// }
-
-// export function onCreateNode({
-//   node,
-//   actions,
-//   createNodeId,
-//   createContentDigest,
-//   reporter
-// }) {
-//   if (node.type === 'File') console.log(node);
-//   if (node.internal.type !== 'File' || !canParse(node)) {
-//     return;
-//   }
-
-//   const src = node.absolutePath;
-
-//   const tsconfig = findConfigFile(src, sys.fileExists);
-//   const { config, error } = readConfigFile(tsconfig!, sys.readFile);
-//   reporter.info(tsconfig!, src);
-
-//   if (error) {
-//     reporter.error(error);
-//     if (!config) return;
-//   }
-
-//   const app = new Application({
-//     // ...pluginOptions,
-//     mode: 'modules',
-//     // excludeNotExported: true,
-//     tsconfig
-//   });
-
-//   const project = app.convert([src]);
-
-//   if (!project) {
-//     reporter.error('There was a problem building your typedoc project');
-//     return;
-//   }
-
-//   const data = app.serializer.projectToObject(project);
-
-//   const nodeId = createNodeId(`typedoc-${data.name || 'default'}`);
-//   const nodeContent = JSON.stringify(data);
-
-//   const nodeData = {
-//     id: nodeId,
-//     json: data,
-//     internal: {
-//       type: 'TypedocNodeRaw',
-//       content: nodeContent,
-//       contentDigest: createContentDigest(data)
-//     }
-//   };
-
-//   actions.createNode(nodeData);
-// }
+exports.createResolvers = ({ createResolvers }) => {
+  createResolvers({
+    TypedocNode: {
+      file: {
+        type: 'File',
+        resolve: (src, _, ctx: GatsbyResolverContext) => {
+          if (!src.absolutePath) return null;
+          return ctx.nodeModel.runQuery({
+            query: {
+              filter: { absolutePath: { eq: src.absolutePath } }
+            },
+            firstOnly: true,
+            type: 'File'
+          });
+        }
+      },
+      resolved: {
+        type: 'JSON',
+        args: { exclude: '[String]', include: '[String]' },
+        resolve: (src, args, ctx, info) => {
+          return resolveNodes(src, args, ctx, info);
+        }
+      }
+    }
+  });
+};
 
 export function sourceNodes(
   { actions, createNodeId, createContentDigest, reporter },
   pluginOptions: PluginOptions
 ) {
   const { createNode } = actions;
+  const nodes = new Map<string, any>();
 
-  const createId = id => createNodeId(`TypedocNode:${id}`);
-
-  function processTypeDocRaw(generated) {
-    const nodeId = createNodeId(`typedoc-${generated.name || 'default'}`);
-    const nodeContent = JSON.stringify(generated);
-
-    const nodeData = {
-      id: nodeId,
-      json: generated,
-      internal: {
-        type: 'TypedocNodeRaw',
-        content: nodeContent,
-        contentDigest: createContentDigest(generated)
-      }
-    };
-
-    return nodeData;
-  }
-
-  const nodes = new Set();
-
-  function findDeclarations(type?: T.SomeType, parent?: string): string[] {
-    const find = (t?: T.SomeType) => findDeclarations(t, parent);
-    if (type) {
-      if ('declaration' in type && type.declaration) {
-        if (Array.isArray(type.declaration))
-          console.log('HERE', type.declaration);
-        return [
-          // pointer
-          !('name' in type.declaration)
-            ? createId(type.declaration.id)
-            : traverse(type.declaration, parent).id
-        ];
-      }
-      if ('elementType' in type) return find(type.elementType);
-      if ('constraint' in type) return find(type.constraint);
-      if ('target' in type) return find(type.target);
-
-      if ('types' in type) return type.types?.flatMap(find) || [];
-      if ('elements' in type) return type.elements?.flatMap(find) || [];
-      if ('typeArguments' in type)
-        return type.typeArguments?.flatMap(find) || [];
-    }
-    return [];
-  }
-
-  function traverse(docNode: DocNode, parent?: string): GatsbyNode {
-    const nodeId = createId(docNode.id);
-
-    if (nodes.has(docNode.id)) {
-      return { id: nodeId };
-    }
-
-    const dnode: any = docNode;
-    const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
-    const signatures = dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
-    const parameters = dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
-
-    const typeParameter = dnode.typeParameter
-      ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
-      : [];
-
-    [
-      'type',
-      'overwrites',
-      'inheritedFrom',
-      'extendedTypes',
-      'extendedBy',
-      'implementedTypes',
-      'implementedBy',
-      'implementationOf'
-    ].forEach(field => findDeclarations((docNode as any)[field], nodeId));
-
-    // if (!docNode.kindString) console.log(docNode, parent);
-
-    const node: any = {
-      ...docNode,
-      parent,
-      id: nodeId,
-      typedocs,
-      signatures,
-      parameters,
-      typeParameter,
-      // childrenTypedocNode: children,
-      sources: ('sources' in docNode && docNode.sources) || [],
-      groups:
-        ('groups' in docNode &&
-          docNode.groups?.map(group => ({
-            ...group,
-            children: group.children?.map(id => createId(id))
-          }))) ||
-        []
-    };
-
-    node.internal = {
-      type: 'TypedocNode',
-      contentDigest: createContentDigest(JSON.stringify(node))
-    };
-
-    node.children = node.typedocs
-      .concat(signatures, parameters, typeParameter)
-      .filter(Boolean);
-
-    nodes.add(docNode.id);
-    createNode(node);
-    return node;
-  }
-
-  const { projects, ...typedocOptions } = pluginOptions;
+  const { projects, debugRaw, ...typedocOptions } = pluginOptions;
 
   const roots = ([] as string[]).concat(projects);
 
-  roots.forEach(root => {
+  const getFile = (node: any, project: ProjectReflection) => {
+    // console.log(project.getReflectionById(node.id));
+
+    if (node.kind === T.Kind.Global) return node.rootDir;
+    if (node.kind === T.Kind.ExternalModule && node.originalName)
+      return node.originalName;
+
+    const reflection = project.getReflectionById(node.id);
+
+    return reflection?.sources?.[0]?.file?.fullFileName ?? null;
+  };
+
+  roots.forEach((root, idx) => {
+    const createId = (id: any) => createNodeId(`TypedocNode:${idx}-${id}`);
+
     const isFile = fs.statSync(root).isFile();
 
     const tsconfig = isFile ? root : findConfigFile(root, sys.fileExists);
@@ -578,15 +256,22 @@ export function sourceNodes(
       if (!config) return;
     }
 
-    const app = new Application({
+    const app = new Application();
+    app.options.addReader(new TSConfigReader());
+
+    app.bootstrap({
       ...typedocOptions,
       mode: 'modules',
       // excludeNotExported: true,
       tsconfig
     });
 
-    const rootDir = path.join(
-      path.dirname(tsconfig),
+    // app.serializer.addSerializer(
+    //   new MySourceReferenceContainerSerializer(app.serializer)
+    // );
+
+    const rootDir = join(
+      dirname(tsconfig),
       config.compilerOptions?.rootDir ?? ''
     );
 
@@ -599,12 +284,124 @@ export function sourceNodes(
 
     const data = app.serializer.projectToObject(project);
 
-    // console.log(data);
+    function findDeclarations(
+      type?: JSONOutput.SomeType,
+      parent?: string
+    ): any {
+      const find = (t?: JSONOutput.SomeType) => findDeclarations(t, parent);
+      if (!type) return type;
+
+      if (type.type === 'reference' && 'id' in type) {
+        return {
+          type: 'reference',
+          reference: createId(type.id)
+        };
+      }
+
+      if ('declaration' in type && type.declaration) {
+        type.declaration =
+          'name' in type.declaration
+            ? traverse(type.declaration, parent).id
+            : createId(type.declaration.id);
+      }
+      if ('target' in type) type.target = find(type.target);
+      if ('types' in type) type.types = type.types?.flatMap(find);
+      if ('constraint' in type) type.constraint = find(type.constraint);
+      if ('elementType' in type) type.elementType = find(type.elementType);
+      if ('elements' in type) type.elements = type.elements?.flatMap(find);
+      if ('typeArguments' in type)
+        type.typeArguments = type.typeArguments?.flatMap(find);
+
+      return type;
+    }
+
+    function traverse(docNode: DocNode, parent?: string): GatsbyNode {
+      const nodeId = createId(docNode.id);
+
+      if (nodes.has(nodeId)) {
+        return { id: nodeId };
+      }
+
+      const dnode: any = docNode;
+      const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
+      const signatures =
+        dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
+      const parameters =
+        dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
+
+      const typeParameter = dnode.typeParameter
+        ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
+        : [];
+
+      [
+        'type',
+        'overwrites',
+        'inheritedFrom',
+        'extendedTypes',
+        'extendedBy',
+        'implementedTypes',
+        'implementedBy',
+        'implementationOf'
+      ].forEach(field => {
+        (docNode as any)[field] = findDeclarations(
+          (docNode as any)[field],
+          nodeId
+        );
+      });
+
+      const node: any = {
+        ...docNode,
+        parent,
+        rootDir,
+        tsconfig,
+        id: nodeId,
+        typedocs,
+        signatures,
+        parameters,
+        typeParameter,
+        // childrenTypedocNode: children,
+        sources: ('sources' in docNode && docNode.sources) || [],
+        groups:
+          ('groups' in docNode &&
+            docNode.groups?.map(group => ({
+              ...group,
+              children: group.children?.map(id => createId(id))
+            }))) ||
+          []
+      };
+
+      node.absolutePath = getFile(docNode, project!);
+
+      node.internal = {
+        type: 'TypedocNode',
+        contentDigest: createContentDigest(JSON.stringify(node))
+      };
+
+      node.children = node.typedocs
+        .concat(signatures, parameters, typeParameter)
+        .filter(Boolean);
+
+      nodes.set(nodeId, docNode);
+      createNode(node);
+      return node;
+    }
 
     if (data) {
+      // console.log(project.getReflectionById(data.children![0]!.id!));
       traverse(data);
       nodes.clear();
-      createNode(processTypeDocRaw(data));
+
+      if (debugRaw) {
+        createNode({
+          root,
+          id: createNodeId(`typedoc-${data.name || 'default'}`),
+          json: data,
+          internal: {
+            type: 'TypedocNodeRaw',
+            contentDigest: createContentDigest(JSON.stringify(data))
+          }
+        });
+      }
     } else {
       reporter.error('Failed to generate TypeDoc');
     }

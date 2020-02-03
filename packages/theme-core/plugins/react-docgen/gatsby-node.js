@@ -1,7 +1,7 @@
 const path = require('path');
 const camelCase = require('lodash/camelCase');
+const DataUtils = require('@docpocalypse/gatsby-data-utils');
 const parseMetadata = require('./parse');
-const DataUtils = require('../../data-utils');
 
 const propsId = (parentId, name) => `${parentId}--ComponentProp-${name}`;
 const descId = parentId => `${parentId}--ComponentDescription`;

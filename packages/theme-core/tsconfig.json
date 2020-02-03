@@ -5,5 +5,8 @@
     "noImplicitAny": false
   },
   "include": ["./*.ts"],
-  "references": [{ "path": "../react-docgen-styled-resolver" }]
+  "references": [
+    { "path": "../react-docgen-styled-resolver" },
+    { "path": "../data-utils" }
+  ]
 }

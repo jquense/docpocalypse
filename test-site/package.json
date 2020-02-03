@@ -19,7 +19,7 @@
     "eslint-plugin-jest": "^23.1.1",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.17.0",
-    "gatsby": "^2.8.2",
+    "gatsby": "^2.19.10",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-typedoc": "*",
     "gatsby-plugin-webfonts": "^1.1.1",

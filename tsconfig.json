@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/props-table" },
     { "path": "packages/code-live" },
+    { "path": "packages/data-utils" },
     { "path": "packages/theme-core" },
     { "path": "packages/theme" }
   ]

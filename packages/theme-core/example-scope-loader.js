@@ -27,7 +27,7 @@ function getEntry(loader) {
 
   try {
     const entryFile = fs.readdirSync(srcDir).find(f => f.startsWith('entry'));
-    console.log(fs.readdirSync(srcDir), entryFile);
+    // console.log(fs.readdirSync(srcDir), entryFile);
 
     return entryFile && path.join(srcDir, entryFile);
   } catch {
