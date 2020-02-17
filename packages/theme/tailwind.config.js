@@ -44,6 +44,8 @@ module.exports = ({ theming }) => ({
           'position',
 
           'display',
+          'gridTemplateColumns',
+          'gridColumn',
           'flex',
           'flexDirection',
           'alignItems',
@@ -66,9 +68,5 @@ module.exports = ({ theming }) => ({
           'zIndex'
         ]
       }
-    : {}),
-  plugins: [
-    // require('./tools/tailwind-base-plugin'),
-    require('./tools/tailwind-grid-plugin')
-  ]
+    : {})
 });

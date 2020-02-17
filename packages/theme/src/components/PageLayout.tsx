@@ -24,32 +24,32 @@ function PageLayout({ children, className, style }: Props) {
       <Navbar />
       <div
         css={dcss`
-          @apply grid;
+          @apply grid grid-cols-12;
         `}
       >
         <SideNavigation
           css={dcss`
-            @apply col-12;
+            @apply col-span-12;
 
-            @screen md { @apply col-3 };
-            @screen xl { @apply col-2 };
+            @screen md { @apply col-span-3 };
+            @screen xl { @apply col-span-2 };
           `}
         />
         <DocumentOutline
           css={dcss`
             @apply hidden;
             order: 2;
-            @screen xl { @apply col-2 block };
+            @screen xl { @apply col-span-2 block };
           `}
         />
         <main
           css={dcss`
-            @apply col-12 px-10;
+            @apply col-span-12 px-10;
 
             order: 1;
 
-            @screen md { @apply col-9 };
-            @screen xl { @apply col-8 };
+            @screen md { @apply col-span-9 };
+            @screen xl { @apply col-span-8 };
           `}
         >
           {children}
