@@ -1,11 +1,12 @@
-import React from 'react';
 import dstyled from 'astroturf';
+import React from 'react';
+
 import ComponentImport from './ComponentImport';
 import Example from './Example';
+import HookSignature from './HookSignature';
 import LinkedHeading from './LinkedHeading';
 import OutlineHeading from './OutlineHeading';
 import PageLayout from './PageLayout';
-import HookSignature from './HookSignature';
 
 const SignatureList = dstyled('ul')`
   list-style: none;
