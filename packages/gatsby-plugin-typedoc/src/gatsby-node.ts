@@ -10,9 +10,14 @@ import {
   TSConfigReader
 } from 'typedoc';
 import { findConfigFile, readConfigFile, sys } from 'typescript';
-import { GatsbyResolverContext } from '@docpocalypse/gatsby-data-utils';
+import camelCase from 'lodash/camelCase';
+import {
+  GatsbyResolverContext,
+  proxyToNode
+} from '@docpocalypse/gatsby-data-utils';
 import resolveNodes, { DocNode } from './lib/resolveNode';
 import * as T from './lib/types';
+import createCommentNode from './lib/createCommentNode';
 
 // class MySourceReferenceContainerSerializer extends SourceReferenceContainerSerializer {
 //   toObject(arg: any, obj: any) {
@@ -73,6 +78,37 @@ export function createSchemaCustomization({
         SomeValue: { value: 2097248 }
       }
     }),
+    schema.buildObjectType({
+      name: `TypedocMdx`,
+      extensions: ['dontInfer'],
+      fields: {
+        body: 'String!',
+        mdxAST: 'JSON'
+      }
+    }),
+    schema.buildObjectType({
+      name: `TypedocMarkdownRemark`,
+      extensions: ['dontInfer'],
+      fields: {
+        html: 'String'
+      }
+    }),
+    schema.buildObjectType({
+      name: 'TypedocCommentValue',
+      interfaces: ['Node'],
+      extensions: ['dontInfer'],
+      fields: {
+        value: 'String',
+        markdownRemark: {
+          type: 'TypedocMarkdownRemark',
+          resolve: proxyToNode('fields.markdownRemark')
+        },
+        mdx: {
+          type: 'TypedocMdx',
+          resolve: proxyToNode('fields.mdx')
+        }
+      }
+    }),
     /* GraphQL */ `
       type TypedocFlags @dontInfer {
         isPrivate: Boolean
@@ -101,9 +137,9 @@ export function createSchemaCustomization({
         text: String
       }
 
-      type TypedocComment @dontInfer {
-        text: String
-        shortText: String
+      type TypedocComment implements Node @dontInfer {
+        text: TypedocCommentValue! @link
+        shortText: TypedocCommentValue! @link
         tags: [TypedocTag]
       }
 
@@ -154,6 +190,7 @@ export function createSchemaCustomization({
         originalName: String
         defaultValue: String
         flags: TypedocFlags!
+        comment: TypedocComment! @link
 
         signatures: [TypedocNode!] @link
         typedocs: [TypedocNode!] @link
@@ -292,10 +329,7 @@ export function sourceNodes(
       if (!type) return type;
 
       if (type.type === 'reference' && 'id' in type) {
-        return {
-          type: 'reference',
-          reference: createId(type.id)
-        };
+        (type as any).reference = createId(type.id);
       }
 
       if ('declaration' in type && type.declaration) {
@@ -382,6 +416,17 @@ export function sourceNodes(
         .filter(Boolean);
 
       nodes.set(nodeId, docNode);
+
+      if ('comment' in node) {
+        createCommentNode(
+          node,
+          node.comment,
+          actions,
+          createNodeId,
+          createContentDigest
+        );
+      }
+
       createNode(node);
       return node;
     }
@@ -406,4 +451,22 @@ export function sourceNodes(
       reporter.error('Failed to generate TypeDoc');
     }
   });
+}
+
+export function onCreateNode({ node, actions, getNode }) {
+  const { createNodeField } = actions;
+
+  const parentNode = node.parent && getNode(node.parent);
+
+  if (parentNode && parentNode.internal.type === 'TypedocCommentValue') {
+    const { type } = node.internal;
+
+    if (type === 'Mdx' || type === 'MarkdownRemark') {
+      createNodeField({
+        node: parentNode,
+        name: camelCase(type),
+        value: node.id
+      });
+    }
+  }
 }

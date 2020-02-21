@@ -15,6 +15,13 @@ export type DocNode =
   | JSONOutput.ProjectReflection
   | JSONOutput.ContainerReflection;
 
+export interface DocCommentNode {
+  id: string;
+  text?: string;
+  shortText?: string;
+  tags?: string;
+}
+
 function map<T, K>(items: T[] | T, fn: (item: T) => K): K | K[] {
   return Array.isArray(items) ? items.map(fn) : fn(items);
 }
@@ -23,7 +30,17 @@ const alwaysExclude = [
   'internal',
   'children',
   'sources',
-  'childrenTypedocNode'
+  'childrenTypedocNode',
+  'childrenTypedocCommentValue'
+];
+
+const nodeTypes = [
+  'TypedocNode',
+  'TypedocType',
+  'TypedocComment',
+  'TypedocCommentValue',
+  'TypedocMarkdownRemark',
+  'TypedocMdx'
 ];
 
 export default function resolveNodes(
@@ -38,33 +55,17 @@ export default function resolveNodes(
 
   const seen = new Set();
 
-  const gqlNodeType = info.schema.getType('TypedocNode')! as GraphQLObjectType;
-  const gqlTypeType = info.schema.getType('TypedocType')! as GraphQLObjectType;
+  const types: GraphQLObjectType[] = nodeTypes.map(type =>
+    info.schema.getType(type)
+  );
 
-  const typedocFields = Object.entries(gqlNodeType.getFields())
-    .map(([key, config]) => [key, getNamedType(config.type).name] as const)
-    .filter(c => exclude.indexOf(c[0]) === -1);
-
-  const typeFields = Object.entries(gqlTypeType.getFields())
-    .map(([key, config]) => [key, getNamedType(config.type).name] as const)
-    .filter(c => exclude.indexOf(c[0]) === -1);
-
-  // linked fields on TypedocNode types
-  const typedocTypeFields = typedocFields
-    .filter(c => c[1] === 'TypedocType')
-    .map(c => c[0]);
-
-  const typedocNodeFields = typedocFields
-    .filter(c => c[1] === 'TypedocNode')
-    .map(c => c[0]);
-
-  // linked fields on TypedocType types
-  const typeTypeFields = typeFields
-    .filter(c => c[1] === 'TypedocType')
-    .map(c => c[0]);
-
-  const typeNodeFields = typeFields
-    .filter(c => c[1] === 'TypedocNode')
+  const fields = types
+    .flatMap(type => Object.entries(type.getFields()))
+    .map(
+      ([key, config]: [string, any]) =>
+        [key, getNamedType(config.type).name] as const
+    )
+    .filter(c => exclude.indexOf(c[0]) === -1 && nodeTypes.indexOf(c[1]) > -1)
     .map(c => c[0]);
 
   function visit(fn) {
@@ -91,32 +92,12 @@ export default function resolveNodes(
     };
   }
 
-  const visitType = visit((ret: any, node: any) => {
-    typeTypeFields.forEach(field => {
-      if (ret[field] == null) return;
-      ret[field] = map(node[field], visitType);
-    });
-
-    typeNodeFields.forEach(field => {
-      if (ret[field] == null) return;
-
-      ret[field] = map(getNodeById(node, field, ctx), visitTypeDoc);
-    });
-  });
-
   const visitTypeDoc = visit((ret: any, node: DocNode) => {
-    typedocNodeFields.forEach(field => {
+    fields.forEach(field => {
       if (ret[field] == null) return;
-
       ret[field] = map(getNodeById(node, field, ctx), visitTypeDoc);
-    });
-
-    typedocTypeFields.forEach(field => {
-      if (ret[field] == null) return;
-      ret[field] = map(node[field], visitType);
     });
   });
 
-  // console.log(exclude, typeFields);
   return visitTypeDoc(root);
 }
