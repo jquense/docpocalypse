@@ -15,15 +15,8 @@ export type DocNode =
   | JSONOutput.ProjectReflection
   | JSONOutput.ContainerReflection;
 
-export interface DocCommentNode {
-  id: string;
-  text?: string;
-  shortText?: string;
-  tags?: string;
-}
-
-function map<T, K>(items: T[] | T, fn: (item: T) => K): K | K[] {
-  return Array.isArray(items) ? items.map(fn) : fn(items);
+function map<T, K>(items: T[] | T, fn: (item: T) => Promise<K>): Promise<K | K[]> {
+  return Array.isArray(items) ? Promise.all(items.map(fn)) : fn(items);
 }
 
 const alwaysExclude = [
@@ -34,15 +27,21 @@ const alwaysExclude = [
   'childrenTypedocCommentValue'
 ];
 
-const nodeTypes = [
-  'TypedocNode',
-  'TypedocType',
-  'TypedocComment',
-  'TypedocCommentValue',
-  'TypedocMarkdownRemark',
-  'TypedocMdx'
-];
+function resolve(
+  node: any,
+  type: string,
+  fieldName: string,
+  ctx: GatsbyResolverContext,
+  info: GraphQLResolveInfo
+) {
+  const gqlType = info.schema.getType(type)! as GraphQLObjectType;
 
+  const resolver = gqlType.getFields()[fieldName].resolve;
+  return resolver?.(node, null, ctx, {
+    ...info,
+    fieldName: 'body'
+  });
+}
 export default function resolveNodes(
   root: DocNode,
   args: { exclude?: string[]; include?: string[] } = {},
@@ -55,21 +54,43 @@ export default function resolveNodes(
 
   const seen = new Set();
 
-  const types: GraphQLObjectType[] = nodeTypes.map(type =>
-    info.schema.getType(type)
-  );
+  const gqlNodeType = info.schema.getType('TypedocNode')! as GraphQLObjectType;
+  const gqlTypeType = info.schema.getType('TypedocType')! as GraphQLObjectType;
 
-  const fields = types
-    .flatMap(type => Object.entries(type.getFields()))
+  const typedocFields = Object.entries(gqlNodeType.getFields())
     .map(
       ([key, config]: [string, any]) =>
         [key, getNamedType(config.type).name] as const
     )
-    .filter(c => exclude.indexOf(c[0]) === -1 && nodeTypes.indexOf(c[1]) > -1)
+    .filter(c => exclude.indexOf(c[0]) === -1);
+
+  const typeFields = Object.entries(gqlTypeType.getFields())
+    .map(
+      ([key, config]: [string, any]) =>
+        [key, getNamedType(config.type).name] as const
+    )
+    .filter(c => exclude.indexOf(c[0]) === -1);
+
+  // linked fields on TypedocNode types
+  const typedocTypeFields = typedocFields
+    .filter(c => c[1] === 'TypedocType')
+    .map(c => c[0]);
+
+  const typedocNodeFields = typedocFields
+    .filter(c => c[1] === 'TypedocNode')
+    .map(c => c[0]);
+
+  // linked fields on TypedocType types
+  const typeTypeFields = typeFields
+    .filter(c => c[1] === 'TypedocType')
+    .map(c => c[0]);
+
+  const typeNodeFields = typeFields
+    .filter(c => c[1] === 'TypedocNode')
     .map(c => c[0]);
 
   function visit(fn) {
-    return (node: any) => {
+    return async (node: any) => {
       if (!node) return null;
 
       if (seen.has(node))
@@ -86,17 +107,74 @@ export default function resolveNodes(
       });
 
       seen.add(node);
-      fn(ret, node);
+      await fn(ret, node);
       seen.delete(node);
       return ret;
     };
   }
 
-  const visitTypeDoc = visit((ret: any, node: DocNode) => {
-    fields.forEach(field => {
-      if (ret[field] == null) return;
-      ret[field] = map(getNodeById(node, field, ctx), visitTypeDoc);
-    });
+  const visitMdx = visit(async (ret: any, node: any) => {
+    ret.body = await resolve(node, 'Mdx', 'body', ctx, info);
+  });
+
+  const visitMdRemark = visit(async (ret: any, node: any) => {
+    ret.html = await resolve(node, 'MarkdownRemark', 'html', ctx, info);
+  });
+
+  const visitComment = visit(async (ret: any, node: any) => {
+    ret.mdx = await visitMdx(getNodeById(node.fields, 'mdx', ctx));
+    ret.markdownRemark = await visitMdRemark(
+      getNodeById(node.fields, 'markdownRemark', ctx)
+    );
+    delete ret.fields;
+  });
+
+  const visitType = visit(async (ret: any, node: any) => {
+    await Promise.all(
+      typeTypeFields.map(async field => {
+        if (ret[field] != null) {
+          ret[field] = await map(node[field], visitType);
+        }
+
+        return ret[field];
+      })
+    );
+
+    await Promise.all(
+      typeNodeFields.map(async field => {
+        if (ret[field] != null) {
+          ret[field] = await map(getNodeById(node, field, ctx), visitTypeDoc);
+        }
+
+        return ret[field];
+      })
+    );
+  });
+
+  const visitTypeDoc = visit(async (ret: any, node: DocNode) => {
+    await Promise.all(
+      typedocNodeFields.map(async field => {
+        if (ret[field] != null) {
+          ret[field] = await map(getNodeById(node, field, ctx), visitTypeDoc);
+        }
+
+        return ret[field];
+      })
+    );
+
+    await Promise.all(
+      typedocTypeFields.map(async field => {
+        if (ret[field] != null) {
+          ret[field] = await map(node[field], visitType);
+        }
+
+        return ret[field];
+      })
+    );
+
+    if (ret.comment != null) {
+      ret.comment = await visitComment(getNodeById(node, 'comment', ctx));
+    }
   });
 
   return visitTypeDoc(root);

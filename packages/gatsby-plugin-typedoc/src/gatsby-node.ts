@@ -94,11 +94,11 @@ export function createSchemaCustomization({
       }
     }),
     schema.buildObjectType({
-      name: 'TypedocCommentValue',
+      name: 'TypedocComment',
       interfaces: ['Node'],
       extensions: ['dontInfer'],
       fields: {
-        value: 'String',
+        tags: '[TypedocTag]',
         markdownRemark: {
           type: 'TypedocMarkdownRemark',
           resolve: proxyToNode('fields.markdownRemark')
@@ -135,12 +135,6 @@ export function createSchemaCustomization({
       type TypedocTag @dontInfer {
         tag: String
         text: String
-      }
-
-      type TypedocComment implements Node @dontInfer {
-        text: TypedocCommentValue! @link
-        shortText: TypedocCommentValue! @link
-        tags: [TypedocTag]
       }
 
       type TypedocGroup @dontInfer {
@@ -458,7 +452,7 @@ export function onCreateNode({ node, actions, getNode }) {
 
   const parentNode = node.parent && getNode(node.parent);
 
-  if (parentNode && parentNode.internal.type === 'TypedocCommentValue') {
+  if (parentNode && parentNode.internal.type === 'TypedocComment') {
     const { type } = node.internal;
 
     if (type === 'Mdx' || type === 'MarkdownRemark') {
