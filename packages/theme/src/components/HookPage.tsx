@@ -35,13 +35,8 @@ function HookPage({ data }) {
       {importName && (
         <ComponentImport importName={importName} docNode={data.docpocalypse} />
       )}
-      <SignatureList>
         {signatures?.map(doc => (
           <HookSignature level={3} definition={doc} />
         ))}
       </SignatureList>
     </PageLayout>
-  );
-}
-
-export default HookPage;
