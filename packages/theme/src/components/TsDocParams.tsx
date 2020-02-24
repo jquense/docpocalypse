@@ -23,11 +23,11 @@ function TsDocParams({ definition, level = 1 }: Props) {
 
   return (
     <>
-      {definition.typeParameters && definition.typeParameters.length > 0 && (
+      {definition.typeParameter && definition.typeParameter.length > 0 && (
         <>
           <Heading level={level}>Type Parameters</Heading>
           <List>
-            {definition.typeParameters.map(typeParam => (
+            {definition.typeParameter.map(typeParam => (
               <li key={typeParam.id}>
                 <Heading level={nextLevel}>
                   {typeParam.name}{' '}

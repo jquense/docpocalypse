@@ -1,5 +1,24 @@
+import dstyled from 'astroturf';
 import React from 'react';
+// eslint-disable-next-line import/no-cycle
 import TsDocSignatureType from './TsDocSignatureType';
+
+const Wrapper = dstyled('span')<{ wrap: boolean }>`
+  @apply ml-2;
+
+  &.wrap {
+    &:before,
+    &:after {
+      color: #969584;
+    }
+    &:before {
+      content: '{ ';
+    }
+    &:after {
+      content: ' }';
+    }
+  }
+`;
 
 function Parameter({ definition }: { definition: any }) {
   return (
@@ -19,6 +38,7 @@ interface Props {
   hideName?: boolean;
   showSignature?: boolean;
   arrowStyle?: boolean;
+  wrap?: boolean;
 }
 
 function TsDocSignatureTitle({
@@ -26,17 +46,17 @@ function TsDocSignatureTitle({
   title = null,
   hideName = false,
   arrowStyle = false,
-  showSignature = true
+  showSignature = true,
+  wrap = false
 }: Props) {
   return (
     <span className="signature">
       {!hideName && <code>{title || definition.name}</code>}
-      {definition.typeParameters &&
-        definition.typeParameters.length > 0 &&
-        `<${definition.typeParameters.map(p => p.name).join(', ')}>`}
+      {definition.typeParameter &&
+        definition.typeParameter.length > 0 &&
+        `<${definition.typeParameter.map(p => p.name).join(', ')}>`}
       {showSignature && (
-        <>
-          {' '}
+        <Wrapper wrap={wrap}>
           (
           {definition.parameters.map((param, idx) => (
             <React.Fragment key={param.id}>
@@ -51,7 +71,7 @@ function TsDocSignatureTitle({
               <TsDocSignatureType type={definition.type} />
             </>
           )}
-        </>
+        </Wrapper>
       )}
     </span>
   );

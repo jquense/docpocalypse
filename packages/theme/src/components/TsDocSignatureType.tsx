@@ -1,7 +1,7 @@
 // Types are defined in https://github.com/TypeStrong/typedoc/blob/master/src/lib/models/types/index.ts
 import React from 'react';
+// eslint-disable-next-line import/no-cycle
 import TsDocSignatureTitle from './TsDocSignatureTitle';
-
 
 function Parens({
   children,
@@ -30,7 +30,7 @@ interface Props {
 
 export default function TsDocSignatureType({
   type,
-  needParens = false
+  needParens = false,
 }: Props) {
   if (!type) return '';
 
@@ -83,7 +83,7 @@ export default function TsDocSignatureType({
       <Parens needParens={needParens}>
         {type.types.map((tt, idx) => (
           <React.Fragment key={tt.id}>
-            {idx > 0 &&' & '}
+            {idx > 0 && ' & '}
             <TsDocSignatureType key={tt.id} type={tt} />
           </React.Fragment>
         ))}
@@ -113,14 +113,14 @@ export default function TsDocSignatureType({
   if (type.type === 'reference') {
     return (
       <>
-        {type.reflection ? type.reflection.name : type.name}
-        {type.typeArguments && (
+        {type.reference ? type.reference.name : type.name}
+        {type.typeArguments && type.typeArguments.length > 0 && (
           <>
             &lt;
             {type.typeArguments.map((typeArgument, idx) => (
               <React.Fragment key={typeArgument.id}>
-                {idx > 0 &&', '}
-                <TsDocSignatureType key={typeArgument.id} type={typeArgument} />
+                {idx > 0 && ', '}
+                <TsDocSignatureType type={typeArgument} />
               </React.Fragment>
             ))}
             &gt;
@@ -131,13 +131,13 @@ export default function TsDocSignatureType({
   }
 
   if (type.type === 'reflection') {
-    if (type.declaration.children) {
+    if (type.declaration.typedocs && type.declaration.typedocs.length > 0) {
       // { Object literal }
       return (
         <Parens openParen="{" closeParen="}" needParens>
-          {type.declaration.children.map((child, idx) => (
+          {type.declaration.typedocs.map((child, idx) => (
             <React.Fragment key={child.id}>
-              {idx > 0 &&'; '}
+              {idx > 0 && '; '}
               {child.name}
               {child.flags.isOptional ? '?:' : ':'}
               {child.type ? (
@@ -151,13 +151,13 @@ export default function TsDocSignatureType({
       );
     }
 
-    if (type.declaration.signatures && type.declaration.signatures.length) {
+    if (type.declaration.signatures && type.declaration.signatures.length > 0) {
       if (type.declaration.signatures.length > 1) {
         return (
           <Parens openParen="{" closeParen="}" needParens>
             {type.declaration.signatures.map((signature, idx) => (
               <React.Fragment key={signature.id}>
-                {idx > 0 &&'; '}
+                {idx > 0 && '; '}
                 <TsDocSignatureTitle
                   key={signature.id}
                   definition={signature}
@@ -192,7 +192,7 @@ export default function TsDocSignatureType({
       <Parens openParen="[" closeParen="]" needParens>
         {type.elements.map((element, idx) => (
           <React.Fragment key={element.id}>
-            {idx > 0 &&', '}
+            {idx > 0 && ', '}
             <TsDocSignatureType type={element} />
           </React.Fragment>
         ))}
@@ -214,7 +214,7 @@ export default function TsDocSignatureType({
       <Parens needParens={needParens}>
         {type.types.map((tt, idx) => (
           <React.Fragment key={tt.id}>
-            {idx > 0 &&' | '}
+            {idx > 0 && ' | '}
             <TsDocSignatureType type={tt} needParens />
           </React.Fragment>
         ))}

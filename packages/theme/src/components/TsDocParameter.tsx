@@ -41,6 +41,7 @@ function TsDocParameter({ definition, level = 1 }: Props) {
       )}
 
       {definition.indexSignature && definition.indexSignature.length > 0 && (
+        /* { [foo: string]: Bar} */
         <li>
           <Heading level={level}>
             [
@@ -58,7 +59,7 @@ function TsDocParameter({ definition, level = 1 }: Props) {
         </li>
       )}
 
-      {definition.children.map(child => (
+      {definition.typedocs.map(child => (
         <li key={child.id}>
           {child.signatures && child.signatures.length > 0 ? (
             <>
@@ -83,7 +84,7 @@ function TsDocParameter({ definition, level = 1 }: Props) {
 
               <TsDocComment comment={child.comment} />
 
-              {child.children && child.children.length > 0 && (
+              {child.typedocs && child.typedocs.length > 0 && (
                 <TsDocParameter definition={child} level={nextLevel} />
               )}
 

@@ -42,6 +42,8 @@ const TsDocBlock = ({
               title={title}
               definition={definition}
               showSignature={showSignature}
+              arrowStyle
+              wrap
             />
           </div>
         </Heading>

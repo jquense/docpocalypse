@@ -1,4 +1,5 @@
 import { css as dcss } from 'astroturf';
+import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
 
 interface Props {
@@ -10,7 +11,6 @@ export default function TsDocComment({ comment }: Props) {
     return null;
   }
 
-  // FIXME: render MDX here by creating a way to query for the comment MDX
   return (
     <div
       css={dcss`
@@ -21,8 +21,7 @@ export default function TsDocComment({ comment }: Props) {
           }
         `}
     >
-      {comment.shortText && <p>{comment.shortText}</p>}
-      {comment.text && <p>{comment.text}</p>}
+      <MDXRenderer>{comment.mdx.body}</MDXRenderer>
     </div>
   );
 }
