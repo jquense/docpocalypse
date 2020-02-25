@@ -1,7 +1,6 @@
 import { css as dcss } from 'astroturf';
 import React from 'react';
 import DocumentOutline from './DocumentOutline';
-import Link from './Link';
 import Navbar from './Navbar';
 import SideNavigation from './SideNavigation';
 

@@ -61,6 +61,8 @@ module.exports = ({ theming }) => ({
           'fontWeight',
           'letterSpacing',
 
+          'listStyleType',
+
           'borderRadius',
           'backgroundColor',
           'textColor',

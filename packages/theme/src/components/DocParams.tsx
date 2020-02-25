@@ -4,13 +4,10 @@ import React from 'react';
 // eslint-disable-next-line import/no-cycle
 import DocBlock from './DocBlock';
 import Heading, { HeadingLevel } from './Heading';
+import List from './List';
 
-const List = ({ elements, level, ignoreParams }) => (
-  <ul
-    css={dcss`
-      composes: ml-5 p-0 mt-0 mb-0 from global;
-    `}
-  >
+const DocList = ({ elements, level, ignoreParams }) => (
+  <List>
     {elements
       .filter(param => !ignoreParams.includes(param.name))
       .map(param => (
@@ -18,7 +15,7 @@ const List = ({ elements, level, ignoreParams }) => (
           <DocBlock definition={param} level={level + 1} />
         </li>
       ))}
-  </ul>
+  </List>
 );
 
 interface ParamsProps {
@@ -33,7 +30,7 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
     return (
       <>
         <Heading level={level}>Parameters</Heading>
-        <List
+        <DocList
           elements={definition.params}
           level={level}
           ignoreParams={ignoreParams}
@@ -45,7 +42,7 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
     return (
       <>
         {level === 1 && <Heading level={level}>Properties</Heading>}
-        <List
+        <DocList
           elements={definition.properties}
           level={level}
           ignoreParams={ignoreParams}
@@ -61,7 +58,7 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
     return (
       <>
         {level === 1 && <Heading level={level}>Fields</Heading>}
-        <List
+        <DocList
           elements={definition.members.static}
           level={level}
           ignoreParams={ignoreParams}

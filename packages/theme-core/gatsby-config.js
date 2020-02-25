@@ -38,10 +38,7 @@ module.exports = (options = {}) => {
           remarkPlugins: [remarkSlug]
         }
       },
-      {
-        resolve: 'gatsby-transformer-remark',
-        options: { plugins: ['gatsby-remark-prismjs'] }
-      },
+      'gatsby-transformer-remark',
       'gatsby-transformer-documentationjs',
       {
         resolve: require.resolve('./plugins/react-docgen'),

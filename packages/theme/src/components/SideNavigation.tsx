@@ -23,10 +23,7 @@ export interface Props {
 }
 
 /** @public */
-function SideNavigation({
-  className,
-  groupComponentsBy = d => NAMES[d.type]
-}: Props) {
+function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
   const data = useStaticQuery(graphql`
     query {
       allDocpocalypse {

@@ -40,7 +40,8 @@ function PropsTable({ metadata }) {
     <>
       <table
         css={dcss`
-          composes: py-4 from global;
+          @apply py-4 mt-6;
+
           display: grid;
           width: auto;
           border-collapse: collapse;

@@ -6,6 +6,8 @@ import { highlight } from '@docpocalypse/code-live';
 import Heading, { HeadingLevel } from './Heading';
 
 const Wrapper = dstyled('span')<{ block?: boolean }>`
+  @apply font-mono;
+
   &.block {
     display: block;
     margin-top: 20px;

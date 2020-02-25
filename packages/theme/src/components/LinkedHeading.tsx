@@ -8,21 +8,28 @@ import Heading from './OutlineHeading';
 const styles = dcss`
   @component LinkedHeading {
     position: relative;
-    pointer-events: none;
+    scroll-margin: theme('height.navbar');
 
-    .anchor {
-      pointer-events: auto;
+    & .anchor:focus,
+    &:hover .anchor {
+      text-decoration: none;
+      opacity: 0.5;
     }
 
-    &:before {
-      display: block;
-      height: calc(theme('height.navbar') + theme('spacing.4'));
-      margin-top: calc(theme('height.navbar') * -1 - theme('spacing.4') );
-      visibility: hidden;
-      content: '';
+    & .anchor {
+      font-size: 90%;
+      position: absolute;
+      padding-top: 0.1em;
+      padding-left: 0.5rem;
+      opacity: 0;
     }
 
-}
+    & .wrapper {
+      position: relative;
+      display: inline-block;
+      padding-right: 1em;
+    }
+  }
 `;
 
 interface LinkHeadingProps {
@@ -31,18 +38,19 @@ interface LinkHeadingProps {
   className?: string;
   children?: React.ReactNode;
 }
-
+console.log(styles);
 function LinkedHeading({ h, id, className, children }: LinkHeadingProps) {
   return (
     <Heading
       h={h}
       id={id}
       title={children}
-      className={cn(className, styles.LinkedHeading, '__heading')}
+      className={cn(className, styles.LinkedHeading)}
     >
-      <Anchor target={id} className={styles.anchor}>
-        {children}
-      </Anchor>
+      {children}
+      <a href={`#${id}`} aria-hidden className={styles.anchor}>
+        <span aria-hidden>#</span>
+      </a>
     </Heading>
   );
 }

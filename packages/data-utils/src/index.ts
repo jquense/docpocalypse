@@ -148,20 +148,23 @@ function resolveNodePath(
   ctx: GatsbyResolverContext
 ) {
   const parts = path.split('.');
+  let isStalePath = false;
 
   const resolveId = (id: unknown) => {
     if (typeof id === 'string' && isUUID(id)) {
-      return ctx.nodeModel.getNodeById({ id });
+      const node = ctx.nodeModel.getNodeById({ id });
+      if (!node) isStalePath = true;
+      return node;
     }
     return id;
   };
 
-  while (parts.length) {
+  while (parts.length && !isStalePath) {
     const part = parts.shift()!;
 
     obj = Array.isArray(obj)
-      ? obj.flatMap(o => resolveId(o)[part])
-      : resolveId(obj)[part];
+      ? obj.flatMap(o => resolveId(o)?.[part] ?? null)
+      : resolveId(obj)?.[part] ?? null;
   }
 
   return obj;
