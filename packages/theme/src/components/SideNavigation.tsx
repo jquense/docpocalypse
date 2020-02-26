@@ -24,8 +24,21 @@ export interface Props {
 
 /** @public */
 function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
-  const data = useStaticQuery(graphql`
+  const { allDocpocalypse, allSitePage } = useStaticQuery(graphql`
     query {
+      allSitePage(
+        filter: {
+          pluginCreator: { name: { ne: "@docpocalypse/gatsby-theme-core" } }
+        }
+      ) {
+        nodes {
+          path
+          docpocalypseTitle
+          pluginCreator {
+            name
+          }
+        }
+      }
       allDocpocalypse {
         nodes {
           type
@@ -37,15 +50,23 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
   `);
 
   const groups = useMemo(
-    () =>
-      groupBy(sortBy(data.allDocpocalypse.nodes, 'name'), groupComponentsBy),
-    [data.allDocpocalypse, groupComponentsBy]
+    () => groupBy(sortBy(allDocpocalypse.nodes, 'name'), groupComponentsBy),
+    [allDocpocalypse, groupComponentsBy]
   );
 
   return (
     <SideNavigationPanel className={className}>
       <nav>
         <ul>
+          {allSitePage.nodes
+            .filter(n => n.docpocalypseTitle)
+            .map(page => (
+              <li key={page.path}>
+                <SideNavigationLink to={page.path}>
+                  {page.docpocalypseTitle}
+                </SideNavigationLink>
+              </li>
+            ))}
           {Object.entries(groups).map(([groupName, nodes]) => (
             <li key={groupName}>
               <SideNavigationHeader>{groupName}</SideNavigationHeader>

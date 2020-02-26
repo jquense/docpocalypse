@@ -7,7 +7,7 @@ import Heading from './OutlineHeading';
 const styles = dcss`
   @component LinkedHeading {
     position: relative;
-    scroll-margin: theme('height.navbar');
+    scroll-margin: calc(theme('height.navbar') + theme('margin.4'));
 
     & .anchor:focus,
     &:hover .anchor {

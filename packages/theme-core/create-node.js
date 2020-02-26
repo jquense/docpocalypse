@@ -4,6 +4,7 @@ const {
   passThroughResolver
 } = require('@docpocalypse/gatsby-data-utils');
 
+const Metadata = require('./dataModel/Metadata');
 const DocumentationJs = require('./dataModel/DocumentationJs');
 const createExampleNode = require('./dataModel/createExampleNode');
 const createDocpocalypseNode = require('./dataModel/createDocpocalypseNode');
@@ -47,6 +48,7 @@ const byFields = (obj, defaultValue = null) => {
 const parseCodeBlocks = require('./parse-code-blocks');
 
 exports.createResolvers = (...args) => {
+  Metadata.createResolvers(...args);
   DocumentationJs.createResolvers(...args);
 };
 

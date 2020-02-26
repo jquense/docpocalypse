@@ -43,7 +43,7 @@ function PageLayout({ children, className, style }: Props) {
         />
         <main
           css={dcss`
-            @apply col-span-12 px-10;
+            @apply col-span-12 px-12;
 
             order: 1;
 
