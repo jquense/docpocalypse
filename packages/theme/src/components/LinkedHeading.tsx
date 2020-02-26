@@ -1,7 +1,6 @@
 import { css as dcss } from 'astroturf';
 import cn from 'classnames';
 import React from 'react';
-import Anchor from './Anchor';
 import { HeadingLevel } from './Heading';
 import Heading from './OutlineHeading';
 
@@ -20,7 +19,7 @@ const styles = dcss`
       font-size: 90%;
       position: absolute;
       padding-top: 0.1em;
-      padding-left: 0.5rem;
+      padding-left: 0.5em;
       opacity: 0;
     }
 
