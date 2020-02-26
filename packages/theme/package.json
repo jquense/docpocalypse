@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@docpocalypse/code-live": "^0.3.8",
-    "@docpocalypse/gatsby-theme-core": "^0.7.3",
+    "@docpocalypse/gatsby-theme-core": "^0.7.4",
     "@docpocalypse/props-table": "^0.3.4",
     "@mdx-js/mdx": "^1.5.5",
     "@mdx-js/react": "^1.5.5",
