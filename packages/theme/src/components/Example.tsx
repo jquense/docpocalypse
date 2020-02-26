@@ -1,8 +1,9 @@
+import { MDXProvider } from '@mdx-js/react';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import { useMDXScope } from 'gatsby-plugin-mdx/context';
 import React, { useMemo } from 'react';
-import { MDXProvider } from '@mdx-js/react';
+
 import BasePre from './Pre';
 
 interface Props {

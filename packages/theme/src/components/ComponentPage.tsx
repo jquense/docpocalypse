@@ -1,5 +1,6 @@
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
+
 import ComponentImport from './ComponentImport';
 import Example from './Example';
 import LinkedHeading from './LinkedHeading';

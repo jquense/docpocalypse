@@ -81,7 +81,9 @@ function exampleScopeLoader(src) {
 
     const entryRequire = entryFile ? `require('${entryFile}');\n` : '';
 
-    const imports = `const IMPORTS = {\n${keys.join('\n')}\n};\n`;
+    const imports = `const IMPORTS = {\n${keys
+      .filter(Boolean)
+      .join('\n')}\n};\n`;
 
     const requires = exampleCodeScope
       ? `{\n${Object.entries(exampleCodeScope)
