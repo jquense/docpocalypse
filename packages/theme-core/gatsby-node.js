@@ -9,25 +9,25 @@ const hashPath = path.resolve('.cache/example-import-hash');
 module.exports = apis;
 
 function collectImports(name, node, context) {
-  const docImports = Imports.get(name) || [];
+  let docImports = Imports.get(name) || [];
   if (node.example)
-    Imports.set(name, docImports.concat(node.example.codeBlockImports));
+    docImports = docImports.concat(node.example.codeBlockImports);
 
   // imports aren't likely to have a context since the're parent isn't a file
   context =
     context || (node.absolutePath ? path.dirname(node.absolutePath) : '');
 
   if (node.description && node.description.mdx) {
-    Imports.set(
-      name,
-      collectImports.concat(
-        node.description.mdx.codeBlockImports.map(imports => ({
-          ...imports,
-          context,
-        })),
-      ),
+    docImports = docImports.concat(
+      node.description.mdx.codeBlockImports.map(imports => ({
+        ...imports,
+        context,
+      })),
     );
   }
+
+  Imports.set(name, docImports);
+
   if (node.props && node.props.length) {
     node.props.forEach(n => collectImports(name, n, context));
   }
