@@ -11,17 +11,17 @@ module.exports = ({ theming }) => ({
       subtle: base.colors.orange[100],
 
       white: base.colors.white,
-      gray: base.colors.gray
+      gray: base.colors.gray,
     },
     fontFamily: {
       ...(theming === 'full' ? base.fontFamily : {}),
       brand: base.fontFamily.sans,
       default: base.fontFamily.sans,
-      mono: base.fontFamily.mono
+      mono: base.fontFamily.mono,
     },
     height: t => ({
       ...base.height,
-      navbar: t('spacing.16')
+      navbar: t('spacing.16'),
     }),
     Heading: true,
     LinkedHeading: true,
@@ -32,8 +32,9 @@ module.exports = ({ theming }) => ({
 
     Navbar: true,
     SideNavigationPanel: true,
+    SideNavigationItem: true,
     SideNavigationHeader: true,
-    SideNavigationLink: true
+    SideNavigationLink: true,
   },
   ...(theming === 'minimal'
     ? {
@@ -67,8 +68,8 @@ module.exports = ({ theming }) => ({
           'backgroundColor',
           'textColor',
 
-          'zIndex'
-        ]
+          'zIndex',
+        ],
       }
-    : {})
+    : {}),
 });

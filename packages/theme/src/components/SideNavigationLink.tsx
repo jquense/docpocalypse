@@ -3,15 +3,16 @@ import Link from './Link';
 
 const SideNavigationLink = dstyled(Link)`
   @component SideNavigationLink & {
+    @apply py-px;
+
     display: block;
-    // padding-left: theme(padding.2);
     line-height: theme(lineHeight.relaxed);
-    opacity: 0.8;
+    // opacity: 0.8;
 
     &:hover,
     &:focus,
     &:active {
-      opacity: 0.6;
+      opacity: 0.7;
     }
   }
 `;

@@ -29,9 +29,9 @@ function AppSideNavigation(props) {
   const groups = useMemo(
     () =>
       groupBy(sortBy(allDocpocalypse.nodes, 'name'), d =>
-        d.packageName.replace(/@.+\//, '')
+        d.packageName.replace(/@.+\//, ''),
       ),
-    [allDocpocalypse]
+    [allDocpocalypse],
   );
   const { 'gatsby-theme': main, ...rest } = groups;
   // console.log(groups);
@@ -39,40 +39,40 @@ function AppSideNavigation(props) {
     <SideNavigation.Panel {...props}>
       <nav>
         <ul>
-          <li className="mb-4">
+          <SideNavigation.Item className="mb-4">
             <SideNavigation.Link to="/theming">Theming</SideNavigation.Link>
-          </li>
-          <li>
+          </SideNavigation.Item>
+          <SideNavigation.Item>
             <SideNavigation.Header>Theme Components</SideNavigation.Header>
             <ul className="mb-4">
               {main.map(n => (
-                <li key={n.name}>
+                <SideNavigation.Item key={n.name}>
                   <SideNavigation.Link to={`/api/${n.name}`}>
                     {n.name}
                   </SideNavigation.Link>
-                </li>
+                </SideNavigation.Item>
               ))}
             </ul>
-          </li>
-          <li>
+          </SideNavigation.Item>
+          <SideNavigation.Item>
             <SideNavigation.Header>Ecosystem Packages</SideNavigation.Header>
             <ul>
               {Object.entries(rest).map(([groupName, nodes]) => (
-                <li key={groupName}>
+                <SideNavigation.Item key={groupName}>
                   <SideNavigation.Header>{groupName}</SideNavigation.Header>
                   <ul className="mb-4">
                     {nodes.map(n => (
-                      <li key={n.name}>
+                      <SideNavigation.Item key={n.name}>
                         <SideNavigation.Link to={`/api/${n.name}`}>
                           {n.name}
                         </SideNavigation.Link>
-                      </li>
+                      </SideNavigation.Item>
                     ))}
                   </ul>
-                </li>
+                </SideNavigation.Item>
               ))}
             </ul>
-          </li>
+          </SideNavigation.Item>
         </ul>
       </nav>
     </SideNavigation.Panel>

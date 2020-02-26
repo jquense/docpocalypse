@@ -17,6 +17,7 @@ export { default as SideNavigation } from './src/components/SideNavigation';
 export { default as SideNavigationPanel } from './src/components/SideNavigationPanel';
 export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
 export { default as SideNavigationLink } from './src/components/SideNavigationLink';
+export { default as SideNavigationItem } from './src/components/SideNavigationItem';
 export { default as Navbar } from './src/components/Navbar';
 export { default as SidePanel } from './src/components/SidePanel';
 

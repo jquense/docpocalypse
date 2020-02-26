@@ -5,6 +5,7 @@ export * from '@docpocalypse/gatsby-theme-core';
 export { default as ComponentImport } from './src/components/ComponentImport';
 export { default as Example } from './src/components/Example';
 export { default as PropsTable } from './src/components/PropsTable';
+export { default as InlineCode } from './src/components/InlineCode';
 export { default as LiveCode } from './src/components/LiveCode';
 export { default as CodeBlock } from './src/components/CodeBlock';
 export { default as DocBlock } from './src/components/DocBlock';
@@ -18,6 +19,7 @@ export { default as DocumentOutline } from './src/components/DocumentOutline';
 export { default as SideNavigation } from './src/components/SideNavigation';
 export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
 export { default as SideNavigationLink } from './src/components/SideNavigationLink';
+export { default as SideNavigationItem } from './src/components/SideNavigationItem';
 
 export { default as Navbar } from './src/components/Navbar';
 export { default as SidePanel } from './src/components/SidePanel';

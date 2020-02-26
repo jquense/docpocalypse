@@ -7,11 +7,7 @@ import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
 import SideNavigationHeader from './SideNavigationHeader';
 import SideNavigationLink from './SideNavigationLink';
 import SideNavigationPanel from './SideNavigationPanel';
-
-const NAMES = {
-  component: 'Components',
-  hook: 'Hooks'
-};
+import SideNavigationItem from './SideNavigationItem';
 
 type GroupBy = (node: DocumentationNode) => string;
 
@@ -51,7 +47,7 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
 
   const groups = useMemo(
     () => groupBy(sortBy(allDocpocalypse.nodes, 'name'), groupComponentsBy),
-    [allDocpocalypse, groupComponentsBy]
+    [allDocpocalypse, groupComponentsBy],
   );
 
   return (
@@ -61,25 +57,25 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
           {allSitePage.nodes
             .filter(n => n.docpocalypseTitle)
             .map(page => (
-              <li key={page.path}>
+              <SideNavigationItem key={page.path}>
                 <SideNavigationLink to={page.path}>
                   {page.docpocalypseTitle}
                 </SideNavigationLink>
-              </li>
+              </SideNavigationItem>
             ))}
           {Object.entries(groups).map(([groupName, nodes]) => (
-            <li key={groupName}>
+            <SideNavigationItem key={groupName}>
               <SideNavigationHeader>{groupName}</SideNavigationHeader>
               <ul css={dcss`@apply mb-4`}>
                 {nodes.map(n => (
-                  <li key={n.name}>
+                  <SideNavigationItem key={n.name}>
                     <SideNavigationLink to={`/api/${n.name}`}>
                       {n.name}
                     </SideNavigationLink>
-                  </li>
+                  </SideNavigationItem>
                 ))}
               </ul>
-            </li>
+            </SideNavigationItem>
           ))}
         </ul>
       </nav>
@@ -90,5 +86,6 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
 SideNavigation.Panel = SideNavigationPanel;
 SideNavigation.Header = SideNavigationHeader;
 SideNavigation.Link = SideNavigationLink;
+SideNavigation.Item = SideNavigationItem;
 
 export default SideNavigation;
