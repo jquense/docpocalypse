@@ -11,7 +11,8 @@
     "build": "lerna run build"
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": true,
+    "trailingComma": "all"
   },
   "husky": {
     "hooks": {
@@ -19,10 +20,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,json,css,md}": [
-      "yarn 4c lint --fix",
-      "git add"
-    ]
+    "*.{js,json,css,md}": "yarn 4c lint --fix"
   },
   "workspaces": {
     "packages": [
@@ -32,7 +30,6 @@
   },
   "devDependencies": {
     "@4c/cli": "^1.0.5",
-    "@4c/import-sort": "^4.3.5",
     "@4c/prettier-config": "^1.1.0",
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",

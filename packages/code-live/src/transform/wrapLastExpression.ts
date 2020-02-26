@@ -4,6 +4,9 @@ export default (): Plugin => ({
   visitor: {
     Program: {
       leave(node) {
+        if (node.body.find(n => n.type === 'ReturnStatement')) {
+          return;
+        }
         const lastExpr = node.body
           .concat()
           .reverse()
@@ -17,11 +20,11 @@ export default (): Plugin => ({
 
         const hasSemi = this.original.substring(start, end).endsWith(';');
 
-        this.appendLeft(start, ';render(');
+        this.appendLeft(start, ';\nreturn (');
 
         if (hasSemi) this.overwrite(end - 1, end, ');');
         else this.appendRight(end, ');');
-      }
-    }
-  }
+      },
+    },
+  },
 });

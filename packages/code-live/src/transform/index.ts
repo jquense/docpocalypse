@@ -1,10 +1,44 @@
+/* eslint-disable no-restricted-syntax */
 import { Parser } from 'acorn';
 import acornJsx from 'acorn-jsx';
-import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 import { Node, NormalVisitor, Plugin, VisitorMap } from './types';
 
 const parser = Parser.extend(acornJsx());
+
+type NormalVisitorMap = Record<string, NormalVisitor[]>;
+
+const isNode = (n: any): n is Node => n !== null && typeof n.type === 'string';
+
+function walk(
+  ctx: MagicString,
+  visitors: NormalVisitorMap,
+  node?: Node,
+  parent?: Node
+) {
+  if (!node) return;
+
+  const visitor = visitors[node.type];
+
+  visitor?.forEach(v => v.enter?.call(ctx, node, parent));
+
+  // eslint-disable-next-line guard-for-in
+  for (const key in node) {
+    const value = node[key];
+    if (isNode(value)) {
+      walk(ctx, visitors, value, node);
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (isNode(item)) {
+          walk(ctx, visitors, item, node);
+        }
+      }
+    }
+  }
+
+  visitor?.forEach(v => v.leave?.call(ctx, node, parent));
+}
 
 const mergeVisitors = (visitors: VisitorMap[]) => {
   const rootVisitor: Record<string, NormalVisitor[]> = {};
@@ -47,22 +81,7 @@ export function transform(source: string, options: Options = { plugins: [] }) {
     }
   });
 
-  const visitors = mergeVisitors(plugins.map(p => p.visitor!).filter(Boolean));
-
-  walk(ast as any, {
-    enter(node: Node, parent: Node) {
-      const visitor = visitors[node.type];
-      if (visitor) {
-        visitor.forEach(v => v.enter?.call(code, node, parent));
-      }
-    },
-    leave(node, parent) {
-      const visitor = visitors[node.type];
-      if (visitor) {
-        visitor.forEach(v => v.leave?.call(code, node, parent));
-      }
-    }
-  });
+  walk(code, mergeVisitors(plugins.map(p => p.visitor!).filter(Boolean)), ast);
 
   return {
     ast,
@@ -74,19 +93,3 @@ export function transform(source: string, options: Options = { plugins: [] }) {
     })
   };
 }
-
-// Step Five: Create the Yellow Cross
-
-// F U R U’ R’ F’
-
-// R U R’ U R U2 R’
-
-// positioning corners:
-
-// L’ U R U’ L U R’ R U R’ U R U2 R’
-
-// edges:
-
-// F2 U R’ L F2 L’ R U F2 (clockwise)
-
-// F2 U’ R’ L F2 L’ R U’ F2 (counter-clockwise)

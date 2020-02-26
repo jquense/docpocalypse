@@ -1,7 +1,7 @@
-import { Position } from 'acorn';
+import { Position, Node as AcornNode } from 'acorn';
 import MagicString from 'magic-string';
 
-export type Node = any;
+export type Node = AcornNode & { [other: string]: any };
 
 export type VisitorFn = <TNode extends Node = any>(
   this: MagicString,

@@ -8,7 +8,7 @@
   },
   "private": true,
   "dependencies": {
-    "node-plop": "^0.23.0",
+    "node-plop": "^0.24.0",
     "yargs": "^15.0.2"
   }
 }

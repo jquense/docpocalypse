@@ -3,7 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import useEventCallback from '@restart/hooks/useEventCallback';
 import { PrismTheme } from './prism';
@@ -38,15 +38,27 @@ const getRequire = (imports?: Record<string, any>) =>
 
 function codeToComponent<TScope extends {}>(
   code: string,
-  scope?: TScope
+  scope?: TScope,
+  renderAsComponent = false,
 ): Promise<React.ReactElement> {
   return new Promise((resolve, reject) => {
     const isInline = !code.includes('render(');
 
+    if (renderAsComponent && !isInline) {
+      throw new Error(
+        'Code using `render()` cannot use top level hooks. Either provide your own stateful component, or return a jsx element directly.',
+      );
+    }
+
     const result = transpile(code, isInline);
 
+    if (renderAsComponent) {
+      result.code = `return React.createElement(function StateContainer() {\n${result.code}\n})`;
+      // console.log(result.code);
+    }
+
     const render = (element: JSX.Element) => {
-      if (typeof element === 'undefined') {
+      if (element === undefined) {
         reject(new SyntaxError('`render()` was called without a JSX element'));
         return;
       }
@@ -63,7 +75,16 @@ function codeToComponent<TScope extends {}>(
     // eslint-disable-next-line no-new-func
     const fn = new Function(...args, result.code);
 
-    return fn(...values);
+    const element = fn(...values);
+
+    if (!isInline) return;
+
+    if (element === undefined) {
+      reject(new SyntaxError('The code did not return a JSX element'));
+      return;
+    }
+
+    resolve(element);
   });
 }
 
@@ -78,6 +99,21 @@ export interface Props<TScope> {
   theme?: PrismTheme;
 
   showImports?: boolean;
+
+  /**
+   * Creates a react component using the code text as it's body. This allows
+   * using top level hooks in your example without having to create and return your
+   * own component. Cannot be used with `render()` in the example.
+   *
+   * ```jsx
+   * import Button from './Button'
+   *
+   * const [active, setActive] = useState()
+   *
+   * <Button active={active} onClick={() => setActive(true)}/>
+   * ```
+   */
+  renderAsComponent?: boolean;
   /**
    * A function that resolves to a hash of import requests to the result
    *
@@ -112,7 +148,8 @@ export default function Provider<TScope extends {} = {}>({
   language,
   theme,
   showImports = false,
-  resolveImports = () => Promise.resolve({})
+  renderAsComponent = false,
+  resolveImports = () => Promise.resolve({}),
 }: Props<TScope>) {
   const [error, setError] = useState<Error | null>(null);
   const [element, setElement] = useState<React.ReactElement | null>(null);
@@ -129,10 +166,14 @@ export default function Provider<TScope extends {} = {}>({
   const handleChange = useEventCallback((nextCode: string) => {
     resolveImports()
       .then(importHash =>
-        codeToComponent(`${importBlock}\n\n${nextCode}`, {
-          ...scope,
-          require: getRequire(importHash)
-        })
+        codeToComponent(
+          `${importBlock}\n\n${nextCode}`,
+          {
+            ...scope,
+            require: getRequire(importHash),
+          },
+          renderAsComponent,
+        ),
       )
       .then(c => {
         setElement(c);
@@ -156,9 +197,9 @@ export default function Provider<TScope extends {} = {}>({
       language,
       theme,
       onError: setError,
-      onChange: handleChange
+      onChange: handleChange,
     }),
-    [code, element, error, handleChange, language, theme]
+    [code, element, error, handleChange, language, theme],
   );
 
   return <Context.Provider value={context}>{children}</Context.Provider>;
