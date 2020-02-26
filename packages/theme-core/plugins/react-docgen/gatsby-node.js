@@ -1,6 +1,9 @@
 const path = require('path');
-const camelCase = require('lodash/camelCase');
+
 const DataUtils = require('@docpocalypse/gatsby-data-utils');
+const camelCase = require('lodash/camelCase');
+
+const parseCodeBlocks = require('../../parse-code-blocks');
 const parseMetadata = require('./parse');
 
 const propsId = (parentId, name) => `${parentId}--ComponentProp-${name}`;
@@ -48,7 +51,7 @@ exports.sourceNodes = ({ actions, schema }) => {
         returns: JSON
       }
 
-      type ComponentProp implements Node @infer {
+      type ComponentProp implements Node @dontInfer {
         name: String
         type: PropTypeValue
         flowType: JSON
@@ -58,24 +61,25 @@ exports.sourceNodes = ({ actions, schema }) => {
         defaultValue: PropDefaultValue
         tags: [ComponentTag]!
 
-        # The raw comment block leading a propType declaration
+        "The raw comment block leading a propType declaration"
         docblock: String
 
-        # Describes whether or not the propType is required, i.e. not \`null\`
+        "Describes whether or not the propType is required, i.e. not \`null\`"
         required: Boolean!
       }
-
-      # type ComponentDescription implements Node @dontInfer {
-      #   text: String!
-      #   mdx: MdxDescription @link
-      # }
 
       type ComponentComposes @dontInfer {
         path: String!
         metadata: ComponentMetadata
       }
 
-      type ComponentMetadata implements Node @infer {
+      type ComponentCodeBlockImport {
+        type: ImportType!
+        request: String!
+        context: String!
+      }
+
+      type ComponentMetadata implements Node @dontInfer {
         displayName: String
 
         absolutePath: String
@@ -86,15 +90,17 @@ exports.sourceNodes = ({ actions, schema }) => {
 
         tags: [ComponentTag]!
 
-        # A list of additional modules "spread" into this component's propTypes such as:
-        #
-        # propTypes = {
-        #   name: PropTypes.string,
-        #   ...AnotherComponent.propTypes,
-        # }
+        """
+        A list of additional modules "spread" into this component's propTypes such as:
+
+        propTypes = {
+          name: PropTypes.string,
+          ...AnotherComponent.propTypes,
+        }
+        """
         composes: [ComponentComposes!]!
 
-        # Component methods
+        "Component methods"
         methods: [ComponentMethod]
       }
     `,
@@ -103,32 +109,42 @@ exports.sourceNodes = ({ actions, schema }) => {
       extensions: ['dontInfer'],
       fields: {
         body: 'String!',
-        mdxAST: 'JSON'
-      }
+        mdxAST: 'JSON',
+        codeBlockImports: {
+          type: ['ComponentCodeBlockImport'],
+          resolve: src => parseCodeBlocks(src),
+        },
+      },
     }),
     schema.buildObjectType({
       name: `ComponentMarkdownRemark`,
       extensions: ['dontInfer'],
       fields: {
-        html: 'String'
-      }
+        html: 'String',
+      },
     }),
+
     schema.buildObjectType({
       name: `ComponentDescription`,
       interfaces: ['Node'],
-      extensions: ['dontInfer'],
+      extensions: {
+        dontInfer: true,
+        childOf: {
+          types: ['ComponentMetadata', 'ComponentProp'],
+        },
+      },
       fields: {
         text: 'String!',
         markdownRemark: {
           type: 'ComponentMarkdownRemark',
-          resolve: DataUtils.proxyToNode('fields.markdownRemark')
+          resolve: DataUtils.proxyToNode('fields.markdownRemark'),
         },
         mdx: {
           type: 'ComponentMdx',
-          resolve: DataUtils.proxyToNode('fields.mdx')
-        }
-      }
-    })
+          resolve: DataUtils.proxyToNode('fields.mdx'),
+        },
+      },
+    }),
   ]);
 };
 
@@ -137,8 +153,8 @@ exports.createResolvers = ({ createResolvers }) => {
     ComponentProp: {
       required: {
         type: 'Boolean!',
-        resolve: ({ required }) => required || false
-      }
+        resolve: ({ required }) => required || false,
+      },
     },
     ComponentMetadata: {
       composes: {
@@ -147,24 +163,24 @@ exports.createResolvers = ({ createResolvers }) => {
           if (!composes || !composes.length) return [];
           const file = context.nodeModel.getNodeById({
             id: parent,
-            type: 'File'
+            type: 'File',
           });
 
           const resolve = composes.map(c =>
-            path.resolve(path.dirname(file.absolutePath), c)
+            path.resolve(path.dirname(file.absolutePath), c),
           );
 
           const result = [];
           context.nodeModel
             .getAllNodes(
               { type: 'ComponentMetadata' },
-              { path: context.path, connectionType: 'ComponentMetadata ' }
+              { path: context.path, connectionType: 'ComponentMetadata ' },
             )
             .forEach(node => {
               const idx = resolve.findIndex(
                 p =>
                   node.absolutePath === p ||
-                  withoutExtension(node.absolutePath) === p
+                  withoutExtension(node.absolutePath) === p,
               );
 
               if (idx !== -1) {
@@ -173,9 +189,9 @@ exports.createResolvers = ({ createResolvers }) => {
             });
 
           return result;
-        }
-      }
-    }
+        },
+      },
+    },
   });
 };
 
@@ -197,7 +213,7 @@ function createDescriptionNode(
   entry,
   actions,
   createNodeId,
-  createContentDigest
+  createContentDigest,
 ) {
   const { createNode } = actions;
 
@@ -212,8 +228,8 @@ function createDescriptionNode(
       type: `ComponentDescription`,
       mediaType: `text/markdown`,
       content: entry.description,
-      contentDigest: createContentDigest(entry.description)
-    }
+      contentDigest: createContentDigest(entry.description),
+    },
   };
 
   node.description = descriptionNode.id;
@@ -228,7 +244,7 @@ function createPropNodes(
   component,
   actions,
   createNodeId,
-  createContentDigest
+  createContentDigest,
 ) {
   const { createNode } = actions;
   const children = new Array(component.props.length);
@@ -245,8 +261,8 @@ function createPropNodes(
       parentType: prop.type,
       internal: {
         type: `ComponentProp`,
-        contentDigest: createContentDigest(content)
-      }
+        contentDigest: createContentDigest(content),
+      },
     };
     children[i] = propNode.id;
     propNode = createDescriptionNode(
@@ -254,13 +270,13 @@ function createPropNodes(
       prop,
       actions,
       createNodeId,
-      createContentDigest
+      createContentDigest,
     );
     createNode(propNode);
   });
 
   node.props = children;
-  node.children = node.children.concat(children);
+
   return node;
 }
 
@@ -280,7 +296,7 @@ function createPassthrough(node, actions, getNode) {
       createNodeField({
         node: parentNode,
         name: camelCase(type),
-        value: node.id
+        value: node.id,
       });
       return true;
     }
@@ -297,9 +313,9 @@ exports.onCreateNode = async (
     getNode,
     createNodeId,
     reporter,
-    createContentDigest
+    createContentDigest,
   },
-  pluginOptions
+  pluginOptions,
 ) => {
   const { createNode, createParentChildLink } = actions;
 
@@ -316,7 +332,7 @@ exports.onCreateNode = async (
   } catch (err) {
     reporter.error(
       `There was a problem parsing component metadata for file: "${node.relativePath}"`,
-      err
+      err,
     );
     return;
   }
@@ -335,8 +351,8 @@ exports.onCreateNode = async (
       absolutePath: node.absolutePath || null,
       internal: {
         contentDigest,
-        type: `ComponentMetadata`
-      }
+        type: `ComponentMetadata`,
+      },
     };
 
     createParentChildLink({ parent: node, child: metadataNode });
@@ -345,14 +361,14 @@ exports.onCreateNode = async (
       component,
       actions,
       createNodeId,
-      createContentDigest
+      createContentDigest,
     );
     metadataNode = createDescriptionNode(
       metadataNode,
       component,
       actions,
       createNodeId,
-      createContentDigest
+      createContentDigest,
     );
     createNode(metadataNode);
   });

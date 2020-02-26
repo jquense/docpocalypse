@@ -3,12 +3,12 @@ import {
   GraphQLNamedType,
   GraphQLObjectType,
   getNamedType,
-  getNullableType
+  getNullableType,
 } from 'gatsby/graphql';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   ComposeOutputType,
-  ObjectTypeComposerFieldConfig
+  ObjectTypeComposerFieldConfig,
 } from 'graphql-compose';
 import get from 'lodash/get';
 
@@ -19,11 +19,11 @@ export type GraphQLResolveInfo = import('gatsby/graphql').GraphQLResolveInfo;
 export interface NodeModel {
   getNodeById<T = any>(
     opts: { id: string; type?: GraphQLNamedType | string },
-    deps?: PageDependencies
+    deps?: PageDependencies,
   ): T | undefined;
   getNodesByIds<T = any>(
     opts: { ids: string[]; type?: GraphQLNamedType | string },
-    deps?: PageDependencies
+    deps?: PageDependencies,
   ): T[] | undefined;
   runQuery<T>(
     args: {
@@ -31,7 +31,7 @@ export interface NodeModel {
       type?: GraphQLNamedType | string;
       firstOnly?: boolean;
     },
-    deps?: PageDependencies
+    deps?: PageDependencies,
   ): T | undefined;
 }
 
@@ -47,7 +47,7 @@ const resolveWithType = async (
   obj: unknown,
   args: Args,
   ctx: GatsbyResolverContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => {
   const fieldValue = await ctx.defaultFieldResolver(obj, args, ctx, info);
   const type = getNamedType(getNullableType(info.returnType));
@@ -56,7 +56,7 @@ const resolveWithType = async (
 
 const defaultLinkResolver = (
   [fieldValue, type]: [any, GraphQLNamedType],
-  ctx: GatsbyResolverContext
+  ctx: GatsbyResolverContext,
 ) =>
   Array.isArray(fieldValue)
     ? ctx.nodeModel.getNodesByIds({ ids: fieldValue, type }, { path: ctx.path })
@@ -67,7 +67,7 @@ function link(resolver = defaultLinkResolver) {
     obj: unknown,
     args: Args,
     ctx: GatsbyResolverContext,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
   ) => {
     // console.log('link!', obj);
     return resolver(await resolveWithType(obj, args, ctx, info), ctx);
@@ -77,7 +77,7 @@ function link(resolver = defaultLinkResolver) {
 function getNodeById<T = any>(
   src: unknown,
   idPath: string,
-  { nodeModel, path }: GatsbyResolverContext
+  { nodeModel, path }: GatsbyResolverContext,
 ) {
   const ids = get(src, idPath);
   if (!ids) return null;
@@ -96,13 +96,13 @@ interface PassThroughOptions {
 function passThroughResolver({
   type,
   fieldName,
-  parentId = 'parent'
+  parentId = 'parent',
 }: PassThroughOptions) {
   return (
     src: unknown,
     args: Args,
     ctx: GatsbyResolverContext,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
   ) => {
     async function resolve(node: unknown) {
       fieldName = fieldName || info.fieldName;
@@ -111,7 +111,7 @@ function passThroughResolver({
       const resolver = gqlType.getFields()[fieldName].resolve;
       const result = await resolver?.(node, args, ctx, {
         ...info,
-        fieldName
+        fieldName,
       });
       return result == null ? null : result;
     }
@@ -128,11 +128,11 @@ function passThroughResolver({
 
 function passThroughType(
   type: ComposeOutputType<any>,
-  parentType: string
+  parentType: string,
 ): ObjectTypeComposerFieldConfig<any, any> {
   return {
     type,
-    resolve: passThroughResolver({ type: parentType })
+    resolve: passThroughResolver({ type: parentType }),
   };
 }
 
@@ -145,7 +145,7 @@ function isUUID(str: string) {
 function resolveNodePath(
   obj: unknown,
   path: string,
-  ctx: GatsbyResolverContext
+  ctx: GatsbyResolverContext,
 ) {
   const parts = path.split('.');
   let isStalePath = false;
@@ -181,7 +181,7 @@ function proxyToNode(idPath: string) {
     src: unknown,
     _: Args,
     ctx: GatsbyResolverContext,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
   ) => {
     if (!get(src, idPath)) return null;
 
@@ -189,23 +189,26 @@ function proxyToNode(idPath: string) {
     if (!otherNode) return null;
 
     const otherFields = (info.schema.getType(
-      otherNode.internal.type
+      otherNode.internal.type,
     ) as GraphQLObjectType).getFields();
 
-    const fieldNames = Object.keys(
-      (info.returnType as GraphQLObjectType).getFields()
-    );
-    const result: Record<string, any> = {};
+    const fieldConfig = (info.returnType as GraphQLObjectType).getFields();
+
+    const result: Record<string, any> = { ...otherNode };
+
     await Promise.all(
-      fieldNames.map(async name => {
-        const other = otherFields[name];
-        const resolver = (other && other.resolve) || ctx.defaultFieldResolver;
+      Object.keys(fieldConfig).map(async name => {
+        // if there is no matching field then don't do anything and let the current
+        // types resolver handle it later
+        if (!otherFields[name]) return;
+
+        const resolver = otherFields[name]?.resolve || ctx.defaultFieldResolver;
 
         result[name] = await resolver(otherNode, _, ctx, {
           ...info,
-          fieldName: name
+          fieldName: name,
         });
-      })
+      }),
     );
     return result;
   };
@@ -217,5 +220,5 @@ export {
   proxyToNode,
   resolveNodePath,
   passThroughType,
-  passThroughResolver
+  passThroughResolver,
 };

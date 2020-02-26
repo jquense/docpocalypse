@@ -1,6 +1,7 @@
 import { ASTNode, namedTypes as t, visit } from 'ast-types';
-import { resolver, utils } from '@monastic.panic/react-docgen';
-import resolveHOC from '@monastic.panic/react-docgen/dist/utils/resolveHOC';
+import { resolver, utils } from 'react-docgen';
+import resolveHOC from 'react-docgen/dist/utils/resolveHOC';
+
 import { isStyledComponent } from './utils';
 
 interface Options {
@@ -23,7 +24,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
           if (
             utils.match(callee.node, {
               object: { name: 'Object' },
-              property: { name: 'assign' }
+              property: { name: 'assign' },
             })
           ) {
             comp = comp.get('arguments', 0);
@@ -46,7 +47,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
     };
 
     visit(ast, {
-      visitExportDefaultDeclaration: visitor
+      visitExportDefaultDeclaration: visitor,
     });
 
     return components;
@@ -63,7 +64,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
     visit(ast, {
       visitExportDeclaration: visitor,
       visitExportNamedDeclaration: visitor,
-      visitExportDefaultDeclaration: visitor
+      visitExportDefaultDeclaration: visitor,
     });
     return components;
   }
@@ -82,7 +83,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
           if (isStyledComponent(comp, moduleName)) components.push(comp);
         }
         return false;
-      }
+      },
     });
     return components;
   }
@@ -90,7 +91,7 @@ export function createStyledResolvers({ moduleName }: Options = {}) {
   return {
     findAllStyledComponents,
     findAllExportedStyledComponents,
-    findExportedStyledComponent
+    findExportedStyledComponent,
   };
 }
 

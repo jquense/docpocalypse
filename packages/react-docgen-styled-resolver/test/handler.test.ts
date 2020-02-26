@@ -1,4 +1,5 @@
-import { parse } from '@monastic.panic/react-docgen';
+import { parse } from 'react-docgen';
+
 import handler from '../src/handler';
 import resolver from '../src/resolver';
 // import * as Utils from './utils';
@@ -6,7 +7,7 @@ import resolver from '../src/resolver';
 describe('resolver', () => {
   const run = src =>
     parse(src, resolver, [handler], {
-      filename: 'foo.tsx'
+      filename: 'foo.tsx',
     });
 
   describe('props', () => {
@@ -28,9 +29,9 @@ describe('resolver', () => {
           description: 'foo',
           required: false,
           tsType: {
-            name: 'string'
-          }
-        }
+            name: 'string',
+          },
+        },
       });
     });
   });

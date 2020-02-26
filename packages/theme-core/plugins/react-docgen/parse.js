@@ -1,12 +1,7 @@
-const {
-  handlers: h,
-  parse,
-  resolver
-} = require('@monastic.panic/react-docgen');
-const {
-  ERROR_MISSING_DEFINITION
-} = require('@monastic.panic/react-docgen/dist/parse');
 const { codeFrameColumns } = require('@babel/code-frame');
+const { handlers: h, parse, resolver } = require('react-docgen');
+const { ERROR_MISSING_DEFINITION } = require('react-docgen/dist/parse');
+
 const { createDisplayNameHandler } = require('./displayname-handler');
 const { applyPropTags, cleanTags, parseTags } = require('./doclets');
 
@@ -18,7 +13,7 @@ const defaultHandlers = [
   h.defaultPropsHandler,
   h.componentDocblockHandler,
   h.componentMethodsHandler,
-  h.componentMethodsJsDocHandler
+  h.componentMethodsJsDocHandler,
 ];
 
 let fileCount = 0;
@@ -28,13 +23,13 @@ let fileCount = 0;
  */
 function makeHandlers(node, handlers) {
   handlers = (handlers || []).map(handler => (...args) =>
-    handler(...args, node)
+    handler(...args, node),
   );
   return [
     createDisplayNameHandler(
-      node.absolutePath || `/UnknownComponent${++fileCount}`
+      node.absolutePath || `/UnknownComponent${++fileCount}`,
     ),
-    ...handlers
+    ...handlers,
   ];
 }
 
@@ -48,8 +43,8 @@ module.exports = function parseMetadata(content, node, options) {
       defaultHandlers.concat(makeHandlers(node, handlers)),
       {
         ...parseOptions,
-        filename: node.absolutePath
-      }
+        filename: node.absolutePath,
+      },
     );
   } catch (err) {
     if (err.message === ERROR_MISSING_DEFINITION) return [];
@@ -60,8 +55,8 @@ module.exports = function parseMetadata(content, node, options) {
         content,
         err.loc.start || { start: err.loc },
         {
-          highlightCode: true
-        }
+          highlightCode: true,
+        },
       );
     }
     throw err;

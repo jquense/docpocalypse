@@ -1,11 +1,12 @@
 const { dirname, extname, basename, sep } = require('path');
+
 const { namedTypes: types } = require('ast-types');
-const { utils } = require('@monastic.panic/react-docgen');
+const { utils } = require('react-docgen');
 
 const {
   getMemberValuePath,
   getNameOrValue,
-  isExportsOrModuleAssignment
+  isExportsOrModuleAssignment,
 } = utils;
 
 const DEFAULT_NAME = `UnknownComponent`;
@@ -24,7 +25,7 @@ function getNameFromPath(path) {
           computed && getNameFromPath(path)
             ? name
             : `${name}.${getNameFromPath(path) || ``}`,
-        getNameFromPath(path.get(`object`))
+        getNameFromPath(path.get(`object`)),
       );
     default:
       return null;
@@ -100,7 +101,7 @@ function createDisplayNameHandler(filePath) {
     let displayName = [
       getStaticDisplayName,
       getNodeIdentifier,
-      getVariableIdentifier
+      getVariableIdentifier,
     ].reduce((name, getDisplayName) => name || getDisplayName(path), ``);
 
     if (!displayName) {

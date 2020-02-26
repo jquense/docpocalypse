@@ -1,20 +1,21 @@
 const {
   resolveNodePath,
   getNodeById,
-  passThroughResolver
+  passThroughResolver,
 } = require('@docpocalypse/gatsby-data-utils');
 
-const Metadata = require('./dataModel/Metadata');
-const DocumentationJs = require('./dataModel/DocumentationJs');
-const createExampleNode = require('./dataModel/createExampleNode');
-const createDocpocalypseNode = require('./dataModel/createDocpocalypseNode');
+const parseCodeBlocks = require('../parse-code-blocks');
+const DocumentationJs = require('./DocumentationJs');
+const Metadata = require('./Metadata');
+const createDocpocalypseNode = require('./createDocpocalypseNode');
+const createExampleNode = require('./createExampleNode');
 
 const mdxType = (type, fieldName) => ({
   type,
   resolve: passThroughResolver({
     fieldName,
-    type: 'Mdx'
-  })
+    type: 'Mdx',
+  }),
 });
 
 const metadataType = (type, fieldName) => ({
@@ -22,8 +23,8 @@ const metadataType = (type, fieldName) => ({
   resolve: passThroughResolver({
     fieldName,
     type: 'ComponentMetadata',
-    parentId: 'fields.metadataId'
-  })
+    parentId: 'fields.metadataId',
+  }),
 });
 
 const typedocType = (type, fieldName) => ({
@@ -31,8 +32,8 @@ const typedocType = (type, fieldName) => ({
   resolve: passThroughResolver({
     fieldName,
     type: 'TypedocNode',
-    parentId: 'fields.typedocId'
-  })
+    parentId: 'fields.typedocId',
+  }),
 });
 
 const byFields = (obj, defaultValue = null) => {
@@ -44,15 +45,13 @@ const byFields = (obj, defaultValue = null) => {
     return defaultValue;
   };
 };
-// const { Kind } = require('gatsby-plugin-typedoc/types');
-const parseCodeBlocks = require('./parse-code-blocks');
 
 exports.createResolvers = (...args) => {
   Metadata.createResolvers(...args);
   DocumentationJs.createResolvers(...args);
 };
 
-exports.createSchemaCustomization = ({ actions, schema }) => {
+exports.createSchemaCustomization = ({ actions, schema, cache }) => {
   const { createTypes } = actions;
 
   createTypes([
@@ -67,7 +66,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
         value: JSON
       }
 
-      type CodeBlockImport {
+      type DocpocalypseCodeBlockImport {
         type: ImportType!
         request: String!
         context: String!
@@ -89,11 +88,11 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
         frontmatter: mdxType('MdxFrontmatter'),
         body: mdxType('String'),
         codeBlockImports: {
-          type: ['CodeBlockImport'],
+          type: ['DocpocalypseCodeBlockImport'],
           resolve: (src, _, ctx) =>
-            parseCodeBlocks(getNodeById(src, 'parent', ctx))
-        }
-      }
+            parseCodeBlocks(getNodeById(src, 'parent', ctx), cache),
+        },
+      },
     }),
     schema.buildObjectType({
       name: 'Docpocalypse',
@@ -114,14 +113,14 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
             return context.nodeModel
               .getAllNodes(
                 { type: 'DocpocalypseExample' },
-                { path: context.path, connectionType: 'DocpocalypseExample' }
+                { path: context.path, connectionType: 'DocpocalypseExample' },
               )
               .find(
                 example =>
                   example.fileName === source.name ||
-                  example.fileName === source.fileName
+                  example.fileName === source.fileName,
               );
-          }
+          },
         },
         description: metadataType('ComponentDescription'),
         props: metadataType('[ComponentProp]'),
@@ -130,7 +129,7 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
         signatures: {
           type: '[DocumentationJs]!',
           resolve: (src, _, ctx) =>
-            getNodeById(src, 'fields.docJsIds', ctx) || []
+            getNodeById(src, 'fields.docJsIds', ctx) || [],
         },
         tags: {
           type: '[DocpocalypseTag]!',
@@ -146,15 +145,15 @@ exports.createSchemaCustomization = ({ actions, schema }) => {
                   .filter(Boolean)
                   .map(({ title, description }) => ({
                     name: title,
-                    value: description
+                    value: description,
                   }));
-              }
+              },
             },
-            []
-          )
-        }
-      }
-    })
+            [],
+          ),
+        },
+      },
+    }),
   ]);
 };
 

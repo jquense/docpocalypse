@@ -1,5 +1,5 @@
 import { namedTypes as t } from 'ast-types';
-import resolveToModule from '@monastic.panic/react-docgen/dist/utils/resolveToModule';
+import resolveToModule from 'react-docgen/dist/utils/resolveToModule';
 
 export const isSimpleStyled = (tagPath: any) =>
   t.CallExpression.check(tagPath.node) &&

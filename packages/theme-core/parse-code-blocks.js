@@ -1,8 +1,9 @@
-const { babelParseToAst } = require('gatsby/dist/utils/babel-parse-to-ast');
-const traverse = require('@babel/traverse').default;
 const { dirname } = require('path');
-const visit = require('unist-util-visit');
+
+const traverse = require('@babel/traverse').default;
 const mdx = require('@mdx-js/mdx');
+const { babelParseToAst } = require('gatsby/dist/utils/babel-parse-to-ast');
+const visit = require('unist-util-visit');
 
 const { isTypescript, canParse } = require('./can-parse');
 
@@ -13,7 +14,7 @@ const compiler = mdx.createMdxAstCompiler({
   rehypePlugins: [],
   remarkPlugins: [],
   plugins: [],
-  root: process.cwd()
+  root: process.cwd(),
 });
 
 const parseProps = node => {
@@ -32,7 +33,9 @@ const parseProps = node => {
   );
 };
 
-module.exports = mdxNode => {
+module.exports = (mdxNode, _cache) => {
+  // const payloadCacheKey = `docpocalypse-mdx-cache-${mdxNode.internal.contentDigest}`;
+
   const mdxAST = compiler.parse(mdxNode.rawBody);
 
   const context = mdxNode.fileAbsolutePath
@@ -59,9 +62,9 @@ module.exports = mdxNode => {
           imports.set(request, {
             request,
             context,
-            type: 'IMPORT'
+            type: 'IMPORT',
           });
-        }
+        },
       });
     } catch {
       /* ignore */

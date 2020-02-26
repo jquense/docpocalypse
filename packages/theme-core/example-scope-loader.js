@@ -1,6 +1,6 @@
-const { promisify } = require('util');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const { promisify } = require('util');
 
 const helpers = `
 const d = (obj) => obj && obj.__esModule ? obj.default : obj;
@@ -27,7 +27,6 @@ function getEntry(loader) {
 
   try {
     const entryFile = fs.readdirSync(srcDir).find(f => f.startsWith('entry'));
-    // console.log(fs.readdirSync(srcDir), entryFile);
 
     return entryFile && path.join(srcDir, entryFile);
   } catch {
@@ -38,7 +37,7 @@ function getEntry(loader) {
 function exampleScopeLoader(src) {
   const { exampleCodeScope } = this.query || {};
   const resolve = promisify(this.resolve);
-
+  const { emitError } = this;
   const entryFile = getEntry(this);
 
   // This file changes every time there is an update to imports
@@ -50,9 +49,20 @@ function exampleScopeLoader(src) {
   async function toImports(imports, name) {
     const results = await Promise.all(
       imports.map(async i => {
-        const file = await resolve(i.context, i.request);
-        return `"${i.request}": import(/* webpackChunkName: "${name}" */ '${file}')`;
-      })
+        try {
+          const file = await resolve(i.context, i.request);
+          return `"${i.request}": import(/* webpackChunkName: "${name}" */ '${file}')`;
+        } catch (err) {
+          emitError(
+            new Error(
+              `Docpocalypse Error: Import in example code block could not be resolved.\n\n` +
+                `\timport request: "${i.request}" relative to "${i.context}"\n\n` +
+                `Either the requested file doesn't exist, or webpack cannot resolve it.`,
+            ),
+          );
+          return '';
+        }
+      }),
     );
 
     return results.join(',\n');
@@ -65,8 +75,8 @@ function exampleScopeLoader(src) {
           ? `'${name}': () => allValues({
     ${await toImports(imports, name)}
   }),`
-          : ''
-      )
+          : '',
+      ),
     );
 
     const entryRequire = entryFile ? `require('${entryFile}');\n` : '';

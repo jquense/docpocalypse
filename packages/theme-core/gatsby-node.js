@@ -1,27 +1,67 @@
 const fs = require('fs');
 const path = require('path');
 
-const apis = require('./create-node');
+const apis = require('./dataModel');
 const { Imports } = require('./example-scope-loader');
 
 const hashPath = path.resolve('.cache/example-import-hash');
 
 module.exports = apis;
 
+function collectImports(name, node, context) {
+  if (node.example) Imports.set(name, node.example.codeBlockImports);
+
+  // imports aren't likely to have a context since the're parent isn't a file
+  context =
+    context || (node.absolutePath ? path.dirname(node.absolutePath) : '');
+
+  if (node.description && node.description.mdx) {
+    Imports.set(
+      name,
+      node.description.mdx.codeBlockImports.map(imports => ({
+        ...imports,
+        context,
+      })),
+    );
+  }
+  if (node.props && node.props.length) {
+    node.props.forEach(n => collectImports(name, n, context));
+  }
+}
+
 module.exports.createPages = async (
   { graphql, actions, createContentDigest },
-  pluginOptions
+  pluginOptions,
 ) => {
   const { templates } = pluginOptions;
   Imports.clear();
 
   const { data, errors } = await graphql(/* GraphQL */ `
-    {
+    fragment imports on ComponentDescription {
+      mdx {
+        codeBlockImports {
+          type
+          request
+          context
+        }
+      }
+    }
+
+    query {
       allDocpocalypse {
         nodes {
           name
           type
           id
+          absolutePath
+          description {
+            ...imports
+          }
+          props {
+            description {
+              ...imports
+            }
+          }
           example {
             id
             codeBlockImports {
@@ -38,17 +78,16 @@ module.exports.createPages = async (
   if (errors) throw errors;
 
   for (const doc of data.allDocpocalypse.nodes) {
-    if (doc.example) {
-      Imports.set(doc.name, doc.example.codeBlockImports);
-    }
+    collectImports(doc.name, doc);
+
     actions.createPage({
       path: `/api/${doc.name}`,
       component: templates[doc.type],
       context: {
         nodeId: doc.id,
         // triggers query rerun
-        exampleId: doc.example && doc.example.id
-      }
+        exampleId: doc.example && doc.example.id,
+      },
     });
   }
 
@@ -67,13 +106,13 @@ module.exports.createPages = async (
 
 module.exports.onCreateWebpackConfig = (
   { actions, getConfig },
-  pluginOptions
+  pluginOptions,
 ) => {
   const { plugins } = getConfig();
 
   if (plugins) {
     const cssExtract = plugins.find(
-      p => p.constructor && p.constructor.name === 'MiniCssExtractPlugin'
+      p => p.constructor && p.constructor.name === 'MiniCssExtractPlugin',
     );
 
     if (cssExtract) cssExtract.options.ignoreeOrder = true;
@@ -86,10 +125,10 @@ module.exports.onCreateWebpackConfig = (
           include: [require.resolve('./wrap-page')],
           use: {
             loader: require.resolve('./example-scope-loader'),
-            options: pluginOptions
-          }
-        }
-      ]
-    }
+            options: pluginOptions,
+          },
+        },
+      ],
+    },
   });
 };

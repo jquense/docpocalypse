@@ -1,11 +1,12 @@
 import { namedTypes as t } from 'ast-types';
-import { unwrapUtilityType } from '@monastic.panic/react-docgen/dist/utils/flowUtilityTypes';
-import { applyToFlowTypeProperties } from '@monastic.panic/react-docgen/dist/utils/getFlowTypeFromReactComponent';
-import getPropertyName from '@monastic.panic/react-docgen/dist/utils/getPropertyName';
-import getTSType from '@monastic.panic/react-docgen/dist/utils/getTSType';
-import resolveToModule from '@monastic.panic/react-docgen/dist/utils/resolveToModule';
-import resolveToValue from '@monastic.panic/react-docgen/dist/utils/resolveToValue';
-import setPropDescription from '@monastic.panic/react-docgen/dist/utils/setPropDescription';
+import { unwrapUtilityType } from 'react-docgen/dist/utils/flowUtilityTypes';
+import { applyToFlowTypeProperties } from 'react-docgen/dist/utils/getFlowTypeFromReactComponent';
+import getPropertyName from 'react-docgen/dist/utils/getPropertyName';
+import getTSType from 'react-docgen/dist/utils/getTSType';
+import resolveToModule from 'react-docgen/dist/utils/resolveToModule';
+import resolveToValue from 'react-docgen/dist/utils/resolveToValue';
+import setPropDescription from 'react-docgen/dist/utils/setPropDescription';
+
 import { Documentation } from './types';
 import { isShorthandStyled, isSimpleStyled, isStyledComponent } from './utils';
 
@@ -13,7 +14,7 @@ import { isShorthandStyled, isSimpleStyled, isStyledComponent } from './utils';
 function setPropDescriptor(
   documentation: Documentation,
   path: any,
-  typeParams
+  typeParams,
 ): void {
   if (t.ObjectTypeSpreadProperty.check(path.node)) {
     const argument = unwrapUtilityType(path.get('argument'));
@@ -25,7 +26,7 @@ function setPropDescriptor(
         (propertyPath, innerTypeParams) => {
           setPropDescriptor(documentation, propertyPath, innerTypeParams);
         },
-        typeParams
+        typeParams,
       );
       return;
     }
@@ -41,7 +42,7 @@ function setPropDescriptor(
         (propertyPath, innerTypeParams) => {
           setPropDescriptor(documentation, propertyPath, innerTypeParams);
         },
-        typeParams
+        typeParams,
       );
     } else {
       documentation.addComposes(name.node.name);
@@ -110,7 +111,7 @@ export function createHandler({ moduleName }: any = {}) {
       typePath,
       (propertyPath, typeParams) => {
         setPropDescriptor(documentation, propertyPath, typeParams);
-      }
+      },
     );
   };
 }
