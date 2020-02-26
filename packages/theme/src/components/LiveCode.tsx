@@ -140,13 +140,10 @@ export default function LiveCode({
         )}
 
         <div className={cn(contentClassName, styles.content)}>
-          <Preview
-            className={cn(previewClassName, styles.preview)}
-            infoComponent={StyledInfoMessage}
-          />
+          <Preview className={cn(previewClassName, styles.preview)} />
 
           <div className={cn(editorClassName, styles.editor)}>
-            {showCode && <Editor />}
+            {showCode && <Editor infoComponent={StyledInfoMessage} />}
           </div>
           <Error className={styles.error} />
         </div>
