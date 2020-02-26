@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
 }
 
 const Preview = ({ className, holderTheme }: any) => {
-  const [example, attachRef] = useCallbackRef();
+  const [example, attachRef] = useCallbackRef<HTMLDivElement>();
   const hasTheme = !!holderTheme;
   const element = useElement();
   const error = useError();
@@ -24,7 +24,7 @@ const Preview = ({ className, holderTheme }: any) => {
 
     holderjs.run({
       theme: hasTheme ? 'userTheme' : undefined,
-      images: example.querySelectorAll('img')
+      images: example.querySelectorAll('img'),
     });
   }, [element, example, hasTheme]);
 
