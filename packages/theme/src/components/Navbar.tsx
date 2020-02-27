@@ -5,14 +5,18 @@ import React from 'react';
 
 const styles = dcss`
   @component Navbar {
-    @apply sticky z-40 top-0 flex items-center px-4 text-white bg-primary;
+    @apply sticky z-40 top-0 px-4 text-white bg-primary;
 
-    height: theme('height.navbar');
 
     & .brand {
       @apply text-3xl font-medium tracking-wide font-brand;
 
       text-shadow: 0 1px theme(colors.gray.600);
+    }
+    & .container {
+      @apply max-w-screen-xl mx-auto flex items-center;
+
+      height: theme('height.navbar');
     }
 
     & .content {
@@ -35,10 +39,12 @@ const Navbar = (props: React.HTMLProps<HTMLDivElement>) => {
 
   return (
     <div {...props} className={cn(props.className, styles.Navbar)}>
-      <Link to="/" className={styles.brand}>
-        {site.siteMetadata?.title ?? 'Documentation'}
-      </Link>
-      <span className={styles.content}>{props.children}</span>
+      <div className={styles.container}>
+        <Link to="/" className={styles.brand}>
+          {site.siteMetadata?.title ?? 'Documentation'}
+        </Link>
+        <span className={styles.content}>{props.children}</span>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { css as dcss } from 'astroturf';
 import React from 'react';
+
 import DocumentOutline from './DocumentOutline';
 import Navbar from './Navbar';
 import SideNavigation from './SideNavigation';
@@ -23,7 +24,9 @@ function PageLayout({ children, className, style }: Props) {
       <Navbar />
       <div
         css={dcss`
-          @apply grid grid-cols-12;
+          @apply grid grid-cols-12 mx-auto max-w-screen-xl;
+
+          width: 100%;
         `}
       >
         <SideNavigation

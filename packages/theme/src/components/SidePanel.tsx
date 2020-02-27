@@ -10,7 +10,7 @@ const SidePanel = dstyled('div')`
 
   & > ul {
     padding-left: 0;
-    border-left: 1px solid them('divider.color');
+    border-left: 1px solid theme('colors.gray.400');
 
     & ul {
       padding-left: 1rem;

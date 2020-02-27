@@ -51,6 +51,7 @@ module.exports = ({ theming }) => ({
           'flexDirection',
           'alignItems',
 
+          'maxWidth',
           'minHeight',
           'margin',
           'padding',

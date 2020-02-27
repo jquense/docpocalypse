@@ -2,9 +2,8 @@ import dstyled from 'astroturf';
 
 const SideNavigationPanel = dstyled('div')`
   @component SideNavigationPanel & {
-    @apply p-4;
+    @apply p-4 pt-8;
 
-    background-color: theme('colors.gray.100');
     overflow-y: auto;
 
     @screen md {
