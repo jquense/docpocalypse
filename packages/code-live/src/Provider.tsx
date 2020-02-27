@@ -1,3 +1,4 @@
+import useEventCallback from '@restart/hooks/useEventCallback';
 import React, {
   ReactNode,
   useContext,
@@ -5,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import useEventCallback from '@restart/hooks/useEventCallback';
+
 import { PrismTheme } from './prism';
 import transpile, { removeImports } from './transpile';
 

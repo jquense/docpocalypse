@@ -1,6 +1,3 @@
-import { css as dcss } from 'astroturf';
-import cn from 'classnames';
-import React from 'react';
 import {
   Editor,
   Error,
@@ -8,8 +5,12 @@ import {
   InfoMessage,
   Preview,
   PrismTheme,
-  Provider
+  Provider,
 } from '@docpocalypse/code-live';
+import { css as dcss } from 'astroturf';
+import cn from 'classnames';
+import React from 'react';
+
 import syntaxTheme from '../syntax-theme';
 
 const styles = dcss`
@@ -48,6 +49,9 @@ const styles = dcss`
 export interface Props<TScope extends {} = {}> {
   code: string;
 
+  /** A descriptive string to title the code block */
+  title?: string;
+
   /**
    * A `prism-react-renderer` style theme. Generally the best way to set is
    * via shadowing `@docpocalypse/gatsby-theme/src/syntax-theme`
@@ -79,7 +83,20 @@ export interface Props<TScope extends {} = {}> {
   /** A CSS class passed to the code Preview component */
   previewClassName?: string;
 
-  title?: string;
+  /**
+   * Creates a react component using the code text as it's body. This allows
+   * using top level hooks in your example without having to create and return your
+   * own component. Cannot be used with `render()` in the example.
+   *
+   * ```jsx
+   * import Button from './Button'
+   *
+   * const [active, setActive] = useState()
+   *
+   * <Button active={active} onClick={() => setActive(true)}/>
+   * ```
+   */
+  renderAsComponent?: boolean;
 
   /**
    * Provides the values for any imports used in code examples. `resolveImports` is
@@ -123,7 +140,8 @@ export default function LiveCode({
   title,
   theme = syntaxTheme,
   showCode = true,
-  showImports = false
+  showImports = false,
+  renderAsComponent = false,
 }: Props) {
   return (
     <Provider
@@ -132,6 +150,7 @@ export default function LiveCode({
       language={language}
       theme={theme}
       showImports={showImports}
+      renderAsComponent={renderAsComponent}
       resolveImports={resolveImports}
     >
       <div className={cn(className, styles.LiveCode)}>
