@@ -1,6 +1,5 @@
-// @flow
-
-import type { PrismToken, Token } from "../types";
+/* eslint-disable no-cond-assign */
+import { PrismToken, Token } from './types';
 
 const newlineRe = /\r\n|\r|\n/;
 
@@ -8,20 +7,17 @@ const newlineRe = /\r\n|\r|\n/;
 const normalizeEmptyLines = (line: Token[]) => {
   if (line.length === 0) {
     line.push({
-      types: ["plain"],
-      content: "",
-      empty: true
+      types: ['plain'],
+      content: '',
+      empty: true,
     });
-  } else if (line.length === 1 && line[0].content === "") {
+  } else if (line.length === 1 && line[0].content === '') {
     line[0].empty = true;
   }
 };
 
-const appendTypes = (
-  types: string[],
-  add: string[] | string
-): string[] => {
-  const typesSize = types.length
+const appendTypes = (types: string[], add: string[] | string): string[] => {
+  const typesSize = types.length;
   if (typesSize > 0 && types[typesSize - 1] === add) {
     return types;
   }
@@ -43,7 +39,7 @@ const normalizeTokens = (tokens: Array<PrismToken | string>): Token[][] => {
 
   let i = 0;
   let stackIndex = 0;
-  let currentLine = [];
+  let currentLine: Array<{ types: string[]; content: string }> = [];
 
   const acc = [currentLine];
 
@@ -58,8 +54,8 @@ const normalizeTokens = (tokens: Array<PrismToken | string>): Token[][] => {
       const token = tokenArr[i];
 
       // Determine content and append type to types if necessary
-      if (typeof token === "string") {
-        types = stackIndex > 0 ? types : ["plain"];
+      if (typeof token === 'string') {
+        types = stackIndex > 0 ? types : ['plain'];
         content = token;
       } else {
         types = appendTypes(types, token.type);
@@ -71,7 +67,7 @@ const normalizeTokens = (tokens: Array<PrismToken | string>): Token[][] => {
       }
 
       // If token.content is an array, increase the stack depth and repeat this while-loop
-      if (typeof content !== "string") {
+      if (typeof content !== 'string') {
         stackIndex++;
         typeArrStack.push(types);
         tokenArrStack.push(content);
@@ -87,10 +83,10 @@ const normalizeTokens = (tokens: Array<PrismToken | string>): Token[][] => {
       currentLine.push({ types, content: splitByNewlines[0] });
 
       // Create a new line for each string on a new line
-      for (let i = 1; i < newlineCount; i++) {
+      for (let j = 1; j < newlineCount; j++) {
         normalizeEmptyLines(currentLine);
         acc.push((currentLine = []));
-        currentLine.push({ types, content: splitByNewlines[i] });
+        currentLine.push({ types, content: splitByNewlines[j] });
       }
     }
 

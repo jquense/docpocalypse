@@ -1,7 +1,0 @@
-node_modules
-.DS_Store
-.vscode
-.babelrc
-*.log
-!prism
-!package.json

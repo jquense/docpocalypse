@@ -2,10 +2,7 @@ const path = require('path');
 const cpy = require('cpy');
 const fs = require('fs');
 
-const dir = path.resolve(
-  path.dirname(require.resolve('prism-react-renderer/themes/github')),
-  '../'
-);
+const dir = path.resolve(__dirname, '../prism-react-renderer/lib/themes');
 
 cpy([`**/*`], path.resolve('themes'), { cwd: dir, parents: true }).then(() => {
   fs.readdirSync(dir)

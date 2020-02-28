@@ -1,33 +1,33 @@
-// @flow
+import { Component, ReactNode } from 'react';
 
-import React, { Component, type Node } from "react";
-import normalizeTokens from "../utils/normalizeTokens";
-import themeToDict, { type ThemeDict } from "../utils/themeToDict";
-
-import type {
+import {
   Language,
-  Token,
   LineInputProps,
   LineOutputProps,
+  PrismLib,
+  PrismTheme,
+  RenderProps,
+  Token,
   TokenInputProps,
   TokenOutputProps,
-  RenderProps,
-  PrismLib,
-  PrismTheme
-} from "../types";
+} from './types';
+import normalizeTokens from './normalizeTokens';
+import themeToDict, { ThemeDict } from './themeToDict';
 
 type Props = {
-  Prism: PrismLib,
-  theme?: PrismTheme,
-  language: Language,
-  code: string,
-  children: (props: RenderProps) => Node
+  Prism: PrismLib;
+  theme?: PrismTheme;
+  language: Language;
+  code: string;
+  children: (props: RenderProps) => ReactNode;
 };
 
-class Highlight extends Component<Props, *> {
-  prevTheme: PrismTheme | void;
-  prevLanguage: Language | void;
-  themeDict: ThemeDict | void;
+class Highlight extends Component<Props, any> {
+  prevTheme!: PrismTheme | void;
+
+  prevLanguage!: Language | void;
+
+  themeDict!: ThemeDict | void;
 
   getThemeDict = (props: Props) => {
     if (
@@ -41,24 +41,24 @@ class Highlight extends Component<Props, *> {
     this.prevTheme = props.theme;
     this.prevLanguage = props.language;
 
-    const themeDict = props.theme
+    this.themeDict = props.theme
       ? themeToDict(props.theme, props.language)
       : undefined;
-    return (this.themeDict = themeDict);
+
+    return this.themeDict;
   };
 
   getLineProps = ({
     key,
     className,
     style,
-    line,
     ...rest
   }: LineInputProps): LineOutputProps => {
     const output: LineOutputProps = {
       ...rest,
-      className: "token-line",
+      className: 'token-line',
       style: undefined,
-      key: undefined
+      key: undefined,
     };
 
     const themeDict = this.getThemeDict(this.props);
@@ -83,14 +83,16 @@ class Highlight extends Component<Props, *> {
 
     if (themeDict === undefined) {
       return undefined;
-    } else if (typesSize === 1 && types[0] === "plain") {
-      return empty ? { display: "inline-block" } : undefined;
-    } else if (typesSize === 1 && !empty) {
+    }
+    if (typesSize === 1 && types[0] === 'plain') {
+      return empty ? { display: 'inline-block' } : undefined;
+    }
+    if (typesSize === 1 && !empty) {
       return themeDict[types[0]];
     }
 
-    const baseStyle = empty ? { display: "inline-block" } : {};
-    // $FlowFixMe
+    const baseStyle = empty ? { display: 'inline-block' } : {};
+
     const typeStyles = types.map(type => themeDict[type]);
     return Object.assign(baseStyle, ...typeStyles);
   };
@@ -104,10 +106,10 @@ class Highlight extends Component<Props, *> {
   }: TokenInputProps): TokenOutputProps => {
     const output: TokenOutputProps = {
       ...rest,
-      className: `token ${token.types.join(" ")}`,
+      className: `token ${token.types.join(' ')}`,
       children: token.content,
       style: this.getStyleForToken(token),
-      key: undefined
+      key: undefined,
     };
 
     if (style !== undefined) {
@@ -136,7 +138,7 @@ class Highlight extends Component<Props, *> {
       className: `prism-code language-${language}`,
       style: themeDict !== undefined ? themeDict.root : {},
       getLineProps: this.getLineProps,
-      getTokenProps: this.getTokenProps
+      getTokenProps: this.getTokenProps,
     });
   }
 }

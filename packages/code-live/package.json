@@ -71,7 +71,7 @@
     "cpy": "^8.0.1",
     "holderjs": "^2.9.6",
     "magic-string": "^0.25.6",
-    "prism-react-renderer": "^1.0.2",
+    "@docpocalypse/prism-react-renderer": "^1.0.2",
     "prismjs": "^1.19.0",
     "prop-types": "^15.7.2",
     "react-live": "^2.2.2",

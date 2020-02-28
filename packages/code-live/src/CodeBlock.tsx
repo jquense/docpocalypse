@@ -1,11 +1,11 @@
-import Highlight, { Prism } from 'prism-react-renderer';
+import Highlight, { Prism } from '@docpocalypse/prism-react-renderer';
 import React from 'react';
 import { Language, PrismTheme, RenderProps } from './prism';
 
 export const defaultHighligher = ({
   tokens,
   getLineProps,
-  getTokenProps
+  getTokenProps,
 }: RenderProps) => (
   <>
     {tokens.map((line, i) => (

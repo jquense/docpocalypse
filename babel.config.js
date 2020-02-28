@@ -2,7 +2,7 @@ module.exports = api => ({
   presets: [
     '@babel/preset-modules',
     '@babel/preset-react',
-    '@babel/preset-typescript'
+    '@babel/preset-typescript',
   ],
   plugins: [
     api.env() !== 'esm' && '@babel/plugin-transform-modules-commonjs',
@@ -11,6 +11,8 @@ module.exports = api => ({
     '@babel/plugin-proposal-export-namespace-from',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     '@babel/plugin-proposal-optional-chaining',
-    '@babel/plugin-syntax-dynamic-import'
-  ].filter(Boolean)
+    '@babel/plugin-syntax-dynamic-import',
+
+    'babel-plugin-macros',
+  ].filter(Boolean),
 });

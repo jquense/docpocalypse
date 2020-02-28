@@ -1,4 +1,4 @@
-import Prism from 'prism-react-renderer/prism';
+import Prism from '@docpocalypse/prism-react-renderer/prism';
 
 export default (code: string, language?: string) => {
   const grammar = language && Prism.languages[language];

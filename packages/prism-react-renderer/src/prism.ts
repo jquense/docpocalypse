@@ -1,10 +1,13 @@
-import Prism from './prism-core'
-import codegen from 'codegen.macro'
+// @ts-ignore
+import codegen from 'codegen.macro'; // eslint-disable-line import/no-extraneous-dependencies
+
+import Prism from './vendor/prism/prism-core';
 
 // Babel Codegen Macro:
 // Get a list of all prismjs languages and inline them here.
 // They should only depend on "Prism" being present in the current scope.
 
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 codegen`
   const { readFileSync } = require('fs')
   const { dirname, join } = require('path')
@@ -70,13 +73,13 @@ codegen`
   };
 
   // This json defines which languages to include
-  const includedLangs = require('./includeLangs')
+  const includedLangs = require('./vendor/prism/includeLangs')
 
   Object.keys(includedLangs).forEach(language => {
     visitLanguage(language, languages[language])
   })
 
   module.exports = output
-`
+`;
 
-export default Prism
+export default Prism;
