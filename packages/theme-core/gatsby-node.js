@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const pkgDir = require('pkg-dir');
+
 const apis = require('./dataModel');
 const { Imports } = require('./example-scope-loader');
 
@@ -108,7 +110,11 @@ module.exports.createPages = async (
   }
 };
 
-module.exports.onCreateWebpackConfig = (
+function getPackageAlias(pkgName) {
+  return pkgDir(path.dirname(require.resolve(pkgName)));
+}
+
+module.exports.onCreateWebpackConfig = async (
   { actions, getConfig },
   pluginOptions,
 ) => {
@@ -134,5 +140,12 @@ module.exports.onCreateWebpackConfig = (
         },
       ],
     },
+    resolve: {
+      alias: {
+        react: await getPackageAlias('react'),
+        'react-dom': await getPackageAlias('react-dom'),
+      },
+    },
   });
+  console.log(getConfig().resolve.alias);
 };

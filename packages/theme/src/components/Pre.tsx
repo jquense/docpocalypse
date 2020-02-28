@@ -1,9 +1,10 @@
-import React from 'react';
 import {
   useImportsForExample,
-  useScope
+  useScope,
 } from '@docpocalypse/gatsby-theme-core';
 import { canParse } from '@docpocalypse/gatsby-theme-core/can-parse';
+import React from 'react';
+
 import CodeBlock from './CodeBlock';
 import LiveCode from './LiveCode';
 

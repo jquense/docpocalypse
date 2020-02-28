@@ -106,3 +106,40 @@ makes documentation a bit more convenient.
 - `@type`: if the type tag is provided it is used **instead** of type information. This is
   useful for cases where the type annotation is hard to read or unclear.
 - `@default`: For components this value is used as the default value for props
+
+## Writing Examples
+
+In addition to inline API documentation, Docpocalypse supports (and encourages) writing
+longer form usage guides, complete with runnable, live editable examples. Examples are
+[MDX](https://mdxjs.com/) files located in your doc site `/src/examples` folder.
+
+To add an example file for a package feature create an `.mdx` file of the same name
+in `./www/src/examples` directory. So if you have a `Button.tsx` component you'd
+create a `Button.mdx` file in `examples`. Docpocalypse will automatically associate
+files in the `examples` folder with features of the same name.
+
+### Code blocks
+
+MDX, like markdown supports "code blocks" (or "code fences"), to display properly
+formatted and syntax highlighted code examples. Docpocalypse enhances example code blocks
+by making the code in the blocks: **runnable** and **editable**, giving you live previews
+as well as little playgrounds for users to explore features.
+
+````markdown
+This is a Code block 👇
+
+```
+Code blocks are written with 3 back ticks
+```
+
+They can be interspersed with <strong>other</strong> MDX
+
+You can also specify the language
+
+```js
+console.log('I am a JavaScript');
+```
+````
+
+Code blocks are automatically considered to be "live" for JavaScript, and TypeScript code,
+which can be specified by noting the language immediately after the opening back ticks
