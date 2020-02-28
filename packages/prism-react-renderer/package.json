@@ -1,5 +1,5 @@
 {
-  "name": "prism-react-renderer",
+  "name": "@docpocalypse/prism-react-renderer",
   "version": "1.0.2",
   "description": "Renders highlighted Prism output using React",
   "sideEffects": false,
@@ -7,7 +7,11 @@
   "module": "dist/index.js",
   "types": "index.d.ts",
   "license": "MIT",
-  "repository": "git@github.com:FormidableLabs/prism-react-renderer.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jquense/docpocalypse.git",
+    "directory": "packages/prism-react-renderer"
+  },
   "files": [
     "index.d.ts",
     "dist",
