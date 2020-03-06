@@ -8,7 +8,7 @@
     "test": "npm run lint",
     "lint": "yarn cli lint .",
     "format": "yarn cli format .",
-    "build": "lerna run build"
+    "build": "lerna run build --ignore \"theme-*\""
   },
   "prettier": {
     "singleQuote": true,
