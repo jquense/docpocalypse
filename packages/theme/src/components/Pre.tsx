@@ -40,10 +40,13 @@ const Pre = props => {
 
   const flatCode = toText(children);
   const language = codeProps.language || getLanguage(codeProps.className);
-  const isStatic =
-    props.static ||
-    codeProps.static === true ||
-    (!canParse(language) && codeProps.live !== true);
+
+  let isStatic = props.static;
+
+  if (isStatic == null)
+    isStatic =
+      codeProps.static === true ||
+      (!canParse(language) && codeProps.live !== true);
 
   return !isStatic ? (
     <LiveCode
