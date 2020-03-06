@@ -12,7 +12,7 @@ interface Props {
 
 const styles = dcss`
   @component CodeBlock {
-    margin: theme(margin.5) theme(margin.-4);
+    margin: theme(margin.5) theme(margin.-4) theme(margin.8);
     border-radius: theme(borderRadius.default);
     border: 1px solid theme(colors.gray.300);
 

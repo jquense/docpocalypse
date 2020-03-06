@@ -11,21 +11,20 @@ interface Props extends React.HTMLProps<HTMLHeadingElement> {
 const styles = dcss`
   @component Heading {
 
+    margin-top: theme('margin.8');
+
     &.h1 {
       font-size: theme(fontSize.3xl);
-      margin-top: theme('margin.6');
       margin-bottom: theme('margin.4');
     }
     &.h2 {
       font-size: theme(fontSize.2xl);
-      margin-top: theme('margin.6');
       margin-bottom: theme('margin.4');
     }
     &.h3,
     &.h4 {
       font-size: theme(fontSize.xl);
-      margin-top: theme('margin.4');
-      margin-bottom: theme('margin.2');
+      margin-bottom: theme('margin.4');
     }
   }
 `;
@@ -38,7 +37,7 @@ function Header({ level, ...props }: Props) {
       className={classNames(
         props.className,
         styles.Heading,
-        styles[Tag as string]
+        styles[Tag as string],
       )}
     />
   );
