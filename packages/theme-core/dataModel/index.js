@@ -66,6 +66,11 @@ exports.createSchemaCustomization = ({ actions, schema, cache }) => {
         value: JSON
       }
 
+      type DocpocalypsePage {
+        title: String
+        codeBlockImports: [DocpocalypseCodeBlockImport]
+      }
+
       type DocpocalypseCodeBlockImport {
         type: ImportType!
         request: String!
@@ -90,7 +95,7 @@ exports.createSchemaCustomization = ({ actions, schema, cache }) => {
         codeBlockImports: {
           type: ['DocpocalypseCodeBlockImport'],
           resolve: (src, _, ctx) =>
-            parseCodeBlocks(getNodeById(src, 'parent', ctx), cache),
+            parseCodeBlocks(getNodeById(src, 'parent', ctx), { cache }),
         },
       },
     }),

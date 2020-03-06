@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 /**
  * Prism: Lightweight, robust, elegant syntax highlighting
  * MIT license http://www.opensource.org/licenses/mit-license.php/
@@ -18,10 +17,10 @@
  */
 const Prism = (function() {
   // Private helper vars
-  const lang = /\blang(?:uage)?-([\w-]+)\b/i;
+  // const lang = /\blang(?:uage)?-([\w-]+)\b/i;
   let uniqueId = 0;
 
-  var _ = {
+  const _ = {
     util: {
       encode(tokens) {
         if (tokens instanceof Token) {
@@ -185,7 +184,9 @@ const Prism = (function() {
         grammar,
         language,
       };
+      _.hooks.run('before-tokenize', env);
       env.tokens = _.tokenize(env.code, env.grammar);
+      _.hooks.run('after-tokenize', env);
       return Token.stringify(_.util.encode(env.tokens), env.language);
     },
 
@@ -331,7 +332,19 @@ const Prism = (function() {
     },
 
     hooks: {
-      add() {},
+      all: {},
+
+      add(name, callback) {
+        const hooks = _.hooks.all;
+        hooks[name] = hooks[name] || [];
+        hooks[name].push(callback);
+      },
+
+      run(name, env) {
+        const callbacks = _.hooks.all[name];
+        if (!callbacks) return;
+        callbacks.forEach(callback => callback(env));
+      },
     },
 
     tokenize(text, grammar, language) {
@@ -362,43 +375,49 @@ const Prism = (function() {
     this.greedy = !!greedy;
   });
 
-  Token.stringify = function(o, language, parent) {
+  Token.stringify = function stringify(o, language) {
     if (typeof o === 'string') {
       return o;
     }
-
-    if (_.util.type(o) === 'Array') {
-      return o
-        .map(function(element) {
-          return Token.stringify(element, language, o);
-        })
-        .join('');
+    if (Array.isArray(o)) {
+      let s = '';
+      o.forEach(function(e) {
+        s += stringify(e, language);
+      });
+      return s;
     }
 
     const env = {
       type: o.type,
-      content: Token.stringify(o.content, language, parent),
+      content: stringify(o.content, language),
       tag: 'span',
       classes: ['token', o.type],
       attributes: {},
       language,
-      parent,
     };
 
-    if (o.alias) {
-      const aliases = _.util.type(o.alias) === 'Array' ? o.alias : [o.alias];
-      Array.prototype.push.apply(env.classes, aliases);
+    const aliases = o.alias;
+    if (aliases) {
+      if (Array.isArray(aliases)) {
+        Array.prototype.push.apply(env.classes, aliases);
+      } else {
+        env.classes.push(aliases);
+      }
     }
 
-    const attributes = Object.keys(env.attributes)
-      .map(function(name) {
-        return `${name}="${(env.attributes[name] || '').replace(/"/g, '&quot;')}"`;
-      })
-      .join(' ');
+    _.hooks.run('wrap', env);
 
-    return `<${env.tag} class="${env.classes.join(' ')}"${
-      attributes ? ` ${attributes}` : ''
-    }>${env.content}</${env.tag}>`;
+    let attributes = '';
+    for (const name in env.attributes) {
+      attributes += ` ${name}="${(env.attributes[name] || '').replace(
+        /"/g,
+        '&quot;',
+      )}"`;
+    }
+
+    return `<${env.tag} class="${env.classes.join(' ')}"${attributes}>${
+      env.content
+    }</${env.tag}>`;
   };
 
   return _;

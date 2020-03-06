@@ -61,5 +61,37 @@
     "lint-staged": "^9.2.1",
     "prettier": "^1.9.0",
     "yargs": "^15.0.2"
+  },
+  "workspace-sources": {
+    "@docpocalypse/code-live/lib/*": [
+      "packages/code-live/src/*"
+    ],
+    "@docpocalypse/gatsby-data-utils/lib/*": [
+      "packages/data-utils/src/*"
+    ],
+    "gatsby-plugin-typedoc/*": [
+      "packages/gatsby-plugin-typedoc/src/*"
+    ],
+    "@docpocalypse/prism-react-renderer/*": [
+      "packages/prism-react-renderer/src/*"
+    ],
+    "@docpocalypse/props-table/lib/*": [
+      "packages/props-table/src/*"
+    ],
+    "react-docgen-styled-resolver/lib/*": [
+      "packages/react-docgen-styled-resolver/src/*"
+    ],
+    "synthetic-grass/lib/*": [
+      "packages/synthetic-grass/src/*"
+    ],
+    "@docpocalypse/gatsby-theme/lib/*": [
+      "packages/theme/src/*"
+    ],
+    "@docpocalypse/gatsby-theme-core/*": [
+      "packages/theme-core/*"
+    ],
+    "test-site/Users/jquense/src/docpocalypse/test-site/*": [
+      "test-site/src/*"
+    ]
   }
 }

@@ -6,5 +6,9 @@
     "noImplicitAny": false
   },
   "include": ["src"],
-  "references": [{ "path": "../data-utils" }]
+  "references": [
+    {
+      "path": "../data-utils"
+    }
+  ]
 }

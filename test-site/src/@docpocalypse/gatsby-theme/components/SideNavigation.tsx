@@ -40,6 +40,12 @@ function AppSideNavigation(props) {
       <nav>
         <ul>
           <SideNavigation.Item className="mb-4">
+            <SideNavigation.Link to="/getting-started">
+              Getting Started
+            </SideNavigation.Link>
+            <SideNavigation.Link to="/writing-docs">
+              Writing Documentation
+            </SideNavigation.Link>
             <SideNavigation.Link to="/theming">Theming</SideNavigation.Link>
           </SideNavigation.Item>
           <SideNavigation.Item>

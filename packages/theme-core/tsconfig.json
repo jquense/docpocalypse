@@ -6,7 +6,11 @@
   },
   "include": ["./*.ts"],
   "references": [
-    { "path": "../react-docgen-styled-resolver" },
-    { "path": "../data-utils" }
+    {
+      "path": "../react-docgen-styled-resolver"
+    },
+    {
+      "path": "../data-utils"
+    }
   ]
 }

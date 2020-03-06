@@ -1,16 +1,22 @@
+const path = require('path');
+
 exports.onCreateBabelConfig = ({ actions }) => {
   actions.setBabelOptions({
     options: {
-      rootMode: 'upward'
-    }
+      rootMode: 'upward',
+    },
   });
 };
 
-// exports.onCreateWebpackConfig = ({ getConfig }) => {
-//   // getConfig().module.rules.map(t => console.log(t));
-//   // actions.setBabelOptions({
-//   //   options: {
-//   //     rootMode: 'upward'
-//   //   }
-//   // });
-// };
+exports.onCreateWebpackConfig = ({ actions }) => {
+  actions.setWebpackConfig({
+    resolve: {
+      alias: {
+        '@docpocalypse/prism-react-renderer': path.resolve(
+          __dirname,
+          '../packages/prism-react-renderer/src',
+        ),
+      },
+    },
+  });
+};

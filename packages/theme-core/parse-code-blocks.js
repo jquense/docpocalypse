@@ -1,4 +1,5 @@
 const { dirname } = require('path');
+const { promises: fs } = require('fs');
 
 const traverse = require('@babel/traverse').default;
 const mdx = require('@mdx-js/mdx');
@@ -33,7 +34,10 @@ const parseProps = node => {
   );
 };
 
-module.exports = (mdxNode, _cache) => {
+const defaultIgnore = (lang, meta) =>
+  meta.static === true || (!canParse(lang) && meta.live !== true);
+
+const parseCodeBlocks = (mdxNode, { ignore = defaultIgnore } = {}) => {
   // const payloadCacheKey = `docpocalypse-mdx-cache-${mdxNode.internal.contentDigest}`;
 
   const mdxAST = compiler.parse(mdxNode.rawBody);
@@ -48,7 +52,7 @@ module.exports = (mdxNode, _cache) => {
     const { lang = 'js' } = node;
     const meta = parseProps(node) || {};
 
-    if (meta.static === true || (!canParse(lang) && meta.live !== true)) {
+    if (ignore(lang, meta)) {
       return;
     }
 
@@ -73,3 +77,14 @@ module.exports = (mdxNode, _cache) => {
 
   return Array.from(imports.values());
 };
+
+module.exports = parseCodeBlocks;
+
+module.exports.fromFile = async (file, options) =>
+  parseCodeBlocks(
+    {
+      rawBody: await fs.readFile(file, 'utf-8'),
+      fileAbsolutePath: file,
+    },
+    options,
+  );

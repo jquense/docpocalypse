@@ -3,7 +3,16 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@docpocalypse/prism-react-renderer/*": ["../prism-react-renderer/lib/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../prism-react-renderer"
+    }
+  ]
 }

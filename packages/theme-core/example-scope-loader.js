@@ -47,11 +47,15 @@ function exampleScopeLoader(src) {
   const done = this.async();
 
   async function toImports(imports, name) {
+    const chunkName = `docpoc-${
+      name === '/' ? 'root' : name.replace(/\/$/, '').replace(/\//g, '-')
+    }`;
+
     const results = await Promise.all(
       imports.map(async i => {
         try {
           const file = await resolve(i.context, i.request);
-          return `"${i.request}": import(/* webpackChunkName: "${name}" */ '${file}')`;
+          return `"${i.request}": import(/* webpackChunkName: "${chunkName}" */ '${file}')`;
         } catch (err) {
           emitError(
             new Error(

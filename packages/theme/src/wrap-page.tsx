@@ -1,10 +1,13 @@
 import React from 'react';
 import { MDXProvider } from '@mdx-js/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Location } from '@reach/router';
 import DocumentOutlineProvider from './components/DocumentOutlineProvider';
 import InlineCode from './components/InlineCode';
 import LinkedHeading from './components/LinkedHeading';
 import Heading from './components/OutlineHeading';
 import Paragraph from './components/Paragraph';
+import List from './components/List';
 import Pre from './components/Pre';
 
 export const components = {
@@ -15,9 +18,22 @@ export const components = {
   h4: props => <LinkedHeading h="4" {...props} />,
   h5: props => <LinkedHeading h="5" {...props} />,
   h6: props => <LinkedHeading h="6" {...props} />,
-  pre: props => <Pre {...props} static />,
+  ul: props => <List {...props} />,
+  pre: props => {
+    return (
+      <Location>
+        {ctx => (
+          <Pre
+            {...props}
+            name={ctx.location.pathname}
+            static={props.children?.props.live !== true}
+          />
+        )}
+      </Location>
+    );
+  },
   p: Paragraph,
-  inlineCode: InlineCode
+  inlineCode: InlineCode,
 };
 
 export default ({ element }) => (

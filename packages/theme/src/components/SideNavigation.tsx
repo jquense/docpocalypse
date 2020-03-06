@@ -29,7 +29,9 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
       ) {
         nodes {
           path
-          docpocalypseTitle
+          docpocalypse {
+            title
+          }
           pluginCreator {
             name
           }
@@ -55,11 +57,11 @@ function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
       <nav>
         <ul>
           {allSitePage.nodes
-            .filter(n => n.docpocalypseTitle)
+            .filter(n => n.docpocalypse?.title)
             .map(page => (
               <SideNavigationItem key={page.path}>
                 <SideNavigationLink to={page.path}>
-                  {page.docpocalypseTitle}
+                  {page.docpocalypse.title}
                 </SideNavigationLink>
               </SideNavigationItem>
             ))}

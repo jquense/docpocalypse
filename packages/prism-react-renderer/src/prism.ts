@@ -2,6 +2,7 @@
 import codegen from 'codegen.macro'; // eslint-disable-line import/no-extraneous-dependencies
 
 import Prism from './vendor/prism/prism-core';
+import { Language } from './types';
 
 // Babel Codegen Macro:
 // Get a list of all prismjs languages and inline them here.
@@ -81,5 +82,67 @@ codegen`
 
   module.exports = output
 `;
+
+// YO DAWG I HEARD YOU LIKE MARKDOWN CODE FENCES
+//
+// borrowed from the same hook in the markdown language, but adds inner
+// tokens in order to add highlighting to code fences
+Prism.hooks.add('after-tokenize', (env: any) => {
+  if (env.language !== 'markdown' && env.language !== 'md') {
+    return;
+  }
+
+  function walkTokens(tokens: any[]) {
+    if (!tokens || typeof tokens === 'string') {
+      return;
+    }
+
+    for (const token of tokens) {
+      if (typeof token === 'string') continue;
+      if (token.type !== 'code') {
+        walkTokens(token.content);
+        continue;
+      }
+
+      const codeLang = token.content[1];
+      const codeBlock = token.content[3];
+
+      if (
+        codeBlock?.type === 'code-block' &&
+        typeof codeLang?.content === 'string'
+      ) {
+        // do some replacements to support C++, C#, and F#
+        let lang: any = codeLang.content
+          .replace(/\b#/g, 'sharp')
+          .replace(/\b\+\+/g, 'pp');
+        // only use the first word
+        lang = (/[a-z][\w-]*/i.exec(lang) || [''])[0].toLowerCase();
+        const grammar = Prism.languages[lang as Language];
+        if (grammar) {
+          codeBlock.content = Prism.tokenizeWithHooks(
+            codeBlock.content,
+            grammar,
+            lang,
+          );
+        }
+      }
+    }
+  }
+
+  walkTokens(env.tokens);
+});
+
+Prism.tokenizeWithHooks = (text, grammar, language) => {
+  const env = {
+    code: text,
+    grammar,
+    language,
+    tokens: [] as any[],
+  };
+  Prism.hooks.run('before-tokenize', env);
+  env.tokens = Prism.tokenize(env.code, env.grammar);
+  Prism.hooks.run('after-tokenize', env);
+  return env.tokens;
+};
 
 export default Prism;

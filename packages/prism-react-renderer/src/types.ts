@@ -57,6 +57,11 @@ export type PrismLib = {
   tokenize: (
     code: string,
     grammar: PrismGrammar,
+    language?: Language,
+  ) => Array<PrismToken | string>;
+  tokenizeWithHooks: (
+    code: string,
+    grammar: PrismGrammar,
     language: Language,
   ) => Array<PrismToken | string>;
   highlight: (
@@ -64,6 +69,8 @@ export type PrismLib = {
     grammar: PrismGrammar,
     language: Language,
   ) => string;
+
+  hooks: any;
 };
 
 export type StyleObj = {

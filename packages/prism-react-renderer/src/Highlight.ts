@@ -52,6 +52,7 @@ class Highlight extends Component<Props, any> {
     key,
     className,
     style,
+    line: _,
     ...rest
   }: LineInputProps): LineOutputProps => {
     const output: LineOutputProps = {
@@ -130,7 +131,9 @@ class Highlight extends Component<Props, any> {
 
     const grammar = Prism.languages[language];
     const mixedTokens =
-      grammar !== undefined ? Prism.tokenize(code, grammar, language) : [code];
+      grammar !== undefined
+        ? Prism.tokenizeWithHooks(code, grammar, language)
+        : [code];
     const tokens = normalizeTokens(mixedTokens);
 
     return children({

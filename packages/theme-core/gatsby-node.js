@@ -2,11 +2,30 @@ const fs = require('fs');
 const path = require('path');
 
 const pkgDir = require('pkg-dir');
+const { slash, createContentDigest } = require('gatsby-core-utils');
+const debounce = require('lodash/debounce');
+const chokidar = require('chokidar');
 
 const apis = require('./dataModel');
 const { Imports } = require('./example-scope-loader');
+const parseCodeBlocks = require('./parse-code-blocks');
 
 const hashPath = path.resolve('.cache/example-import-hash');
+
+const writeImportHash = debounce(() => {
+  // We hash the imports and output a file so that the loader has something to
+  // check for a "dirty" state
+  const hash = createContentDigest(JSON.stringify(Array.from(Imports))).trim();
+
+  const last = fs.existsSync(hashPath)
+    ? fs.readFileSync(hashPath, 'utf-8').trim()
+    : '';
+
+  if (last !== hash) {
+    console.log('WRITING OUT');
+    fs.writeFileSync(hashPath, hash);
+  }
+}, 300);
 
 module.exports = apis;
 
@@ -35,10 +54,7 @@ function collectImports(name, node, context) {
   }
 }
 
-module.exports.createPages = async (
-  { graphql, actions, createContentDigest },
-  pluginOptions,
-) => {
+module.exports.createPages = async ({ graphql, actions }, pluginOptions) => {
   const { templates } = pluginOptions;
   Imports.clear();
 
@@ -97,22 +113,56 @@ module.exports.createPages = async (
     });
   }
 
-  // We hash the imports and output a file so that the loader has something to
-  // check for a "dirty" state
-  const hash = createContentDigest(JSON.stringify(Array.from(Imports))).trim();
-
-  const last = fs.existsSync(hashPath)
-    ? fs.readFileSync(hashPath, 'utf-8').trim()
-    : '';
-
-  if (last !== hash) {
-    fs.writeFileSync(hashPath, hash);
-  }
+  writeImportHash();
 };
 
 function getPackageAlias(pkgName) {
   return pkgDir(path.dirname(require.resolve(pkgName)));
 }
+
+async function parsePageImports(page) {
+  const ext = path.extname(page.component);
+
+  if (ext === '.mdx') {
+    console.log('Parsing page imports!');
+    const codeBlockImports = await parseCodeBlocks.fromFile(
+      page.componentPath,
+      {
+        ignore: (lang, meta) => !meta.live,
+      },
+    );
+
+    const stripped = page.path === '/' ? '/' : page.path.replace(/\/$/, '');
+    Imports.set(stripped, codeBlockImports);
+
+    writeImportHash();
+  }
+}
+
+module.exports.createPagesStatefully = ({ store }) => {
+  const { program } = store.getState();
+  const pageDir = slash(path.join(program.directory, `src/pages`));
+  const exts = program.extensions.map(e => `${e.slice(1)}`).join(`,`);
+
+  chokidar
+    .watch(`**/*.{${exts}}`, { cwd: pageDir })
+    .on(`change`, changedPath => {
+      const componentPath = slash(path.join(pageDir, changedPath));
+      const { pages } = store.getState();
+
+      for (const [_, page] of pages) {
+        if (page.componentPath === componentPath) {
+          console.log('UPDATE FOUUUND');
+          parsePageImports(page);
+          break;
+        }
+      }
+    });
+};
+
+module.exports.onCreatePage = async ({ page }) => {
+  await parsePageImports(page);
+};
 
 module.exports.onCreateWebpackConfig = async (
   { actions, getConfig },
@@ -147,5 +197,5 @@ module.exports.onCreateWebpackConfig = async (
       },
     },
   });
-  console.log(getConfig().resolve.alias);
+  // console.log(getConfig().resolve.alias);
 };

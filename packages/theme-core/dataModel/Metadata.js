@@ -1,4 +1,6 @@
+const { promises: fs } = require('fs');
 const capitalize = require('lodash/capitalize');
+const parseCodeBlocks = require('../parse-code-blocks');
 
 function unslugify(path) {
   const lastSegment = path
@@ -12,21 +14,34 @@ function unslugify(path) {
 exports.createResolvers = ({ createResolvers }) => {
   createResolvers({
     SitePage: {
-      docpocalypseTitle: {
-        type: 'String',
-        resolve: src => {
-          if (src.path === '/' || src.path.includes('404')) {
+      docpocalypse: {
+        type: 'DocpocalypsePage',
+        resolve: async src => {
+          if (src.path.includes('404')) {
             return null;
           }
 
           let title;
+          let codeBlockImports = [];
           // Mdx adds frontmatter to the page context
           if (src.context && src.context.frontmatter)
             title = src.context.frontmatter.title;
 
-          return title || unslugify(src.path);
-        }
-      }
-    }
+          if (src.componentPath.endsWith('.mdx')) {
+            const rawBody = await fs.readFile(src.componentPath, 'utf-8');
+
+            codeBlockImports = parseCodeBlocks({
+              rawBody,
+              fileAbsolutePath: src.componentPath,
+            });
+          }
+
+          return {
+            title: title || unslugify(src.path),
+            codeBlockImports,
+          };
+        },
+      },
+    },
   });
 };

@@ -13,8 +13,14 @@
   },
   "include": ["src"],
   "references": [
-    { "path": "../props-table" },
-    { "path": "../code-live" },
-    { "path": "../theme-core" }
+    {
+      "path": "../props-table"
+    },
+    {
+      "path": "../code-live"
+    },
+    {
+      "path": "../theme-core"
+    }
   ]
 }
