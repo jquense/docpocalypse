@@ -1,6 +1,5 @@
 [![Maintenance Status][maintenance-image]](#maintenance-status)
 
-
 <h1 align="center">
   prism-react-renderer 🖌️
   <br>
@@ -337,8 +336,8 @@ use the built-in theming, you simply need to leave it out to allow your bundler
 to tree-shake those:
 
 ```js
-import Highlight from "prism-react-renderer";
-import Prism from "prismjs"; // Different source
+import Highlight from '@docpocalypse/prism-react-renderer';
+import Prism from 'prismjs'; // Different source
 
 <Highlight Prism={Prism} code={exampleCode} language="jsx">
   {highlight => null /* ... */}
@@ -348,9 +347,9 @@ import Prism from "prismjs"; // Different source
 You can also import the vendored Prism library on its own:
 
 ```js
-import { Prism } from "prism-react-renderer";
+import { Prism } from '@docpocalypse/prism-react-renderer';
 // or
-import Prism from "prism-react-renderer/prism";
+import Prism from '@docpocalypse/prism-react-renderer/prism';
 ```
 
 </details>
@@ -361,7 +360,6 @@ MIT
 
 ## Maintenance Status
 
-**Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome. 
+**Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome.
 
 [maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
-
