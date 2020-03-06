@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/prism-react-renderer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Renders highlighted Prism output using React",
   "sideEffects": false,
   "main": "lib/cjs/index.js",
