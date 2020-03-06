@@ -7,7 +7,7 @@ const debounce = require('lodash/debounce');
 const chokidar = require('chokidar');
 
 const apis = require('./dataModel');
-const { Imports } = require('./example-scope-loader');
+const { Imports, PageImports } = require('./example-scope-loader');
 const parseCodeBlocks = require('./parse-code-blocks');
 
 const hashPath = path.resolve('.cache/example-import-hash');
@@ -22,7 +22,7 @@ const writeImportHash = debounce(() => {
     : '';
 
   if (last !== hash) {
-    console.log('WRITING OUT');
+    // console.log('WRITING OUT');
     fs.writeFileSync(hashPath, hash);
   }
 }, 300);
@@ -120,11 +120,15 @@ function getPackageAlias(pkgName) {
   return pkgDir(path.dirname(require.resolve(pkgName)));
 }
 
+function getPageImportKey(page) {
+  return page.path === '/' ? '/' : page.path.replace(/\/$/, '');
+}
+
 async function parsePageImports(page) {
   const ext = path.extname(page.component);
 
   if (ext === '.mdx') {
-    console.log('Parsing page imports!');
+    // console.log('Parsing page imports!');
     const codeBlockImports = await parseCodeBlocks.fromFile(
       page.componentPath,
       {
@@ -132,8 +136,7 @@ async function parsePageImports(page) {
       },
     );
 
-    const stripped = page.path === '/' ? '/' : page.path.replace(/\/$/, '');
-    Imports.set(stripped, codeBlockImports);
+    PageImports.set(getPageImportKey(page), codeBlockImports);
 
     writeImportHash();
   }
@@ -143,16 +146,28 @@ module.exports.createPagesStatefully = ({ store }) => {
   const { program } = store.getState();
   const pageDir = slash(path.join(program.directory, `src/pages`));
   const exts = program.extensions.map(e => `${e.slice(1)}`).join(`,`);
-
+  // TODO: handle any configured pages
   chokidar
     .watch(`**/*.{${exts}}`, { cwd: pageDir })
+    .on('unlink', removedPath => {
+      const componentPath = slash(path.join(pageDir, removedPath));
+      const { pages } = store.getState();
+
+      for (const [_, page] of pages) {
+        if (page.componentPath === componentPath) {
+          PageImports.delete(getPageImportKey(page));
+          writeImportHash();
+          break;
+        }
+      }
+    })
     .on(`change`, changedPath => {
       const componentPath = slash(path.join(pageDir, changedPath));
       const { pages } = store.getState();
 
       for (const [_, page] of pages) {
         if (page.componentPath === componentPath) {
-          console.log('UPDATE FOUUUND');
+          // console.log('UPDATE FOUUUND');
           parsePageImports(page);
           break;
         }

@@ -19,7 +19,7 @@ const allValues = obj => {
 `;
 
 const Imports = new Map();
-const BaseModules = new Map();
+const PageImports = new Map();
 
 function getEntry(loader) {
   // eslint-disable-next-line no-underscore-dangle
@@ -73,15 +73,17 @@ function exampleScopeLoader(src) {
   }
 
   const process = async () => {
-    const keys = await Promise.all(
-      Array.from(Imports, async ([name, imports]) =>
-        imports.length
-          ? `'${name}': () => allValues({
-    ${await toImports(imports, name)}
+    const toKey = async ([name, imports]) =>
+      imports.length
+        ? `'${name}': () => allValues({
+  ${await toImports(imports, name)}
   }),`
-          : '',
-      ),
-    );
+        : '';
+
+    const keys = await Promise.all([
+      ...Array.from(Imports, toKey),
+      ...Array.from(PageImports, toKey),
+    ]);
 
     const entryRequire = entryFile ? `require('${entryFile}');\n` : '';
 
@@ -106,4 +108,4 @@ function exampleScopeLoader(src) {
 module.exports = exampleScopeLoader;
 
 module.exports.Imports = Imports;
-module.exports.BaseModules = BaseModules;
+module.exports.PageImports = PageImports;

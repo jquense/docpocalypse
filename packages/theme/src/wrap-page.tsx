@@ -10,6 +10,9 @@ import Paragraph from './components/Paragraph';
 import List from './components/List';
 import Pre from './components/Pre';
 
+const stripTrailing = (path: string) =>
+  path === '/' ? '/' : path.replace(/\/$/, '');
+
 export const components = {
   wrapper: props => <>{props.children}</>,
   h1: props => <Heading h="1" {...props} />,
@@ -25,7 +28,7 @@ export const components = {
         {ctx => (
           <Pre
             {...props}
-            name={ctx.location.pathname}
+            name={stripTrailing(ctx.location.pathname)}
             static={props.children?.props.live !== true}
           />
         )}
