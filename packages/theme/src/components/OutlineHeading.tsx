@@ -1,4 +1,3 @@
-import { css as dcss } from 'astroturf';
 import React, { ReactNode, useContext, useEffect } from 'react';
 import { DocumentOutlineContext } from './DocumentOutlineProvider';
 import Heading from './Heading';
@@ -18,8 +17,9 @@ function OutlineHeading({ h, id, title, children, className }: HProps) {
   useEffect(() => {
     if (!registerNode) return undefined;
 
-    return registerNode(h, title, id);
-  }, [h, registerNode, title, id]);
+    return registerNode(+h, title, id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerNode]);
 
   return (
     <Heading id={id} level={h} className={className}>
