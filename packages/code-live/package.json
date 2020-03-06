@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/code-live",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "lib/index.js",
   "module": "esm/index.js",
   "repository": {
@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@4c/tsconfig": "^0.3.1",
+    "@docpocalypse/prism-react-renderer": "^2.0.0",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.11",
     "@restart/hooks": "^0.3.21",
@@ -71,7 +72,6 @@
     "cpy": "^8.0.1",
     "holderjs": "^2.9.6",
     "magic-string": "^0.25.6",
-    "@docpocalypse/prism-react-renderer": "^1.0.2",
     "prismjs": "^1.19.0",
     "prop-types": "^15.7.2",
     "react-live": "^2.2.2",
