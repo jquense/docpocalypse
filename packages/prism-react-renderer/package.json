@@ -26,6 +26,7 @@
     "directory": "lib"
   },
   "devDependencies": {
+    "@4c/file-butler": "^4.1.2",
     "@babel/core": "^7.6.2",
     "babel-jest": "^24.9.0",
     "cherry-pick": "^0.5.0",
