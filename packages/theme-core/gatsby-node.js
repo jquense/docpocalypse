@@ -15,7 +15,9 @@ const hashPath = path.resolve('.cache/example-import-hash');
 const writeImportHash = debounce(() => {
   // We hash the imports and output a file so that the loader has something to
   // check for a "dirty" state
-  const hash = createContentDigest(JSON.stringify(Array.from(Imports))).trim();
+  const hash = createContentDigest(
+    JSON.stringify([...Array.from(Imports), ...Array.from(PageImports)]),
+  ).trim();
 
   const last = fs.existsSync(hashPath)
     ? fs.readFileSync(hashPath, 'utf-8').trim()

@@ -276,6 +276,7 @@ function createPropNodes(
   });
 
   node.props = children;
+  node.children = node.children.concat(children);
 
   return node;
 }
