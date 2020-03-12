@@ -1,13 +1,14 @@
-import React from 'react';
 import { MDXProvider } from '@mdx-js/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Location } from '@reach/router';
+import React from 'react';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
 import DocumentOutlineProvider from './components/DocumentOutlineProvider';
 import InlineCode from './components/InlineCode';
 import LinkedHeading from './components/LinkedHeading';
+import List from './components/List';
 import Heading from './components/OutlineHeading';
 import Paragraph from './components/Paragraph';
-import List from './components/List';
 import Pre from './components/Pre';
 
 const stripTrailing = (path: string) =>

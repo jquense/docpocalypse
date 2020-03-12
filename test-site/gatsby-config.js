@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   siteMetadata: {
     title: 'Docpocalypse',
-    description: ''
+    description: '',
   },
   plugins: [
     {
@@ -14,48 +14,49 @@ module.exports = {
             {
               family: 'Marcellus',
               subsets: ['latin'],
-              display: 'swap'
+              display: 'swap',
             },
             {
               family: 'Cutive+Mono',
               subsets: ['latin'],
-              display: 'swap'
-            }
-          ]
-        }
-      }
+              display: 'swap',
+            },
+          ],
+        },
+      },
     },
     {
       resolve: '@docpocalypse/gatsby-theme',
       options: {
         sources: [
           path.resolve(__dirname, '../packages/code-live/src'),
-          path.resolve(__dirname, '../packages/theme/src/components')
+          path.resolve(__dirname, '../packages/theme/src/components'),
         ],
         getImportName(docNode, _) {
           return `import { ${docNode.name} } from '${docNode.packageName}'`;
         },
         reactDocgenConfig: {
-          babelrcRoots: true
+          babelrcRoots: true,
         },
+        propsLayout: 'list',
         theming: 'minimal',
         tailwindConfig: require.resolve('./src/tailwind.config'),
         typedocConfig: {
           tsconfig: require.resolve('./tsconfig.json'),
-          mode: 'modules'
-        }
-      }
+          mode: 'modules',
+        },
+      },
     },
     {
       resolve: 'gatsby-plugin-astroturf',
-      options: { enableCssProp: true }
+      options: { enableCssProp: true },
     },
     {
       resolve: 'gatsby-plugin-typedoc',
       options: {
         debugRaw: true,
-        projects: [path.resolve(__dirname, '../packages/code-live')]
-      }
-    }
-  ]
+        projects: [path.resolve(__dirname, '../packages/code-live')],
+      },
+    },
+  ],
 };

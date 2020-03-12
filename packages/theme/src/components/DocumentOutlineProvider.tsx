@@ -1,11 +1,11 @@
+import useAnimationFrame from '@restart/hooks/useAnimationFrame';
 import React, {
   ReactNode,
   useCallback,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
-import useAnimationFrame from '@restart/hooks/useAnimationFrame';
 
 export interface Node {
   id: string;
@@ -20,7 +20,7 @@ export interface Tree {
 
 export const DocumentOutlineContext = React.createContext<null | {
   tree: Tree | null;
-  registerNode(level: number, title: ReactNode, id: string): () => void;
+  registerNode(level: number, title: ReactNode, id: string): void;
 }>(null);
 
 function toTree(list: Iterable<Node>): Tree {
@@ -31,6 +31,7 @@ function toTree(list: Iterable<Node>): Tree {
 
   // eslint-disable-next-line
   for (let item of list) {
+    // const item = list.get(key)!;
     if (last && item.level > last.level) parents.push(last);
     if (last && item.level < last.level) parents.pop();
     last = item;
@@ -55,19 +56,19 @@ export default function DocumentOutlineProvider({ children }: any) {
 
   const registerNode = useCallback(
     (level: number, title: string, id: string) => {
-      if (level === 1) return () => {};
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      if (level === 1) {
+        list.clear();
+        return;
+      }
 
       list.set(id, { level, title, id });
 
       animationFrame.request(() => {
         setTree(toTree(list.values()));
       });
-
-      return () => {
-        list.delete(id);
-      };
     },
-    [list, animationFrame]
+    [list, animationFrame],
   );
 
   const context = useMemo(() => ({ registerNode, tree }), [registerNode, tree]);

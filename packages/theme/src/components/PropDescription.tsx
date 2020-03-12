@@ -2,7 +2,7 @@ import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
 
 interface Props {
-  as: React.ElementType;
+  as?: React.ElementType;
   html?: string;
   mdx?: { body: string };
 }

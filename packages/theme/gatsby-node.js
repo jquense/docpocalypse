@@ -1,4 +1,4 @@
-exports.onCreateWebpackConfig = ({ actions }) => {
+exports.onCreateWebpackConfig = ({ actions, plugins }, pluginOptions) => {
   actions.setWebpackConfig({
     module: {
       rules: [
@@ -7,7 +7,7 @@ exports.onCreateWebpackConfig = ({ actions }) => {
           include: [
             /packages\/theme\/src\/.*/,
             /.yalc\/@docpocalypse\/gatsby-theme.*\/src\/.*/,
-            /node_modules\/@docpocalypse\/gatsby-theme.*\/src\/.*/
+            /node_modules\/@docpocalypse\/gatsby-theme.*\/src\/.*/,
           ],
           use: [
             {
@@ -16,12 +16,19 @@ exports.onCreateWebpackConfig = ({ actions }) => {
                 tagName: 'dcss',
                 styledTag: 'dstyled',
                 extension: '.module.css',
-                enableCssProp: true
-              }
-            }
-          ]
-        }
-      ]
-    }
+                enableCssProp: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+    plugins: [
+      plugins.define({
+        __DOCPOC_PROPS_LAYOUT__: JSON.stringify(
+          pluginOptions.propsLayout || 'table',
+        ),
+      }),
+    ],
   });
 };

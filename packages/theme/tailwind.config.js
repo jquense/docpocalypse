@@ -35,6 +35,11 @@ module.exports = ({ theming }) => ({
     SideNavigationItem: true,
     SideNavigationHeader: true,
     SideNavigationLink: true,
+
+    PropListName: true,
+    PropListRequiredBadge: true,
+    PropListTypeDefinition: true,
+    PropListDefaultValue: true,
   },
   ...(theming === 'minimal'
     ? {

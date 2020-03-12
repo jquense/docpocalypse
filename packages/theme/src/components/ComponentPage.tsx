@@ -6,7 +6,14 @@ import Example from './Example';
 import LinkedHeading from './LinkedHeading';
 import Heading from './OutlineHeading';
 import PageLayout from './PageLayout';
-import PropsTable from './PropsTable';
+
+let Props: any;
+// @ts-ignore
+if (__DOCPOC_PROPS_LAYOUT__ === 'list') {
+  Props = require('./PropsList').default;
+} else {
+  Props = require('./PropsTable').default;
+}
 
 function ComponentPage({ data }) {
   const { description, importName, name, example } = data.docpocalypse;
@@ -38,7 +45,7 @@ function ComponentPage({ data }) {
           <MDXRenderer scope={{ React }}>{description.mdx.body}</MDXRenderer>
         </div>
       )}
-      <PropsTable metadata={data.docpocalypse} />
+      <Props metadata={data.docpocalypse} />
     </PageLayout>
   );
 }

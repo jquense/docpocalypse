@@ -1,8 +1,9 @@
+import renderProps from '@docpocalypse/props-table';
+import { TokenMap } from '@docpocalypse/props-table/src/TypescriptTypeValue';
 import { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
-import renderProps from '@docpocalypse/props-table';
-import { TokenMap } from '@docpocalypse/props-table/src/TypescriptTypeValue';
+
 import PropDescription from './PropDescription';
 
 export { renderProps };

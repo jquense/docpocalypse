@@ -5,6 +5,7 @@ export * from '@docpocalypse/gatsby-theme-core';
 export { default as ComponentImport } from './src/components/ComponentImport';
 export { default as Example } from './src/components/Example';
 export { default as PropsTable } from './src/components/PropsTable';
+export { default as PropsList } from './src/components/PropsList';
 export { default as InlineCode } from './src/components/InlineCode';
 export { default as LiveCode } from './src/components/LiveCode';
 export { default as CodeBlock } from './src/components/CodeBlock';
@@ -44,6 +45,7 @@ export type Templates = {
 
 export interface PluginOptions extends BasePluginOptions {
   theme?: 'full' | 'minimal';
+  propsLayout?: 'list' | 'table';
   tailwindConfig?: string | Record<string, any>;
 }
 
