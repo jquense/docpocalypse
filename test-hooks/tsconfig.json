@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "noImplicitAny": false
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../packages/gatsby-plugin-typedoc"
+    },
+    {
+      "path": "../packages/code-live"
+    },
+    {
+      "path": "../packages/theme-core"
+    },
+    {
+      "path": "../packages/gatsby-plugin-typedoc"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "name": "test-site",
+  "name": "test-hooks",
   "version": "0.0.0",
   "scripts": {
     "develop": "gatsby develop",
@@ -14,7 +14,6 @@
     "gatsby": "^2.19.10",
     "gatsby-plugin-astroturf": "^0.2.1",
     "gatsby-plugin-typedoc": "*",
-    "gatsby-plugin-webfonts": "^1.1.1",
     "lodash": "^4.17.15",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

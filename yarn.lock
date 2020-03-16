@@ -97,6 +97,24 @@
     text-table "^0.2.0"
     yargs "^15.0.1"
 
+"@4c/cli-core@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@4c/cli-core/-/cli-core-2.1.2.tgz#8dde92f742c2f3f3d9328e165a88dc2539c0aa24"
+  integrity sha512-bdN6D2S0q8vCV29YiQgZinz74C268hrtCjtmhgTGfr0/WPZ04g/R1+iF6M2vYg5D5gj6Ac57MUmAzcdSH1KQ1Q==
+  dependencies:
+    chalk "^3.0.0"
+    execa "^4.0.0"
+    fs-extra "^8.1.0"
+    globby "^11.0.0"
+    inquirer "^7.0.0"
+    is-ci "^2.0.0"
+    log-symbols "^3.0.0"
+    ora "^4.0.2"
+    slash "^3.0.0"
+    strip-ansi "^6.0.0"
+    text-table "^0.2.0"
+    yargs "^15.0.1"
+
 "@4c/cli@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@4c/cli/-/cli-1.0.5.tgz#671c59293882a252217fb5a3d567881dc39e9fb8"
@@ -3015,6 +3033,27 @@
   dependencies:
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
+
+"@manypkg/find-root@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@manypkg/find-root/-/find-root-1.0.0.tgz#b8e96d7c24678b1b65c2057ae47df750669197d7"
+  integrity sha512-c2J5B6MgkCqPVN49/FggigF2a5WThPnjd2RxknDPZjQM/QfSTHpU1r3NOXjQOzKSNRTnFFMHuOYJAVZ66LZNCQ==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@types/node" "^12.7.1"
+    find-up "^4.1.0"
+    fs-extra "^8.1.0"
+
+"@manypkg/get-packages@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@manypkg/get-packages/-/get-packages-1.0.0.tgz#857f1a40661525cc188fc7379e96c59f2140b9ea"
+  integrity sha512-aY9Xp6YXpO1bShEhm0GFd8y8BRWNSbJSUf4p1nTb0t280ONrarwMFEzkF4oqb62KzkR70FMymPKEXXnfTE9egA==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@manypkg/find-root" "^1.0.0"
+    fs-extra "^8.1.0"
+    globby "^11.0.0"
+    read-yaml-file "^1.1.0"
 
 "@mdx-js/mdx@^1.5.7":
   version "1.5.7"
@@ -6001,7 +6040,7 @@ comment-json@^2.2.0:
     has-own-prop "^2.0.0"
     repeat-string "^1.6.1"
 
-comment-json@^3.0.0:
+comment-json@^3.0.0, comment-json@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/comment-json/-/comment-json-3.0.2.tgz#a5652a491910e338080bcbf98fc9a37cbd7f3733"
   integrity sha512-ysJasbJ671+8mPEmwLOfLFqxoGtSmjyoep+lKRVH4J1/hsGu79fwetMDQWk8de8mVgqDZ43D7JuJAlACqjI1pg==
@@ -19880,6 +19919,18 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/true-case-path/-/true-case-path-2.2.1.tgz#c5bf04a5bbec3fd118be4084461b3a27c4d796bf"
   integrity sha512-0z3j8R7MCjy10kc/g+qg7Ln3alJTodw9aDuVWZa3uiWqfuBMKeAeP2ocWcxoyM3D73yz3Jt/Pu4qPr4wHSdB/Q==
 
+ts-doctor@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ts-doctor/-/ts-doctor-1.1.0.tgz#8b47255b158710abd5f932371548cac89809b6fb"
+  integrity sha512-DqGyjP6gGDHxn3V6lPpdRnvlg8j9Ban2JqRENKqzN77esPDYIjED6sXDxJZdWcx+UcvEOYNRp2FCL1OG+Hmdsg==
+  dependencies:
+    "@4c/cli-core" "^2.1.2"
+    "@manypkg/get-packages" "^1.0.0"
+    comment-json "^3.0.2"
+    lodash "^4.17.15"
+    prettier "^1.19.1"
+    yargs "^15.1.0"
+
 ts-pnp@^1.1.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.1.5.tgz#840e0739c89fce5f3abd9037bb091dbff16d9dec"
@@ -21453,6 +21504,14 @@ yargs-parser@^16.1.0:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
+yargs-parser@^18.1.0:
+  version "18.1.0"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-18.1.0.tgz#1b0ab1118ebd41f68bb30e729f4c83df36ae84c3"
+  integrity sha512-o/Jr6JBOv6Yx3pL+5naWSoIA2jJ+ZkMYQG/ie9qFbukBe4uzmBatlXFOiu/tNKRWEtyf+n5w7jc/O16ufqOTdQ==
+  dependencies:
+    camelcase "^5.0.0"
+    decamelize "^1.2.0"
+
 yargs@12.0.5, yargs@^12.0.2, yargs@^12.0.5:
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
@@ -21520,6 +21579,23 @@ yargs@^15.0.0, yargs@^15.0.1, yargs@^15.0.2:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^16.1.0"
+
+yargs@^15.1.0:
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-15.3.0.tgz#403af6edc75b3ae04bf66c94202228ba119f0976"
+  integrity sha512-g/QCnmjgOl1YJjGsnUg2SatC7NUYEiLXJqxNOQU9qSpjzGtGXda9b+OKccr1kLTy8BN9yqEyqfq5lxlwdc13TA==
+  dependencies:
+    cliui "^6.0.0"
+    decamelize "^1.2.0"
+    find-up "^4.1.0"
+    get-caller-file "^2.0.1"
+    require-directory "^2.1.1"
+    require-main-filename "^2.0.0"
+    set-blocking "^2.0.0"
+    string-width "^4.2.0"
+    which-module "^2.0.0"
+    y18n "^4.0.0"
+    yargs-parser "^18.1.0"
 
 yargs@~1.2.6:
   version "1.2.6"
