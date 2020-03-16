@@ -1,13 +1,15 @@
+/* eslint-disable react/no-array-index-key */
 // Types are defined in https://github.com/TypeStrong/typedoc/blob/master/src/lib/models/types/index.ts
 import React from 'react';
 // eslint-disable-next-line import/no-cycle
 import TsDocSignatureTitle from './TsDocSignatureTitle';
+import { TypedocType } from './typedoc-types';
 
 function Parens({
   children,
   needParens = false,
   openParen = '(',
-  closeParen = ')'
+  closeParen = ')',
 }: {
   children: React.ReactNode;
   needParens?: boolean;
@@ -24,7 +26,7 @@ function Parens({
 }
 
 interface Props {
-  type: any;
+  type: TypedocType;
   needParens?: boolean;
 }
 
@@ -32,20 +34,20 @@ export default function TsDocSignatureType({
   type,
   needParens = false,
 }: Props) {
-  if (!type) return '';
+  if (!type) return null;
 
   if (
     type.type === 'intrinsic' ||
     type.type === 'typeParameter' ||
     type.type === 'unknown'
   ) {
-    return type.name;
+    return <>{type.name}</>;
   }
 
   if (type.type === 'array') {
     return (
       <>
-        <TsDocSignatureType type={type.elementType} needParens />
+        <TsDocSignatureType type={type.elementType!} needParens />
         []
       </>
     );
@@ -75,16 +77,16 @@ export default function TsDocSignatureType({
   }
 
   if (type.type === 'inferred') {
-    return `inger ${type.name}`;
+    return <>{`infer ${type.name}`}</>;
   }
 
   if (type.type === 'intersection') {
     return (
       <Parens needParens={needParens}>
         {type.types.map((tt, idx) => (
-          <React.Fragment key={tt.id}>
+          <React.Fragment key={idx}>
             {idx > 0 && ' & '}
-            <TsDocSignatureType key={tt.id} type={tt} />
+            <TsDocSignatureType type={tt} />
           </React.Fragment>
         ))}
       </Parens>
@@ -113,13 +115,13 @@ export default function TsDocSignatureType({
   if (type.type === 'reference') {
     return (
       <>
-        {type.reference ? type.reference.name : type.name}
-        {type.typeArguments && type.typeArguments.length > 0 && (
+        {type.reference?.name ?? type.name}
+        {!!type.typeArguments?.length && (
           <>
             &lt;
             {type.typeArguments.map((typeArgument, idx) => (
-              <React.Fragment key={typeArgument.id}>
-                {idx > 0 && ', '}
+              <React.Fragment key={idx}>
+                {!!idx && ', '}
                 <TsDocSignatureType type={typeArgument} />
               </React.Fragment>
             ))}
@@ -131,7 +133,7 @@ export default function TsDocSignatureType({
   }
 
   if (type.type === 'reflection') {
-    if (type.declaration.typedocs && type.declaration.typedocs.length > 0) {
+    if (type.declaration.typedocs?.length) {
       // { Object literal }
       return (
         <Parens openParen="{" closeParen="}" needParens>
@@ -141,9 +143,9 @@ export default function TsDocSignatureType({
               {child.name}
               {child.flags.isOptional ? '?:' : ':'}
               {child.type ? (
-                <TsDocSignatureType key={child.id} type={child.type} />
+                <TsDocSignatureType type={child.type} />
               ) : (
-                'any'
+                <TsDocSignatureTitle hideName definition={child} />
               )}
             </React.Fragment>
           ))}
@@ -180,18 +182,18 @@ export default function TsDocSignatureType({
       );
     }
 
-    return '{}';
+    return <>{'{}'}</>;
   }
 
   if (type.type === 'stringLiteral') {
-    return `"${type.value}"`;
+    return <>&quot;{type.value}&quot;</>;
   }
 
   if (type.type === 'tuple') {
     return (
       <Parens openParen="[" closeParen="]" needParens>
         {type.elements.map((element, idx) => (
-          <React.Fragment key={element.id}>
+          <React.Fragment key={idx}>
             {idx > 0 && ', '}
             <TsDocSignatureType type={element} />
           </React.Fragment>
@@ -213,7 +215,7 @@ export default function TsDocSignatureType({
     return (
       <Parens needParens={needParens}>
         {type.types.map((tt, idx) => (
-          <React.Fragment key={tt.id}>
+          <React.Fragment key={idx}>
             {idx > 0 && ' | '}
             <TsDocSignatureType type={tt} needParens />
           </React.Fragment>
@@ -222,5 +224,5 @@ export default function TsDocSignatureType({
     );
   }
 
-  return 'void';
+  return <>void</>;
 }

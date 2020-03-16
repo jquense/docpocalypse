@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { GraphQLObjectType, getNamedType } from 'gatsby/graphql';
 import {
   GatsbyResolverContext,
   GraphQLResolveInfo,
-  getNodeById
+  getNodeById,
 } from '@docpocalypse/gatsby-data-utils';
+import { GraphQLObjectType, getNamedType } from 'gatsby/graphql';
+
 import { JSONOutput } from './types';
 
 export type DocNode =
@@ -15,7 +16,10 @@ export type DocNode =
   | JSONOutput.ProjectReflection
   | JSONOutput.ContainerReflection;
 
-function map<T, K>(items: T[] | T, fn: (item: T) => Promise<K>): Promise<K | K[]> {
+function map<T, K>(
+  items: T[] | T,
+  fn: (item: T) => Promise<K>,
+): Promise<K | K[]> {
   return Array.isArray(items) ? Promise.all(items.map(fn)) : fn(items);
 }
 
@@ -24,7 +28,7 @@ const alwaysExclude = [
   'children',
   'sources',
   'childrenTypedocNode',
-  'childrenTypedocCommentValue'
+  'childrenTypedocCommentValue',
 ];
 
 function resolve(
@@ -32,24 +36,26 @@ function resolve(
   type: string,
   fieldName: string,
   ctx: GatsbyResolverContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) {
   const gqlType = info.schema.getType(type)! as GraphQLObjectType;
 
-  const resolver = gqlType.getFields()[fieldName].resolve;
-  return resolver?.(node, null, ctx, {
+  const resolver =
+    gqlType.getFields()[fieldName].resolve || ctx.defaultFieldResolver;
+  return resolver(node, {}, ctx, {
     ...info,
-    fieldName: 'body'
+    fieldName: 'body',
   });
 }
+
 export default function resolveNodes(
   root: DocNode,
   args: { exclude?: string[]; include?: string[] } = {},
   ctx: GatsbyResolverContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) {
   const exclude = [...alwaysExclude, ...(args.exclude || [])].filter(
-    i => !args.include || !args.include.includes(i)
+    i => !args.include || !args.include.includes(i),
   );
 
   const seen = new Set();
@@ -58,17 +64,11 @@ export default function resolveNodes(
   const gqlTypeType = info.schema.getType('TypedocType')! as GraphQLObjectType;
 
   const typedocFields = Object.entries(gqlNodeType.getFields())
-    .map(
-      ([key, config]: [string, any]) =>
-        [key, getNamedType(config.type).name] as const
-    )
+    .map(([key, config]) => [key, getNamedType(config.type).name] as const)
     .filter(c => exclude.indexOf(c[0]) === -1);
 
   const typeFields = Object.entries(gqlTypeType.getFields())
-    .map(
-      ([key, config]: [string, any]) =>
-        [key, getNamedType(config.type).name] as const
-    )
+    .map(([key, config]) => [key, getNamedType(config.type).name] as const)
     .filter(c => exclude.indexOf(c[0]) === -1);
 
   // linked fields on TypedocNode types
@@ -98,7 +98,7 @@ export default function resolveNodes(
           kind: -1,
           kindString: 'CircularReference',
           id: node.id,
-          name: node.name
+          name: node.name,
         };
 
       const ret = { ...node };
@@ -124,7 +124,7 @@ export default function resolveNodes(
   const visitComment = visit(async (ret: any, node: any) => {
     ret.mdx = await visitMdx(getNodeById(node.fields, 'mdx', ctx));
     ret.markdownRemark = await visitMdRemark(
-      getNodeById(node.fields, 'markdownRemark', ctx)
+      getNodeById(node.fields, 'markdownRemark', ctx),
     );
     delete ret.fields;
   });
@@ -137,7 +137,7 @@ export default function resolveNodes(
         }
 
         return ret[field];
-      })
+      }),
     );
 
     await Promise.all(
@@ -147,7 +147,7 @@ export default function resolveNodes(
         }
 
         return ret[field];
-      })
+      }),
     );
   });
 
@@ -159,7 +159,7 @@ export default function resolveNodes(
         }
 
         return ret[field];
-      })
+      }),
     );
 
     await Promise.all(
@@ -169,7 +169,7 @@ export default function resolveNodes(
         }
 
         return ret[field];
-      })
+      }),
     );
 
     if (ret.comment != null) {

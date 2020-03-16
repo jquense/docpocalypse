@@ -1,49 +1,50 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import TsDocSignatureTitle from './TsDocSignatureTitle';
-import { HeadingLevel } from './Heading';
 import { Heading } from '../../index';
 import TsDocSignatureType from './TsDocSignatureType';
 import TsDocBlock from './TsDocBlock';
 import TsDocComment from './TsDocComment';
+import List from './List';
 
 interface Props {
   definition: any;
-  level?: HeadingLevel;
+  depth?: number;
 }
 
-function TsDocParameter({ definition, level = 1 }: Props) {
-  const nextLevel: HeadingLevel = (level + 1) as any;
+function TsDocParameter({ definition, depth = 0 }: Props) {
+  const nextDepth = depth + 1;
 
   return (
-    <ul>
+    <List>
       {definition.signatures && definition.signatures.length > 0 && (
         <li>
-          <ul>
+          <List>
             {definition.signatures.map(signature => (
               <li key={signature.id}>
                 <TsDocSignatureTitle definition={signature} hideName />
               </li>
             ))}
-          </ul>
+          </List>
 
-          <ul>
+          <List>
             {definition.signatures.map(signature => (
               <li key={signature.id}>
                 <TsDocBlock
-                  level={nextLevel}
+                  depth={nextDepth}
                   definition={signature}
                   showHeader={false}
                 />
               </li>
             ))}
-          </ul>
+          </List>
         </li>
       )}
 
       {definition.indexSignature && definition.indexSignature.length > 0 && (
         /* { [foo: string]: Bar} */
         <li>
-          <Heading level={level}>
+          <Heading>
             [
             {definition.indexSignature.parameters.map(param => (
               <React.Fragment key={param.id}>
@@ -63,18 +64,18 @@ function TsDocParameter({ definition, level = 1 }: Props) {
         <li key={child.id}>
           {child.signatures && child.signatures.length > 0 ? (
             <>
-              <Heading level={level}>
+              <Heading>
                 {child.flags.isRest && '...'}
                 {child.name}
                 {child.flags.isOptional && '?'}
                 {': '}
                 function
               </Heading>
-              <TsDocBlock definition={child} level={nextLevel} />
+              <TsDocBlock definition={child} depth={nextDepth} />
             </>
           ) : (
             <>
-              <Heading level={level}>
+              <Heading>
                 {child.flags.isRest && '...'}
                 {child.name}
                 {child.flags.isOptional && '?'}
@@ -85,20 +86,20 @@ function TsDocParameter({ definition, level = 1 }: Props) {
               <TsDocComment comment={child.comment} />
 
               {child.typedocs && child.typedocs.length > 0 && (
-                <TsDocParameter definition={child} level={nextLevel} />
+                <TsDocParameter definition={child} depth={nextDepth} />
               )}
 
               {child.type.declaration && (
                 <TsDocParameter
                   definition={child.type.declaration}
-                  level={nextLevel}
+                  depth={nextDepth}
                 />
               )}
             </>
           )}
         </li>
       ))}
-    </ul>
+    </List>
   );
 }
 

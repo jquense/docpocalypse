@@ -1,11 +1,13 @@
 import dstyled from 'astroturf';
 import React from 'react';
-import Heading, { HeadingLevel } from './Heading';
+import Heading from './Heading';
 import TsDocSignatureType from './TsDocSignatureType';
 import TsDocComment from './TsDocComment';
 import TsDocParameter from './TsDocParameter';
+import List from './List';
+import { TypedocNode } from './typedoc-types';
 
-const List = dstyled('ul')`
+const StyledList = dstyled(List)`
   @apply ml-5 p-0 mt-0 mb-0;
 
   & li {
@@ -14,22 +16,22 @@ const List = dstyled('ul')`
 `;
 
 interface Props {
-  definition: any;
-  level?: HeadingLevel;
+  definition: TypedocNode;
+  depth?: number;
 }
 
-function TsDocParams({ definition, level = 1 }: Props) {
-  const nextLevel: HeadingLevel = (level + 1) as any;
+function TsDocParams({ definition, depth = 0 }: Props) {
+  const nextDepth = depth + 1;
 
   return (
     <>
       {definition.typeParameter && definition.typeParameter.length > 0 && (
         <>
-          <Heading level={level}>Type Parameters</Heading>
-          <List>
+          <Heading>Type Parameters</Heading>
+          <StyledList>
             {definition.typeParameter.map(typeParam => (
               <li key={typeParam.id}>
-                <Heading level={nextLevel}>
+                <Heading>
                   {typeParam.name}{' '}
                   {typeParam.type && (
                     <>
@@ -40,17 +42,17 @@ function TsDocParams({ definition, level = 1 }: Props) {
                 </Heading>
               </li>
             ))}
-          </List>
+          </StyledList>
         </>
       )}
 
-      {definition.parameters && definition.parameters.length > 0 && (
+      {!!definition.parameters?.length && (
         <>
-          <Heading level={level}>Parameters</Heading>
-          <List>
+          <Heading>Parameters</Heading>
+          <StyledList>
             {definition.parameters.map(param => (
               <li key={param.id}>
-                <Heading level={nextLevel}>
+                <Heading>
                   {param.flags.isRest && '...'}
                   {param.name}
                   {': '}
@@ -65,12 +67,15 @@ function TsDocParams({ definition, level = 1 }: Props) {
 
                 <TsDocComment comment={param.comment} />
 
-                {param.declaration && (
-                  <TsDocParameter definition={param.declaration} />
-                )}
+                {/* {param.declaration && (
+                  <TsDocParameter
+                    definition={param.declaration}
+                    depth={nextDepth}
+                  />
+                )} */}
               </li>
             ))}
-          </List>
+          </StyledList>
         </>
       )}
     </>

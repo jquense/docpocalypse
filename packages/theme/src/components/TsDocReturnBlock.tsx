@@ -1,24 +1,27 @@
 import React from 'react';
-import Heading, { HeadingLevel } from './Heading';
+import Heading from './Heading';
 import TsDocSignatureType from './TsDocSignatureType';
 import TsDocParameter from './TsDocParameter';
 
 interface Props {
   definition: any;
-  level?: HeadingLevel;
+  depth?: number;
 }
 
-function TsDocReturnBlock({ definition, level = 1 }: Props) {
+function TsDocReturnBlock({ definition, depth = 0 }: Props) {
   return (
     <div>
       {definition.type && (
         <>
-          <Heading level={level}>Return Value</Heading>
+          <Heading>Return Value</Heading>
           <TsDocSignatureType type={definition.type} />
 
-          {definition.type.declaration && (
-            <TsDocParameter definition={definition.type.declaration} />
-          )}
+          {/* {definition.type.declaration && (
+            <TsDocParameter
+              definition={definition.type.declaration}
+              depth={depth + 1}
+            />
+          )} */}
         </>
       )}
     </div>

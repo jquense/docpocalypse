@@ -2,15 +2,16 @@
 
 import { css as dcss } from 'astroturf';
 import React from 'react';
-import Heading, { HeadingLevel } from './Heading';
+import Heading from './Heading';
 import TsDocSignatureTitle from './TsDocSignatureTitle';
 import TsDocComment from './TsDocComment';
 import TsDocReturnBlock from './TsDocReturnBlock';
 import TsDocParams from './TsDocParams';
+import { TypedocNode } from './typedoc-types';
 
 interface Props {
-  definition: any;
-  level: HeadingLevel;
+  definition: TypedocNode;
+  depth?: number;
   title?: string | null;
   showSignature?: boolean;
   showHeader?: boolean;
@@ -20,19 +21,19 @@ interface Props {
 const TsDocBlock = ({
   className,
   definition,
-  level = 2,
+  depth = 2,
   title = null,
   showHeader = true,
   showSignature = true,
 }: Props) => {
   if (!definition) return null;
 
-  const nextLevel: HeadingLevel = (level + 1) as any;
+  const nextDepth = depth + 1;
 
   return (
     <div className={className}>
       {showHeader && (
-        <Heading level={level}>
+        <Heading>
           <div
             css={dcss`
             @apply inline-block mr-3;
@@ -50,8 +51,8 @@ const TsDocBlock = ({
       )}
 
       <TsDocComment comment={definition.comment} />
-      <TsDocParams level={nextLevel} definition={definition} />
-      <TsDocReturnBlock level={nextLevel} definition={definition} />
+      <TsDocParams depth={nextDepth} definition={definition} />
+      <TsDocReturnBlock depth={nextDepth} definition={definition} />
     </div>
   );
 };

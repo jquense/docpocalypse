@@ -1,13 +1,14 @@
 import { css as dcss } from 'astroturf';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
+import { TypeDocComment } from './typedoc-types';
 
 interface Props {
-  comment: any;
+  comment?: TypeDocComment;
 }
 
 export default function TsDocComment({ comment }: Props) {
-  if (!comment) {
+  if (!comment?.mdx) {
     return null;
   }
 

@@ -2,6 +2,7 @@ import dstyled from 'astroturf';
 import React from 'react';
 // eslint-disable-next-line import/no-cycle
 import TsDocSignatureType from './TsDocSignatureType';
+import { Kind, TypedocType, TypedocNode } from './typedoc-types';
 
 const Wrapper = dstyled('span')<{ wrap: boolean }>`
   @apply ml-2;
@@ -33,7 +34,7 @@ function Parameter({ definition }: { definition: any }) {
 }
 
 interface Props {
-  definition: any;
+  definition: TypedocNode;
   title?: string | null;
   hideName?: boolean;
   showSignature?: boolean;
@@ -47,18 +48,20 @@ function TsDocSignatureTitle({
   hideName = false,
   arrowStyle = false,
   showSignature = true,
-  wrap = false
+  wrap = false,
 }: Props) {
+  if (definition.signatures?.length) {
+    definition = definition.signatures[0];
+  }
   return (
     <span className="signature">
       {!hideName && <code>{title || definition.name}</code>}
-      {definition.typeParameter &&
-        definition.typeParameter.length > 0 &&
+      {!!definition.typeParameter?.length &&
         `<${definition.typeParameter.map(p => p.name).join(', ')}>`}
       {showSignature && (
         <Wrapper wrap={wrap}>
           (
-          {definition.parameters.map((param, idx) => (
+          {definition.parameters?.map((param, idx) => (
             <React.Fragment key={param.id}>
               {idx > 0 && ', '}
               <Parameter definition={param} />

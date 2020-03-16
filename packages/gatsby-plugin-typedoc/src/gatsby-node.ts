@@ -7,13 +7,13 @@ import {
   Application,
   JSONOutput,
   ProjectReflection,
-  TSConfigReader
+  TSConfigReader,
 } from 'typedoc';
 import { findConfigFile, readConfigFile, sys } from 'typescript';
 import camelCase from 'lodash/camelCase';
 import {
   GatsbyResolverContext,
-  proxyToNode
+  proxyToNode,
 } from '@docpocalypse/gatsby-data-utils';
 import resolveNodes, { DocNode } from './lib/resolveNode';
 import * as T from './lib/types';
@@ -37,7 +37,7 @@ interface PluginOptions {
 
 export function createSchemaCustomization({
   actions,
-  schema
+  schema,
 }: CreateSchemaCustomizationArgs) {
   actions.createTypes([
     schema.buildEnumType({
@@ -75,23 +75,23 @@ export function createSchemaCustomization({
         SomeSignature: { value: 1601536 },
         SomeModule: { value: 3 },
         SomeType: { value: 4391168 },
-        SomeValue: { value: 2097248 }
-      }
+        SomeValue: { value: 2097248 },
+      },
     }),
     schema.buildObjectType({
       name: `TypedocMdx`,
       extensions: ['dontInfer'],
       fields: {
         body: 'String!',
-        mdxAST: 'JSON'
-      }
+        mdxAST: 'JSON',
+      },
     }),
     schema.buildObjectType({
       name: `TypedocMarkdownRemark`,
       extensions: ['dontInfer'],
       fields: {
-        html: 'String'
-      }
+        html: 'String',
+      },
     }),
     schema.buildObjectType({
       name: 'TypedocComment',
@@ -101,13 +101,13 @@ export function createSchemaCustomization({
         tags: '[TypedocTag]',
         markdownRemark: {
           type: 'TypedocMarkdownRemark',
-          resolve: proxyToNode('fields.markdownRemark')
+          resolve: proxyToNode('fields.markdownRemark'),
         },
         mdx: {
           type: 'TypedocMdx',
-          resolve: proxyToNode('fields.mdx')
-        }
-      }
+          resolve: proxyToNode('fields.mdx'),
+        },
+      },
     }),
     /* GraphQL */ `
       type TypedocFlags @dontInfer {
@@ -208,7 +208,7 @@ export function createSchemaCustomization({
         sources: [TypedocSource!]!
         groups: [TypedocGroup!]!
       }
-    `
+    `,
     // gatsby type is wrong
   ] as any);
 }
@@ -222,27 +222,27 @@ exports.createResolvers = ({ createResolvers }) => {
           if (!src.absolutePath) return null;
           return ctx.nodeModel.runQuery({
             query: {
-              filter: { absolutePath: { eq: src.absolutePath } }
+              filter: { absolutePath: { eq: src.absolutePath } },
             },
             firstOnly: true,
-            type: 'File'
+            type: 'File',
           });
-        }
+        },
       },
       resolved: {
         type: 'JSON',
         args: { exclude: '[String]', include: '[String]' },
         resolve: (src, args, ctx, info) => {
           return resolveNodes(src, args, ctx, info);
-        }
-      }
-    }
+        },
+      },
+    },
   });
 };
 
 export function sourceNodes(
   { actions, createNodeId, createContentDigest, reporter },
-  pluginOptions: PluginOptions
+  pluginOptions: PluginOptions,
 ) {
   const { createNode } = actions;
   const nodes = new Map<string, any>();
@@ -272,12 +272,12 @@ export function sourceNodes(
 
     if (!tsconfig) {
       reporter.info(
-        `No typescript project detected for source ${root} skipping`
+        `No typescript project detected for source ${root} skipping`,
       );
       return;
     }
     reporter.info(
-      `Typescript config found for source ${root}, generating type information`
+      `Typescript config found for source ${root}, generating type information`,
     );
 
     const { config, error } = readConfigFile(tsconfig, sys.readFile);
@@ -294,7 +294,7 @@ export function sourceNodes(
       ...typedocOptions,
       mode: 'modules',
       // excludeNotExported: true,
-      tsconfig
+      tsconfig,
     });
 
     // app.serializer.addSerializer(
@@ -303,7 +303,7 @@ export function sourceNodes(
 
     const rootDir = join(
       dirname(tsconfig),
-      config.compilerOptions?.rootDir ?? ''
+      config.compilerOptions?.rootDir ?? '',
     );
 
     const project = app.convert(app.expandInputFiles([rootDir]));
@@ -317,7 +317,7 @@ export function sourceNodes(
 
     function findDeclarations(
       type?: JSONOutput.SomeType,
-      parent?: string
+      parent?: string,
     ): any {
       const find = (t?: JSONOutput.SomeType) => findDeclarations(t, parent);
       if (!type) return type;
@@ -369,11 +369,11 @@ export function sourceNodes(
         'extendedBy',
         'implementedTypes',
         'implementedBy',
-        'implementationOf'
+        'implementationOf',
       ].forEach(field => {
         (docNode as any)[field] = findDeclarations(
           (docNode as any)[field],
-          nodeId
+          nodeId,
         );
       });
 
@@ -393,16 +393,16 @@ export function sourceNodes(
           ('groups' in docNode &&
             docNode.groups?.map(group => ({
               ...group,
-              children: group.children?.map(id => createId(id))
+              children: group.children?.map(id => createId(id)),
             }))) ||
-          []
+          [],
       };
 
       node.absolutePath = getFile(docNode, project!);
 
       node.internal = {
         type: 'TypedocNode',
-        contentDigest: createContentDigest(JSON.stringify(node))
+        contentDigest: createContentDigest(JSON.stringify(node)),
       };
 
       node.children = node.typedocs
@@ -417,7 +417,7 @@ export function sourceNodes(
           node.comment,
           actions,
           createNodeId,
-          createContentDigest
+          createContentDigest,
         );
       }
 
@@ -426,21 +426,24 @@ export function sourceNodes(
     }
 
     if (data) {
-      // console.log(project.getReflectionById(data.children![0]!.id!));
-      traverse(data);
-      nodes.clear();
-
       if (debugRaw) {
+        const json = JSON.stringify(data);
+        fs.writeFileSync(`${process.cwd()}/nodes.json`, json);
+
         createNode({
           root,
           id: createNodeId(`typedoc-${data.name || 'default'}`),
           json: data,
           internal: {
             type: 'TypedocNodeRaw',
-            contentDigest: createContentDigest(JSON.stringify(data))
-          }
+            contentDigest: createContentDigest(json),
+          },
         });
       }
+
+      // console.log(project.getReflectionById(data.children![0]!.id!));
+      traverse(data);
+      nodes.clear();
     } else {
       reporter.error('Failed to generate TypeDoc');
     }
@@ -459,7 +462,7 @@ export function onCreateNode({ node, actions, getNode }) {
       createNodeField({
         node: parentNode,
         name: camelCase(type),
-        value: node.id
+        value: node.id,
       });
     }
   }
