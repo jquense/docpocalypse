@@ -1,8 +1,8 @@
 import { MDXProvider } from '@mdx-js/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Location } from '@reach/router';
 import React from 'react';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import DocumentOutlineProvider from './components/DocumentOutlineProvider';
 import InlineCode from './components/InlineCode';
 import LinkedHeading from './components/LinkedHeading';
@@ -10,12 +10,15 @@ import List from './components/List';
 import Heading from './components/OutlineHeading';
 import Paragraph from './components/Paragraph';
 import Pre from './components/Pre';
+import DataProvider from './components/DataProvider';
+import Anchor from './components/Anchor';
 
 const stripTrailing = (path: string) =>
   path === '/' ? '/' : path.replace(/\/$/, '');
 
 export const components = {
   wrapper: props => <>{props.children}</>,
+  a: Anchor,
   h1: props => <Heading h="1" {...props} />,
   h2: props => <LinkedHeading h="2" {...props} />,
   h3: props => <LinkedHeading h="3" {...props} />,
@@ -40,8 +43,12 @@ export const components = {
   inlineCode: InlineCode,
 };
 
-export default ({ element }) => (
-  <DocumentOutlineProvider>
-    <MDXProvider components={components}>{element}</MDXProvider>
-  </DocumentOutlineProvider>
-);
+export default ({ element }) => {
+  return (
+    <DataProvider>
+      <DocumentOutlineProvider>
+        <MDXProvider components={components}>{element}</MDXProvider>
+      </DocumentOutlineProvider>
+    </DataProvider>
+  );
+};

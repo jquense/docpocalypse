@@ -8,7 +8,10 @@
   },
   "private": true,
   "dependencies": {
+    "@manypkg/get-packages": "^1.0.0",
+    "latest-version": "^5.1.0",
     "node-plop": "^0.24.0",
+    "path-shorten": "^0.0.6",
     "yargs": "^15.0.2"
   }
 }

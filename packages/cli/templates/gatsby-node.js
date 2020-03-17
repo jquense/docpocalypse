@@ -3,7 +3,7 @@ exports.onCreateBabelConfig = ({ actions }) => {
   actions.setBabelOptions({
     options: {
       babelrcRoots: true,
-      rootMode: 'upwardsOptional'
-    }
+      rootMode: 'upward-optional',
+    },
   });
 };

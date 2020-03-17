@@ -13137,7 +13137,7 @@ last-call-webpack-plugin@^3.0.0:
     lodash "^4.17.5"
     webpack-sources "^1.1.0"
 
-latest-version@^5.0.0:
+latest-version@^5.0.0, latest-version@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/latest-version/-/latest-version-5.1.0.tgz#119dfe908fe38d15dfa43ecd13fa12ec8832face"
   integrity sha512-weT+r0kTkRQdCdYCNtkMwWXQTMEswKrFBkm4ckQOMVhhqhIMI1UT2hMj+1iigIhgSZm5gTmrRXBNoGUgaTY1xA==
@@ -15753,6 +15753,11 @@ path-root@^0.1.1:
   integrity sha1-mkpoFMrBwM1zNgqV8yCDyOpHRbc=
   dependencies:
     path-root-regex "^0.1.0"
+
+path-shorten@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/path-shorten/-/path-shorten-0.0.6.tgz#fc371f1151ca11abaa4e64447fb2399560266bc8"
+  integrity sha1-/DcfEVHKEauqTmREf7I5lWAma8g=
 
 path-to-regexp@0.1.7:
   version "0.1.7"

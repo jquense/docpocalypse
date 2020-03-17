@@ -23,6 +23,7 @@ module.exports = ({ theming }) => ({
       ...base.height,
       navbar: t('spacing.16'),
     }),
+    Anchor: true,
     Heading: true,
     LinkedHeading: true,
     InlineCode: true,

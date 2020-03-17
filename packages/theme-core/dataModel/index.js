@@ -66,6 +66,14 @@ exports.createSchemaCustomization = ({ actions, schema, cache }) => {
         value: JSON
       }
 
+      # type DocpocalypsePackageSource implements Node @dontInfer {
+      #   name: String!
+      #   package: JSON!
+      #   relativeFilePath: String!
+      #   rootLocation: String!
+      #   # TODO: link to Nodes
+      # }
+
       type DocpocalypsePage {
         title: String
         codeBlockImports: [DocpocalypseCodeBlockImport]

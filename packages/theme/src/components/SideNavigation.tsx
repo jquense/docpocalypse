@@ -1,15 +1,16 @@
 import { css as dcss } from 'astroturf';
-import { graphql, useStaticQuery } from 'gatsby';
-import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
 import SideNavigationHeader from './SideNavigationHeader';
 import SideNavigationLink from './SideNavigationLink';
 import SideNavigationPanel from './SideNavigationPanel';
 import SideNavigationItem from './SideNavigationItem';
+import { usePageData } from './DataProvider';
 
 type GroupBy = (node: DocumentationNode) => string;
+
+export { usePageData };
 
 export interface Props {
   className?: string;
@@ -19,66 +20,32 @@ export interface Props {
 }
 
 /** @public */
-function SideNavigation({ className, groupComponentsBy = () => 'API' }: Props) {
-  const { allDocpocalypse, allSitePage } = useStaticQuery(graphql`
-    query {
-      allSitePage(
-        filter: {
-          pluginCreator: { name: { ne: "@docpocalypse/gatsby-theme-core" } }
-        }
-      ) {
-        nodes {
-          path
-          docpocalypse {
-            title
-          }
-          pluginCreator {
-            name
-          }
-        }
-      }
-      allDocpocalypse {
-        nodes {
-          type
-          name
-          packageName
-        }
-      }
-    }
-  `);
-
-  const groups = useMemo(
-    () => groupBy(sortBy(allDocpocalypse.nodes, 'name'), groupComponentsBy),
-    [allDocpocalypse, groupComponentsBy],
-  );
+function SideNavigation({ className }: Props) {
+  const { pages, api } = usePageData();
 
   return (
     <SideNavigationPanel className={className}>
       <nav>
         <ul>
-          {allSitePage.nodes
-            .filter(n => n.docpocalypse?.title)
-            .map(page => (
-              <SideNavigationItem key={page.path}>
-                <SideNavigationLink to={page.path}>
-                  {page.docpocalypse.title}
-                </SideNavigationLink>
-              </SideNavigationItem>
-            ))}
-          {Object.entries(groups).map(([groupName, nodes]) => (
-            <SideNavigationItem key={groupName}>
-              <SideNavigationHeader>{groupName}</SideNavigationHeader>
-              <ul css={dcss`@apply mb-4`}>
-                {nodes.map(n => (
-                  <SideNavigationItem key={n.name}>
-                    <SideNavigationLink to={`/api/${n.name}`}>
-                      {n.name}
-                    </SideNavigationLink>
-                  </SideNavigationItem>
-                ))}
-              </ul>
+          {pages.map(page => (
+            <SideNavigationItem key={page.path}>
+              <SideNavigationLink to={page.path}>
+                {page.title}
+              </SideNavigationLink>
             </SideNavigationItem>
           ))}
+          <SideNavigationItem>
+            <SideNavigationHeader>API</SideNavigationHeader>
+            <ul css={dcss`@apply mb-4`}>
+              {sortBy(api, 'name').map(page => (
+                <SideNavigationItem key={page.title}>
+                  <SideNavigationLink to={page.path}>
+                    {page.title}
+                  </SideNavigationLink>
+                </SideNavigationItem>
+              ))}
+            </ul>
+          </SideNavigationItem>
         </ul>
       </nav>
     </SideNavigationPanel>

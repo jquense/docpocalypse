@@ -1,7 +1,6 @@
 module.exports = {
   siteMetadata: {
     title: '{{pkgName}} documentation',
-    author: 'Jason Quense'
   },
   plugins: [
     {
@@ -10,8 +9,8 @@ module.exports = {
         sources: ['{{src}}'],
         getImportName(docNode) {
           return `import { ${docNode.name} } from '${docNode.packageName}'`;
-        }
-      }
-    }
-  ]
+        },
+      },
+    },
+  ],
 };

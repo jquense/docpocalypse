@@ -14,7 +14,10 @@ export { default as ComponentPage } from './src/components/ComponentPage';
 export { default as HookPage } from './src/components/HookPage';
 
 export { default as DocumentOutline } from './src/components/DocumentOutline';
-export { default as SideNavigation } from './src/components/SideNavigation';
+export {
+  default as SideNavigation,
+  usePageData,
+} from './src/components/SideNavigation';
 export { default as SideNavigationPanel } from './src/components/SideNavigationPanel';
 export { default as SideNavigationHeader } from './src/components/SideNavigationHeader';
 export { default as SideNavigationLink } from './src/components/SideNavigationLink';

@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     {
-      "path": "test-site"
+      "path": "www"
     },
     {
       "path": "packages/code-live"

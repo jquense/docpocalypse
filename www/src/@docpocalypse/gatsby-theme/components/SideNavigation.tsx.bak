@@ -34,7 +34,7 @@ function AppSideNavigation(props) {
     [allDocpocalypse],
   );
   const { 'gatsby-theme': main, ...rest } = groups;
-  // console.log(groups);
+
   return (
     <SideNavigation.Panel {...props}>
       <nav>

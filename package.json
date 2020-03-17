@@ -24,7 +24,7 @@
   },
   "workspaces": {
     "packages": [
-      "test-site",
+      "www",
       "test-hooks",
       "packages/*"
     ]
@@ -91,12 +91,6 @@
     ],
     "@docpocalypse/gatsby-theme-core/*": [
       "packages/theme-core/*"
-    ],
-    "test-site/Users/jquense/src/docpocalypse/test-hooks/*": [
-      "test-hooks/src/*"
-    ],
-    "test-site/Users/jquense/src/docpocalypse/test-site/*": [
-      "test-site/src/*"
     ]
   }
 }
