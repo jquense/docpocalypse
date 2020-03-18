@@ -39,8 +39,24 @@ const styles = dcss`
     & .editor {
       @apply bg-gray-100 rounded-b;
 
+      white-space: pre-wrap;
+
       textarea {
         outline: none;
+      }
+    }
+
+    @at-root {
+
+    .line-numbers :global(.token-line) {
+      counter-increment: line;
+
+        &::before {
+          content: counter(line);
+          display: inline-block;
+          text-align: right;
+          margin-right: theme(margin.4);
+        }
       }
     }
   }
@@ -139,6 +155,7 @@ export default function LiveCode({
   language,
   title,
   theme = syntaxTheme,
+  lineNumbers = true,
   showCode = true,
   showImports = false,
   renderAsComponent = false,
@@ -161,7 +178,13 @@ export default function LiveCode({
         <div className={cn(contentClassName, styles.content)}>
           <Preview className={cn(previewClassName, styles.preview)} />
 
-          <div className={cn(editorClassName, styles.editor)}>
+          <div
+            className={cn(
+              editorClassName,
+              styles.editor,
+              lineNumbers && styles.lineNumbers,
+            )}
+          >
             {showCode && <Editor infoComponent={StyledInfoMessage} />}
           </div>
           <Error className={styles.error} />

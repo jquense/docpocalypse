@@ -31,9 +31,16 @@ interface Props {
 
 function CodeBlock({ highlighter = defaultHighligher, code, ...props }: Props) {
   return (
-    <Highlight Prism={Prism} code={code.trim()} {...props}>
-      {highlighter}
-    </Highlight>
+    <pre
+      className={props.className}
+      style={{ ...props.style, ...props.theme?.plain }}
+    >
+      <code>
+        <Highlight Prism={Prism} code={code.trim()} {...props}>
+          {highlighter}
+        </Highlight>
+      </code>
+    </pre>
   );
 }
 

@@ -58,8 +58,6 @@ class Highlight extends Component<Props, any> {
     const output: LineOutputProps = {
       ...rest,
       className: 'token-line',
-      style: undefined,
-      key: undefined,
     };
 
     const themeDict = this.getThemeDict(this.props);
@@ -110,7 +108,6 @@ class Highlight extends Component<Props, any> {
       className: `token ${token.types.join(' ')}`,
       children: token.content,
       style: this.getStyleForToken(token),
-      key: undefined,
     };
 
     if (style !== undefined) {
