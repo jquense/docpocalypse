@@ -1,17 +1,21 @@
+import Highlight, {
+  Prism,
+  PrismTheme,
+} from '@docpocalypse/prism-react-renderer';
+import useMergeState from '@restart/hooks/useMergeState';
+import useStableMemo from '@restart/hooks/useStableMemo';
 import React, {
   useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import SimpleCodeEditor from 'react-simple-code-editor';
-import useMergeState from '@restart/hooks/useMergeState';
-import useStableMemo from '@restart/hooks/useStableMemo';
-import CodeBlock from './CodeBlock';
+
+import { mapTokens } from './CodeBlock';
 import InfoMessage from './InfoMessage';
 import { useLiveContext } from './Provider';
-import { PrismTheme } from './prism';
 
 let uid = 0;
 
@@ -34,19 +38,26 @@ export interface Props {
   className?: string;
   style?: any;
   theme?: PrismTheme;
+  lineNumbers?: boolean;
   infoComponent?: React.ComponentType<any>;
 }
 
 const Editor = React.forwardRef(
   (
-    { style, className, theme, infoComponent: Info = InfoMessage }: Props,
-    ref: any
+    {
+      style,
+      className,
+      theme,
+      infoComponent: Info = InfoMessage,
+      lineNumbers,
+    }: Props,
+    ref: any,
   ) => {
     const {
       code: contextCode,
       theme: contextTheme,
       language,
-      onChange
+      onChange,
     } = useLiveContext();
     const userTheme = theme || contextTheme;
     const [code, setCode] = useStateFromProp(contextCode);
@@ -62,7 +73,7 @@ const Editor = React.forwardRef(
     const [{ visible, ignoreTab, keyboardFocused }, setState] = useMergeState({
       visible: false,
       ignoreTab: false,
-      keyboardFocused: false
+      keyboardFocused: false,
     });
 
     const id = useMemo(() => `described-by-${++uid}`, []);
@@ -84,14 +95,14 @@ const Editor = React.forwardRef(
       setState({
         visible: true,
         ignoreTab: !mouseDown.current,
-        keyboardFocused: !mouseDown.current
+        keyboardFocused: !mouseDown.current,
       });
     };
 
     const handleBlur = (e: React.FocusEvent) => {
       if (e.target !== e.currentTarget) return;
       setState({
-        visible: false
+        visible: false,
       });
     };
 
@@ -102,16 +113,23 @@ const Editor = React.forwardRef(
       });
     };
 
-    const handleHighlight = useCallback(
+    const highlight = useCallback(
       (value: string) => (
-        <CodeBlock theme={userTheme} code={value} language={language as any} />
+        <Highlight
+          theme={userTheme}
+          Prism={Prism}
+          code={value}
+          language={language as any}
+        >
+          {hl => mapTokens({ ...hl, lineNumbers })}
+        </Highlight>
       ),
-      [language, userTheme]
+      [language, userTheme, lineNumbers],
     );
 
     const baseTheme =
       userTheme && typeof userTheme.plain === 'object' ? userTheme.plain : {};
-
+    console.log('C', code);
     return (
       <div ref={ref} style={{ position: 'relative' }}>
         <SimpleCodeEditor
@@ -121,7 +139,7 @@ const Editor = React.forwardRef(
           onKeyDown={handleKeyDown}
           onMouseDown={handleMouseDown}
           onValueChange={setCode}
-          highlight={handleHighlight}
+          highlight={highlight}
           ignoreTabKey={ignoreTab}
           className={className}
           aria-describedby={id}
@@ -143,7 +161,7 @@ const Editor = React.forwardRef(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default Editor;

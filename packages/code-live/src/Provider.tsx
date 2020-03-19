@@ -6,8 +6,11 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { SourceMapConsumer } from 'source-map';
+import { decode } from 'sourcemap-codec';
 
 import { PrismTheme } from './prism';
+import { Wrapper } from './transform/wrapContent';
 import transpile, { removeImports } from './transpile';
 
 const prettierComment = /(\{\s*\/\*\s+prettier-ignore\s+\*\/\s*\})|(\/\/\s+prettier-ignore)/gim;
@@ -37,6 +40,49 @@ const getRequire = (imports?: Record<string, any>) =>
     return imports[request];
   };
 
+const wrapAsComponent: Wrapper = ctx => {
+  ctx.prepend('return React.createElement(function StateContainer() {\n');
+  ctx.append('\n})');
+};
+
+async function handleError(
+  err: any,
+  result: ReturnType<typeof transpile>,
+  fn: Function,
+) {
+  const fnStr = fn.toString();
+  // account for the function chrome lines
+  const offset = fnStr.slice(0, fnStr.indexOf('{')).split(/\n/).length;
+
+  let pos;
+  if ('line' in err) {
+    pos = { line: err.line, column: err.column };
+  } else if ('lineNumber' in err) {
+    pos = { line: err.lineNumber - 1, column: err.columnNumber - 1 };
+  } else {
+    const [, line, col] = err.stack?.match(
+      /at eval.+<anonymous>:(\d+):(\d+)/m,
+    )!;
+    pos = { line: +line - 1, column: +col - 1 };
+  }
+  if (!pos) return err;
+
+  const decoded = decode(result.map.mappings);
+
+  const line = pos.line - offset;
+  const mapping = decoded[line]?.find(([col]) => col === pos.column);
+  // const original = consumer.originalPositionFor({
+  //   line: frame.lineNumber = 0,
+  //   column: frame.columnNumber = 0,
+  // });
+  if (mapping) {
+    err.location = { line: mapping[2], column: mapping[3] };
+  }
+
+  console.log(err.location);
+  return err;
+}
+
 function codeToComponent<TScope extends {}>(
   code: string,
   scope?: TScope,
@@ -51,12 +97,10 @@ function codeToComponent<TScope extends {}>(
       );
     }
 
-    const result = transpile(code, isInline);
-
-    if (renderAsComponent) {
-      result.code = `return React.createElement(function StateContainer() {\n${result.code}\n})`;
-      // console.log(result.code);
-    }
+    const result = transpile(code, {
+      inline: isInline,
+      wrapper: renderAsComponent ? wrapAsComponent : undefined,
+    });
 
     const render = (element: JSX.Element) => {
       if (element === undefined) {
@@ -73,10 +117,18 @@ function codeToComponent<TScope extends {}>(
     const args = ['React', 'render'].concat(Object.keys(finalScope));
     const values = [React, render].concat(Object.values(finalScope));
 
-    // eslint-disable-next-line no-new-func
-    const fn = new Function(...args, result.code);
+    const body = result.code;
 
-    const element = fn(...values);
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(...args, body);
+
+    let element;
+    try {
+      element = fn(...values);
+    } catch (err) {
+      handleError(err, result, fn).then(reject);
+      return;
+    }
 
     if (!isInline) return;
 
@@ -161,7 +213,13 @@ export default function Provider<TScope extends {} = {}>({
 
     if (showImports) return [nextCode, ''];
     const r = removeImports(nextCode);
-    return [r.code, r.imports.map(i => i.code).join('\n')];
+    return [
+      r.code,
+      r.imports
+        .map(i => i.code)
+        .join('\n')
+        .trimStart(),
+    ];
   }, [codeText, showImports]);
 
   const handleChange = useEventCallback((nextCode: string) => {

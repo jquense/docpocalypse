@@ -45,20 +45,6 @@ const styles = dcss`
         outline: none;
       }
     }
-
-    @at-root {
-
-    .line-numbers :global(.token-line) {
-      counter-increment: line;
-
-        &::before {
-          content: counter(line);
-          display: inline-block;
-          text-align: right;
-          margin-right: theme(margin.4);
-        }
-      }
-    }
   }
 `;
 
@@ -132,6 +118,8 @@ export interface Props<TScope extends {} = {}> {
    * Imports can't be changed in the browser, so showing them is for
    * illustrative purposes only */
   showImports?: boolean;
+
+  lineNumbers?: boolean;
 }
 
 function StyledInfoMessage(props) {
@@ -154,8 +142,8 @@ export default function LiveCode({
   resolveImports,
   language,
   title,
+  lineNumbers,
   theme = syntaxTheme,
-  lineNumbers = true,
   showCode = true,
   showImports = false,
   renderAsComponent = false,
@@ -178,14 +166,13 @@ export default function LiveCode({
         <div className={cn(contentClassName, styles.content)}>
           <Preview className={cn(previewClassName, styles.preview)} />
 
-          <div
-            className={cn(
-              editorClassName,
-              styles.editor,
-              lineNumbers && styles.lineNumbers,
+          <div className={cn(editorClassName, styles.editor)}>
+            {showCode && (
+              <Editor
+                infoComponent={StyledInfoMessage}
+                lineNumbers={lineNumbers}
+              />
             )}
-          >
-            {showCode && <Editor infoComponent={StyledInfoMessage} />}
           </div>
           <Error className={styles.error} />
         </div>

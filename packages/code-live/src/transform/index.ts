@@ -2,6 +2,7 @@
 import { Parser } from 'acorn';
 import acornJsx from 'acorn-jsx';
 import MagicString from 'magic-string';
+
 import { Node, NormalVisitor, Plugin, VisitorMap } from './types';
 
 const parser = Parser.extend(acornJsx());
@@ -14,7 +15,7 @@ function walk(
   ctx: MagicString,
   visitors: NormalVisitorMap,
   node?: Node,
-  parent?: Node
+  parent?: Node,
 ) {
   if (!node) return;
 
@@ -78,7 +79,7 @@ export function transform(source: string, options: Options = { plugins: [] }) {
     allowHashBang: true,
     onComment: (...args) => {
       plugins.forEach(p => p.onComment?.(...args));
-    }
+    },
   });
 
   walk(code, mergeVisitors(plugins.map(p => p.visitor!).filter(Boolean)), ast);
@@ -89,7 +90,7 @@ export function transform(source: string, options: Options = { plugins: [] }) {
     map: code.generateMap({
       file: options.file,
       source: options.source,
-      includeContent: options.includeContent !== false
-    })
+      includeContent: options.includeContent !== false,
+    }),
   };
 }

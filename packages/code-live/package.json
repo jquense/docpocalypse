@@ -60,7 +60,7 @@
     "@docpocalypse/prism-react-renderer": "^2.0.2",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.11",
-    "@restart/hooks": "^0.3.21",
+    "@restart/hooks": "^0.3.22",
     "@types/classnames": "^2.2.9",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
@@ -70,13 +70,16 @@
     "buble": "^0.19.8",
     "classnames": "^2.2.6",
     "cpy": "^8.0.1",
+    "error-stack-parser": "^2.0.6",
     "holderjs": "^2.9.6",
     "magic-string": "^0.25.6",
     "prismjs": "^1.19.0",
     "prop-types": "^15.7.2",
     "react-live": "^2.2.2",
     "react-simple-code-editor": "^0.11.0",
-    "snarkdown": "^1.2.2"
+    "snarkdown": "^1.2.2",
+    "source-map": "^0.8.0-beta.0",
+    "sourcemap-codec": "^1.4.8"
   },
   "peerDependencies": {
     "react": "^16.8.6",
