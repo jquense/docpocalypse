@@ -1,12 +1,13 @@
+import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
 import { css as dcss } from 'astroturf';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
-import { DocumentationNode } from '@docpocalypse/gatsby-theme-core';
+
+import { usePageData } from './DataProvider';
 import SideNavigationHeader from './SideNavigationHeader';
+import SideNavigationItem from './SideNavigationItem';
 import SideNavigationLink from './SideNavigationLink';
 import SideNavigationPanel from './SideNavigationPanel';
-import SideNavigationItem from './SideNavigationItem';
-import { usePageData } from './DataProvider';
 
 type GroupBy = (node: DocumentationNode) => string;
 
@@ -37,7 +38,7 @@ function SideNavigation({ className }: Props) {
           <SideNavigationItem>
             <SideNavigationHeader>API</SideNavigationHeader>
             <ul css={dcss`@apply mb-4`}>
-              {sortBy(api, 'name').map(page => (
+              {sortBy(api, 'title').map(page => (
                 <SideNavigationItem key={page.title}>
                   <SideNavigationLink to={page.path}>
                     {page.title}

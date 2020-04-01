@@ -1,13 +1,14 @@
+import useMergeState from '@restart/hooks/useMergeState';
+import useStableMemo from '@restart/hooks/useStableMemo';
 import React, {
   useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import SimpleCodeEditor from 'react-simple-code-editor';
-import useMergeState from '@restart/hooks/useMergeState';
-import useStableMemo from '@restart/hooks/useStableMemo';
+
 import CodeBlock from './CodeBlock';
 import InfoMessage from './InfoMessage';
 import { useLiveContext } from './Provider';
@@ -40,13 +41,13 @@ export interface Props {
 const Editor = React.forwardRef(
   (
     { style, className, theme, infoComponent: Info = InfoMessage }: Props,
-    ref: any
+    ref: any,
   ) => {
     const {
       code: contextCode,
       theme: contextTheme,
       language,
-      onChange
+      onChange,
     } = useLiveContext();
     const userTheme = theme || contextTheme;
     const [code, setCode] = useStateFromProp(contextCode);
@@ -62,7 +63,7 @@ const Editor = React.forwardRef(
     const [{ visible, ignoreTab, keyboardFocused }, setState] = useMergeState({
       visible: false,
       ignoreTab: false,
-      keyboardFocused: false
+      keyboardFocused: false,
     });
 
     const id = useMemo(() => `described-by-${++uid}`, []);
@@ -84,14 +85,14 @@ const Editor = React.forwardRef(
       setState({
         visible: true,
         ignoreTab: !mouseDown.current,
-        keyboardFocused: !mouseDown.current
+        keyboardFocused: !mouseDown.current,
       });
     };
 
     const handleBlur = (e: React.FocusEvent) => {
       if (e.target !== e.currentTarget) return;
       setState({
-        visible: false
+        visible: false,
       });
     };
 
@@ -106,7 +107,7 @@ const Editor = React.forwardRef(
       (value: string) => (
         <CodeBlock theme={userTheme} code={value} language={language as any} />
       ),
-      [language, userTheme]
+      [language, userTheme],
     );
 
     const baseTheme =
@@ -143,7 +144,7 @@ const Editor = React.forwardRef(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default Editor;

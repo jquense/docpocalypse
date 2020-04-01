@@ -1,6 +1,7 @@
 import { css as dcss } from 'astroturf';
 import cn from 'classnames';
 import React from 'react';
+
 import { HeadingLevel } from './Heading';
 import Heading from './OutlineHeading';
 
@@ -37,7 +38,7 @@ interface LinkHeadingProps {
   className?: string;
   children?: React.ReactNode;
 }
-console.log(styles);
+
 function LinkedHeading({ h, id, className, children }: LinkHeadingProps) {
   return (
     <Heading
