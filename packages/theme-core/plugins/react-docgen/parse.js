@@ -3,7 +3,7 @@ const { handlers: h, parse, resolver } = require('react-docgen');
 const { ERROR_MISSING_DEFINITION } = require('react-docgen/dist/parse');
 
 const { createDisplayNameHandler } = require('./displayname-handler');
-const { applyPropTags, cleanTags, parseTags } = require('./doclets');
+const tagsHandler = require('./tags-handler');
 
 const defaultHandlers = [
   h.propTypeHandler,
@@ -29,6 +29,7 @@ function makeHandlers(node, handlers) {
     createDisplayNameHandler(
       node.absolutePath || `/UnknownComponent${++fileCount}`,
     ),
+    tagsHandler,
     ...handlers,
   ];
 }
@@ -66,22 +67,22 @@ module.exports = function parseMetadata(content, node, options) {
     components[0].displayName = components[0].displayName.replace(/\d+$/, ``);
   }
 
-  components.forEach(component => {
-    component.docblock = component.description || ``;
-    component.tags = parseTags(component);
-    component.description = cleanTags(component.description);
+  // components.forEach(component => {
+  //   component.docblock = component.description || ``;
+  //   component.tags = parseTags(component);
+  //   component.description = cleanTags(component.description);
 
-    component.props = Object.keys(component.props || {}).map(propName => {
-      const prop = component.props[propName];
-      prop.name = propName;
-      prop.docblock = prop.description || ``;
-      prop.tags = parseTags(prop, propName);
-      prop.description = cleanTags(prop.description);
+  //   component.props = Object.keys(component.props || {}).map(propName => {
+  //     const prop = component.props[propName];
+  //     prop.name = propName;
+  //     prop.docblock = prop.description || ``;
+  //     prop.tags = parseTags(prop, propName);
+  //     prop.description = cleanTags(prop.description);
 
-      applyPropTags(prop);
-      return prop;
-    });
-  });
+  //     applyPropTags(prop);
+  //     return prop;
+  //   });
+  // });
 
   return components;
 };
