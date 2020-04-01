@@ -75,7 +75,6 @@ module.exports = function parseMetadata(content, node, options) {
         return prop;
       },
     );
-    console.log('hi', component);
   });
 
   return components;
