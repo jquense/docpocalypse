@@ -254,6 +254,7 @@ function createPropNodes(
     const content = JSON.stringify(prop);
 
     let propNode = {
+      tags: [],
       ...prop,
       id: createNodeId(propNodeId),
       children: [],

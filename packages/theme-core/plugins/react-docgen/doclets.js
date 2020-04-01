@@ -42,9 +42,8 @@ const getTags = str => {
  *
  * @param {ComponentMetadata|PropMetadata} obj
  */
-const parseTags = obj => {
-  const desc = obj.description || ``;
-  return getTags(desc) || [];
+const parseTags = (description = '') => {
+  return getTags(description) || [];
 };
 
 function parseType(type) {
@@ -59,7 +58,7 @@ function parseType(type) {
       name,
       value: raw.split(`|`).map(v => {
         return { name: v.trim() };
-      })
+      }),
     };
   }
 
@@ -69,7 +68,7 @@ function parseType(type) {
 
   if (raw) {
     return {
-      name: raw
+      name: raw,
     };
   }
 
@@ -106,7 +105,7 @@ const applyPropTags = prop => {
         const typeName = value.every(isLiteral) ? `enum` : `union`;
         prop.type.name = typeName;
         prop.type.value = value.map(v =>
-          typeName === `enum` ? { value: v, computed: false } : { name: value }
+          typeName === `enum` ? { value: v, computed: false } : { name: value },
         );
       }
       return;

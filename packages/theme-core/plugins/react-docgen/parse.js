@@ -67,22 +67,16 @@ module.exports = function parseMetadata(content, node, options) {
     components[0].displayName = components[0].displayName.replace(/\d+$/, ``);
   }
 
-  // components.forEach(component => {
-  //   component.docblock = component.description || ``;
-  //   component.tags = parseTags(component);
-  //   component.description = cleanTags(component.description);
+  components.forEach(component => {
+    component.props = Object.entries(component.props || {}).map(
+      ([propName, prop]) => {
+        prop.name = propName;
 
-  //   component.props = Object.keys(component.props || {}).map(propName => {
-  //     const prop = component.props[propName];
-  //     prop.name = propName;
-  //     prop.docblock = prop.description || ``;
-  //     prop.tags = parseTags(prop, propName);
-  //     prop.description = cleanTags(prop.description);
-
-  //     applyPropTags(prop);
-  //     return prop;
-  //   });
-  // });
+        return prop;
+      },
+    );
+    console.log('hi', component);
+  });
 
   return components;
 };

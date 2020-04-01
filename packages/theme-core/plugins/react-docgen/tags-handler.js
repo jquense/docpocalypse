@@ -15,10 +15,11 @@ function tagsHandler(documentation) {
     const propDoc = documentation.getPropDescriptor(name);
 
     const propDescription = propDoc.description || '';
+    const propTags = Doclets.parseTags(propDescription);
 
     propDoc.docblock = propDescription;
     propDoc.description = Doclets.cleanTags(propDescription);
-    propDoc.tags = tags || [];
+    propDoc.tags = propTags || [];
 
     Doclets.applyPropTags(propDoc);
   });
