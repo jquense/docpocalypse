@@ -78,7 +78,6 @@
     "react-live": "^2.2.2",
     "react-simple-code-editor": "^0.11.0",
     "snarkdown": "^1.2.2",
-    "source-map": "^0.8.0-beta.0",
     "sourcemap-codec": "^1.4.8"
   },
   "peerDependencies": {

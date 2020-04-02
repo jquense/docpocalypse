@@ -6,7 +6,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { SourceMapConsumer } from 'source-map';
 import { decode } from 'sourcemap-codec';
 
 import { PrismTheme } from './prism';
@@ -20,12 +19,16 @@ Object.entries(React).forEach(([key, value]) => {
   if (key.startsWith('use')) hooks[key] = value;
 });
 
+export type LiveError = Error & {
+  location?: { line: number; col: number };
+};
+
 export interface LiveContext {
   code?: string;
   language?: string;
   theme?: PrismTheme;
   disabled?: boolean;
-  error: Error | null;
+  error: LiveError | null;
   element: JSX.Element | null;
   onChange(code: string): void;
   onError(error: Error): void;
@@ -45,11 +48,11 @@ const wrapAsComponent: Wrapper = ctx => {
   ctx.append('\n})');
 };
 
-async function handleError(
+function handleError(
   err: any,
   result: ReturnType<typeof transpile>,
   fn: Function,
-) {
+): LiveError {
   const fnStr = fn.toString();
   // account for the function chrome lines
   const offset = fnStr.slice(0, fnStr.indexOf('{')).split(/\n/).length;
@@ -60,6 +63,7 @@ async function handleError(
   } else if ('lineNumber' in err) {
     pos = { line: err.lineNumber - 1, column: err.columnNumber - 1 };
   } else {
+    console.log(err.loc);
     const [, line, col] = err.stack?.match(
       /at eval.+<anonymous>:(\d+):(\d+)/m,
     )!;
@@ -67,19 +71,15 @@ async function handleError(
   }
   if (!pos) return err;
 
-  const decoded = decode(result.map.mappings);
+  const decoded = decode(result.map?.mappings);
 
   const line = pos.line - offset;
   const mapping = decoded[line]?.find(([col]) => col === pos.column);
-  // const original = consumer.originalPositionFor({
-  //   line: frame.lineNumber = 0,
-  //   column: frame.columnNumber = 0,
-  // });
+
   if (mapping) {
     err.location = { line: mapping[2], column: mapping[3] };
   }
 
-  console.log(err.location);
   return err;
 }
 
@@ -97,10 +97,17 @@ function codeToComponent<TScope extends {}>(
       );
     }
 
-    const result = transpile(code, {
-      inline: isInline,
-      wrapper: renderAsComponent ? wrapAsComponent : undefined,
-    });
+    let result;
+
+    try {
+      result = transpile(code, {
+        inline: isInline,
+        wrapper: renderAsComponent ? wrapAsComponent : undefined,
+      });
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
 
     const render = (element: JSX.Element) => {
       if (element === undefined) {
@@ -126,7 +133,7 @@ function codeToComponent<TScope extends {}>(
     try {
       element = fn(...values);
     } catch (err) {
-      handleError(err, result, fn).then(reject);
+      reject(handleError(err, result, fn));
       return;
     }
 
@@ -204,7 +211,7 @@ export default function Provider<TScope extends {} = {}>({
   renderAsComponent = false,
   resolveImports = () => Promise.resolve({}),
 }: Props<TScope>) {
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<LiveError | null>(null);
   const [element, setElement] = useState<React.ReactElement | null>(null);
 
   const [code, importBlock] = useMemo<[string, string]>(() => {
@@ -226,7 +233,7 @@ export default function Provider<TScope extends {} = {}>({
     resolveImports()
       .then(importHash =>
         codeToComponent(
-          `${importBlock}\n\n${nextCode}`,
+          `${importBlock}\n\n${nextCode}`.trimStart(),
           {
             ...scope,
             require: getRequire(importHash),

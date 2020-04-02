@@ -58,6 +58,7 @@ const Editor = React.forwardRef(
       theme: contextTheme,
       language,
       onChange,
+      error,
     } = useLiveContext();
     const userTheme = theme || contextTheme;
     const [code, setCode] = useStateFromProp(contextCode);
@@ -65,10 +66,8 @@ const Editor = React.forwardRef(
     const mouseDown = useRef(false);
 
     useLayoutEffect(() => {
-      if (code && contextCode !== code) {
-        onChange(code);
-      }
-    }, [code, contextCode, onChange]);
+      onChange(code || '');
+    }, [code, onChange]);
 
     const [{ visible, ignoreTab, keyboardFocused }, setState] = useMergeState({
       visible: false,
@@ -121,15 +120,21 @@ const Editor = React.forwardRef(
           code={value}
           language={language as any}
         >
-          {hl => mapTokens({ ...hl, lineNumbers })}
+          {hl =>
+            mapTokens({
+              ...hl,
+              lineNumbers,
+              errorLocation: error?.location,
+            })
+          }
         </Highlight>
       ),
-      [language, userTheme, lineNumbers],
+      [userTheme, language, lineNumbers, error],
     );
 
     const baseTheme =
       userTheme && typeof userTheme.plain === 'object' ? userTheme.plain : {};
-    console.log('C', code);
+
     return (
       <div ref={ref} style={{ position: 'relative' }}>
         <SimpleCodeEditor

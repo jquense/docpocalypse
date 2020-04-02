@@ -44,6 +44,10 @@ const styles = dcss`
       textarea {
         outline: none;
       }
+
+      & :global(.token-line-error) {
+       background-color: rgb(229, 62, 62, .4)
+      }
     }
   }
 `;
