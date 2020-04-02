@@ -1,12 +1,12 @@
 export function useScope(): () => Promise<Record<string, any>>;
 
 export function useImportsForExample(
-  name: string
+  name: string,
 ): () => Promise<Record<string, any>> | undefined;
 
 export enum DocType {
   component,
-  hook
+  hook,
 }
 
 export interface DocumentationNode {
@@ -28,7 +28,7 @@ export interface PluginOptions {
    * The key of of each should be the identifier the module is assigned too
    *
    * ```js
-   * scope: {
+   * exampleCodeScope: {
    *   _: 'lodash',
    *   helpers: require.resolve('./src/helpers'),
    *   Bootstrap: 'react-bootstrap',

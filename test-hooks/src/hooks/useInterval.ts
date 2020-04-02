@@ -10,7 +10,6 @@ import { useEffect } from 'react';
  * @param ms The milliseconds duration of the interval
  */
 function useInterval(fn: () => void, ms: number): void;
-
 /**
  * Creates a pausable `setInterval` that is properly cleaned up when a component unmounted
  *
@@ -18,8 +17,7 @@ function useInterval(fn: () => void, ms: number): void;
  * @param ms The milliseconds duration of the interval
  * @param paused Whether or not the interval is currently running
  */
-function useInterval(fn: () => void, ms: number, paused: boolean): void;
-
+function useInterval(fn: () => boolean, ms: number, paused: boolean): void;
 /**
  * Creates a pausable `setInterval` that is properly cleaned up when a component unmounted
  *

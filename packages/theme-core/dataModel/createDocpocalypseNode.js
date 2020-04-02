@@ -1,5 +1,6 @@
-const findPkg = require('find-pkg');
 const path = require('path');
+
+const findPkg = require('find-pkg');
 const { Kind } = require('gatsby-plugin-typedoc/lib/types');
 
 const isComponent = node => node.internal.type === 'ComponentMetadata';
@@ -28,7 +29,7 @@ function getFile(node, getNode, getNodesByType) {
 
   if (node.absolutePath && (!file || file.internal.type !== 'File'))
     file = getNodesByType('File').find(
-      f => f.absolutePath === node.absolutePath
+      f => f.absolutePath === node.absolutePath,
     );
 
   if (file && file.sourceInstanceName.match(/^@docs::source/)) return file;
@@ -37,7 +38,7 @@ function getFile(node, getNode, getNodesByType) {
 
 module.exports = async function createDocpocalypseNode(
   { node, getNode, getNodesByType, actions, createNodeId, createContentDigest },
-  pluginOptions
+  pluginOptions,
 ) {
   const { getImportName, ignore } = pluginOptions;
   const { createNode, createNodeField } = actions;
@@ -54,7 +55,7 @@ module.exports = async function createDocpocalypseNode(
     const name = getNameFromNode(node) || srcFile.name;
 
     let currentNode = getNodesByType(nodeType).find(
-      n => n.name === name && n.absolutePath === srcFile.absolutePath
+      n => n.name === name && n.absolutePath === srcFile.absolutePath,
     );
 
     if (!currentNode) {
@@ -79,8 +80,8 @@ module.exports = async function createDocpocalypseNode(
         file___NODE: srcFile.id,
         internal: {
           contentDigest: createContentDigest(`${node.id}-${name}`),
-          type: nodeType
-        }
+          type: nodeType,
+        },
       };
 
       currentNode.importName = getImportName
@@ -108,24 +109,26 @@ module.exports = async function createDocpocalypseNode(
       createNodeField({
         node: baseNode,
         name: 'metadataId',
-        value: node.id
+        value: node.id,
       });
       return;
     }
     case 'DocumentationJs': {
+      console.log('D', node);
       const others = (baseNode.fields && baseNode.fields.docJsIds) || [];
-      createNodeField({
-        node: baseNode,
-        name: 'docJsIds',
-        value: [...others, node.id]
-      });
+      if (!others.includes(node.id))
+        createNodeField({
+          node: baseNode,
+          name: 'docJsIds',
+          value: [...others, node.id],
+        });
       return;
     }
     case 'TypedocNode':
       createNodeField({
         node: baseNode,
         name: 'typedocId',
-        value: node.id
+        value: node.id,
       });
       return;
     default:

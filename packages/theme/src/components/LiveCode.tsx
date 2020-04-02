@@ -37,7 +37,7 @@ const styles = dcss`
     }
 
     & .editor {
-      @apply bg-gray-100 rounded-b;
+      @apply bg-gray-100 rounded-b font-mono;
 
       textarea {
         outline: none;
