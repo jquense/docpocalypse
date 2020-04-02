@@ -41,6 +41,8 @@ module.exports = ({ theming }) => ({
     PropListRequiredBadge: true,
     PropListTypeDefinition: true,
     PropListDefaultValue: true,
+
+    DocTypeWrapper: true,
   },
   ...(theming === 'minimal'
     ? {

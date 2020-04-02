@@ -5,7 +5,7 @@ import React from 'react';
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 interface Props extends React.HTMLProps<HTMLHeadingElement> {
-  level: HeadingLevel;
+  level?: HeadingLevel;
 }
 
 const styles = dcss`
@@ -30,7 +30,9 @@ const styles = dcss`
 `;
 
 function Header({ level, ...props }: Props) {
-  const Tag = `h${Math.min(level, 6)}` as React.ElementType;
+  const Tag = (level == null || level > 6
+    ? 'header'
+    : `h${Math.min(level, 6)}`) as React.ElementType;
   return (
     <Tag
       {...props}

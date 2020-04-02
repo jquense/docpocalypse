@@ -1,26 +1,33 @@
 /* eslint-disable react/no-array-index-key */
+import { highlight } from '@docpocalypse/code-live';
 import dstyled from 'astroturf';
 import { graphql } from 'gatsby';
 import React from 'react';
-import { highlight } from '@docpocalypse/code-live';
+
 import Heading, { HeadingLevel } from './Heading';
 
 const Wrapper = dstyled('span')<{ block?: boolean }>`
-  @apply font-mono;
+  @component DocTypeWrapper & {
+    @apply font-mono;
 
-  &.block {
-    display: block;
-    margin-top: 20px;
-  }
-  &:before,
-  &:after {
-    color: #969584;
-  }
-  &:before {
-    content: '{ ';
-  }
-  &:after {
-    content: ' }';
+    font-size: initial;
+    display: inline-block;
+    vertical-align: text-top;
+
+    &.block {
+      display: block;
+      margin-top: 20px;
+    }
+    &:before,
+    &:after {
+      color: #969584;
+    }
+    &:before {
+      content: '{ ';
+    }
+    &:after {
+      content: ' }';
+    }
   }
 `;
 
@@ -46,6 +53,9 @@ const typeExpression = (type): string => {
   if (type.type === `UndefinedLiteral`) {
     return 'undefined';
   }
+  if (type.type === 'FunctionType') {
+    return 'function';
+  }
   if (type.type === `UnionType`) {
     return type.elements.map(typeExpression).join(' | ');
   }
@@ -59,7 +69,7 @@ const typeExpression = (type): string => {
       return `${typeExpression(type.applications[0])}[]`;
     }
     return `${typeExpression(type.expression)}<${typeExpression(
-      type.applications[0]
+      type.applications[0],
     )}>`;
   }
 
@@ -82,7 +92,7 @@ interface FunctionSignatureProps {
 function FunctionSignature({
   definition,
   block,
-  ignoreParams
+  ignoreParams,
 }: FunctionSignatureProps) {
   const params = definition.params
     ? definition.params
@@ -104,7 +114,7 @@ function FunctionSignature({
     <Wrapper
       block={block}
       dangerouslySetInnerHTML={{
-        __html: highlight(`(${params.join(', ')}) => ${returns}`, 'typescript')
+        __html: highlight(`(${params.join(', ')}) => ${returns}`, 'typescript'),
       }}
     />
   );
@@ -129,7 +139,7 @@ function SignatureElement({
   definition,
   ignoreParams = [],
   fallbackToName = false,
-  block = false
+  block = false,
 }: SignatureProps) {
   if (isFunctionDef(definition, false)) {
     return (
@@ -182,7 +192,7 @@ export {
   SignatureElement,
   SignatureBlock,
   TypeComponent,
-  Wrapper as SignatureWrapper
+  Wrapper as SignatureWrapper,
 };
 
 export const fragment = graphql`
