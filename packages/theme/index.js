@@ -6,7 +6,7 @@ export { default as PropDescription } from './src/components/PropDescription';
 export { default as InlineCode } from './src/components/InlineCode';
 export { default as LiveCode } from './src/components/LiveCode';
 export { default as CodeBlock } from './src/components/CodeBlock';
-export { default as DocBlock } from './src/components/DocBlock';
+export { default as JsDocBlock } from './src/components/JsDocBlock';
 export { default as Pre } from './src/components/Pre';
 
 export { default as PageLayout } from './src/components/PageLayout';

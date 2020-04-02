@@ -1,4 +1,4 @@
-export const typeExpression = (type): string => {
+function typeExpression(type): string {
   if (!type) return '';
 
   if (type.type === `RecordType`) {
@@ -37,11 +37,6 @@ export const typeExpression = (type): string => {
   }
 
   return '';
-};
-
-export default function TypeExpression({ type }) {
-  const str = typeExpression(type);
-  return (
-    <span dangerouslySetInnerHTML={{ __html: highlight(str, 'typescript') }} />
-  );
 }
+
+export default typeExpression;

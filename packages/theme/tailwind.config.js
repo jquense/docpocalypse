@@ -31,6 +31,8 @@ module.exports = ({ theming }) => ({
     LiveCode: true,
     Paragraph: true,
 
+    HookSignature: true,
+
     Navbar: true,
     SideNavigationPanel: true,
     SideNavigationItem: true,
@@ -42,7 +44,11 @@ module.exports = ({ theming }) => ({
     PropListTypeDefinition: true,
     PropListDefaultValue: true,
 
-    DocTypeWrapper: true,
+    JsDocTypeWrapper: true,
+    JsDocDescription: true,
+    JsDocTypeExpression: true,
+    JsDocMemberListItem: true,
+    JsDocTitleSignature: true,
   },
   ...(theming === 'minimal'
     ? {

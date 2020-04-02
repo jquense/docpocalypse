@@ -13,7 +13,7 @@ import {
   TokenOutputProps,
 } from './types';
 
-type Options = {
+export type UseHighlightOptions = {
   Prism: PrismLib;
   theme?: PrismTheme;
   language: Language;
@@ -32,7 +32,7 @@ export default function useHighlight({
   language,
   code,
   Prism,
-}: Options) {
+}: UseHighlightOptions) {
   const themeDict = useThemeDict(theme, language);
 
   const getStyleForToken = ({ types, empty }: Token) => {

@@ -3,7 +3,7 @@ import { graphql } from 'gatsby';
 import React from 'react';
 import Heading, { HeadingLevel } from './Heading';
 
-function DocExamples({
+function JsDocExample({
   definition,
   level,
 }: {
@@ -38,10 +38,10 @@ function DocExamples({
   return null;
 }
 
-export default DocExamples;
+export default JsDocExample;
 
 export const fragment = graphql`
-  fragment DocumentationExampleFragment on DocumentationJs {
+  fragment JsDocExampleFragment on DocumentationJs {
     examples {
       highlighted
     }

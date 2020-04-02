@@ -1,19 +1,29 @@
-import { css as dcss } from 'astroturf';
 import { graphql } from 'gatsby';
+import { css as dcss } from 'astroturf';
 import React from 'react';
 
 // eslint-disable-next-line import/no-cycle
-import DocBlock from './DocBlock';
+import DocBlock from './JsDocBlock';
 import Heading, { HeadingLevel } from './Heading';
 import List from './List';
+
+import TitleSignature from './JsDocTitleSignature';
 
 const DocList = ({ elements, level, ignoreParams }) => (
   <List>
     {elements
       .filter(param => !ignoreParams.includes(param.name))
       .map(param => (
-        <li key={param.name} className="mt-3">
-          <DocBlock definition={param} level={level + 1} />
+        <li
+          key={param.name}
+          css={dcss`
+            @component JsDocMemberListItem & {
+              margin-top: theme(margin.4);
+            }
+          `}
+        >
+          <TitleSignature definition={param} />
+          <DocBlock definition={param} depth={level + 1} />
         </li>
       ))}
   </List>
@@ -26,14 +36,18 @@ interface ParamsProps {
   block?: boolean;
 }
 
-function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
+function JsDocMembers({
+  definition,
+  level = 1,
+  ignoreParams = [],
+}: ParamsProps) {
   if (definition.params && definition.params.length > 0) {
     return (
       <>
         <Heading level={level}>Parameters</Heading>
         <DocList
-          elements={definition.params}
           level={level}
+          elements={definition.params}
           ignoreParams={ignoreParams}
         />
       </>
@@ -44,8 +58,8 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
       <>
         {level === 1 && <Heading level={level}>Properties</Heading>}
         <DocList
-          elements={definition.properties}
           level={level}
+          elements={definition.properties}
           ignoreParams={ignoreParams}
         />
       </>
@@ -60,39 +74,39 @@ function Params({ definition, level = 1, ignoreParams = [] }: ParamsProps) {
       <>
         {level === 1 && <Heading level={level}>Fields</Heading>}
         <DocList
-          elements={definition.members.static}
           level={level}
+          elements={definition.members.static}
           ignoreParams={ignoreParams}
         />
       </>
     );
   }
   if (definition.type && definition.type.typeDef) {
-    return <Params definition={definition.type.typeDef} level={level} />;
+    return <JsDocMembers definition={definition.type.typeDef} level={level} />;
   }
 
   return null;
 }
 
-export default Params;
+export default JsDocMembers;
 
 export const fragment = graphql`
   fragment DocumentationParamBase on DocumentationJs {
     params {
       name
-      ...DocumentationDescriptionFragment
-      ...DocumentationExampleFragment
-      ...DocumentationTypeFragment
+      ...JsDocDescriptionFragment
+      ...JsDocExampleFragment
+      ...JsDocTypeFragment
     }
     properties {
       name
-      ...DocumentationExampleFragment
-      ...DocumentationTypeFragment
+      ...JsDocExampleFragment
+      ...JsDocTypeFragment
     }
-    ...DocumentationTypeFragment
-    ...DocumentationDescriptionFragment
-    ...DocumentationExampleFragment
-    ...DocumentationReturnsFragment
+    ...JsDocTypeFragment
+    ...JsDocDescriptionFragment
+    ...JsDocExampleFragment
+    ...JsDocReturnBlockFragment
   }
   fragment DocumentationParamsFieldsFragment on DocumentationJs {
     ...DocumentationParamBase
@@ -155,7 +169,7 @@ export const fragment = graphql`
       }
     }
   }
-  fragment DocumentationParamsFragment on DocumentationJs {
+  fragment JsDocMembersFragment on DocumentationJs {
     ...DocumentationParamsFragmentR2
     params {
       ...DocumentationParamsFragmentR2

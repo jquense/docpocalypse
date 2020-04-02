@@ -8,6 +8,7 @@ const isComponent = node => node.internal.type === 'ComponentMetadata';
 const isHook = node => {
   const isDocJs =
     node.internal.type === 'DocumentationJs' &&
+    node.kind === 'function' &&
     node.name &&
     node.name.match(/^use[A-Z]/);
 

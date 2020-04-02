@@ -1,11 +1,20 @@
-import { css as dcss } from 'astroturf';
 import React from 'react';
+import dstyled from 'astroturf';
 import ComponentImport from './ComponentImport';
-import DocBlock from './DocBlock';
 import Example from './Example';
 import LinkedHeading from './LinkedHeading';
 import OutlineHeading from './OutlineHeading';
 import PageLayout from './PageLayout';
+import HookSignature from './HookSignature';
+
+const SignatureList = dstyled('ul')`
+  list-style: none;
+  counter-reset: signature-list-counter;
+
+  & > li {
+    counter-increment: signature-list-counter;
+  }
+`;
 
 function HookPage({ data }) {
   const { signatures, name, importName, example } = data.docpocalypse;
@@ -25,16 +34,11 @@ function HookPage({ data }) {
       {importName && (
         <ComponentImport importName={importName} docNode={data.docpocalypse} />
       )}
-      {signatures?.map(doc => (
-        <DocBlock
-          definition={doc}
-          showSignatureNextToTitle={false}
-          level={3}
-          css={dcss`
-            @apply mt-8;
-          `}
-        />
-      ))}
+      <SignatureList>
+        {signatures?.map(doc => (
+          <HookSignature level={3} definition={doc} />
+        ))}
+      </SignatureList>
     </PageLayout>
   );
 }
