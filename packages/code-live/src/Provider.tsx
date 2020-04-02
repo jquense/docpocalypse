@@ -6,8 +6,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { decode } from 'sourcemap-codec';
 
 import { PrismTheme } from './prism';
+import { Wrapper } from './transform/wrapContent';
 import transpile, { removeImports } from './transpile';
 
 const prettierComment = /(\{\s*\/\*\s+prettier-ignore\s+\*\/\s*\})|(\/\/\s+prettier-ignore)/gim;
@@ -17,12 +19,16 @@ Object.entries(React).forEach(([key, value]) => {
   if (key.startsWith('use')) hooks[key] = value;
 });
 
+export type LiveError = Error & {
+  location?: { line: number; col: number };
+};
+
 export interface LiveContext {
   code?: string;
   language?: string;
   theme?: PrismTheme;
   disabled?: boolean;
-  error: Error | null;
+  error: LiveError | null;
   element: JSX.Element | null;
   onChange(code: string): void;
   onError(error: Error): void;
@@ -36,6 +42,46 @@ const getRequire = (imports?: Record<string, any>) =>
     if (!(request in imports)) throw new Error(`Module not found: ${request}`);
     return imports[request];
   };
+
+const wrapAsComponent: Wrapper = ctx => {
+  ctx.prepend('return React.createElement(function StateContainer() {\n');
+  ctx.append('\n})');
+};
+
+function handleError(
+  err: any,
+  result: ReturnType<typeof transpile>,
+  fn: Function,
+): LiveError {
+  const fnStr = fn.toString();
+  // account for the function chrome lines
+  const offset = fnStr.slice(0, fnStr.indexOf('{')).split(/\n/).length;
+
+  let pos;
+  if ('line' in err) {
+    pos = { line: err.line, column: err.column };
+  } else if ('lineNumber' in err) {
+    pos = { line: err.lineNumber - 1, column: err.columnNumber - 1 };
+  } else {
+    console.log(err.loc);
+    const [, line, col] = err.stack?.match(
+      /at eval.+<anonymous>:(\d+):(\d+)/m,
+    )!;
+    pos = { line: +line - 1, column: +col - 1 };
+  }
+  if (!pos) return err;
+
+  const decoded = decode(result.map?.mappings);
+
+  const line = pos.line - offset;
+  const mapping = decoded[line]?.find(([col]) => col === pos.column);
+
+  if (mapping) {
+    err.location = { line: mapping[2], column: mapping[3] };
+  }
+
+  return err;
+}
 
 function codeToComponent<TScope extends {}>(
   code: string,
@@ -51,11 +97,16 @@ function codeToComponent<TScope extends {}>(
       );
     }
 
-    const result = transpile(code, isInline);
+    let result;
 
-    if (renderAsComponent) {
-      result.code = `return React.createElement(function StateContainer() {\n${result.code}\n})`;
-      // console.log(result.code);
+    try {
+      result = transpile(code, {
+        inline: isInline,
+        wrapper: renderAsComponent ? wrapAsComponent : undefined,
+      });
+    } catch (err) {
+      console.log(err);
+      throw err;
     }
 
     const render = (element: JSX.Element) => {
@@ -73,10 +124,18 @@ function codeToComponent<TScope extends {}>(
     const args = ['React', 'render'].concat(Object.keys(finalScope));
     const values = [React, render].concat(Object.values(finalScope));
 
-    // eslint-disable-next-line no-new-func
-    const fn = new Function(...args, result.code);
+    const body = result.code;
 
-    const element = fn(...values);
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(...args, body);
+
+    let element;
+    try {
+      element = fn(...values);
+    } catch (err) {
+      reject(handleError(err, result, fn));
+      return;
+    }
 
     if (!isInline) return;
 
@@ -152,7 +211,7 @@ export default function Provider<TScope extends {} = {}>({
   renderAsComponent = false,
   resolveImports = () => Promise.resolve({}),
 }: Props<TScope>) {
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<LiveError | null>(null);
   const [element, setElement] = useState<React.ReactElement | null>(null);
 
   const [code, importBlock] = useMemo<[string, string]>(() => {
@@ -161,14 +220,20 @@ export default function Provider<TScope extends {} = {}>({
 
     if (showImports) return [nextCode, ''];
     const r = removeImports(nextCode);
-    return [r.code, r.imports.map(i => i.code).join('\n')];
+    return [
+      r.code,
+      r.imports
+        .map(i => i.code)
+        .join('\n')
+        .trimStart(),
+    ];
   }, [codeText, showImports]);
 
   const handleChange = useEventCallback((nextCode: string) => {
     resolveImports()
       .then(importHash =>
         codeToComponent(
-          `${importBlock}\n\n${nextCode}`,
+          `${importBlock}\n\n${nextCode}`.trimStart(),
           {
             ...scope,
             require: getRequire(importHash),

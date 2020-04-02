@@ -1,6 +1,7 @@
+import { CodeBlock as BaseCodeBlock } from '@docpocalypse/code-live';
 import { css as dcss } from 'astroturf';
 import React from 'react';
-import { CodeBlock as BaseCodeBlock } from '@docpocalypse/code-live';
+
 import theme from '../syntax-theme';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
   className?: string;
   language?: string;
   title?: string;
+  lineNumbers?: boolean;
 }
 
 const styles = dcss`
@@ -26,15 +28,24 @@ const styles = dcss`
   }
 `;
 
-function CodeBlock({ className, title, language, code = '' }: Props) {
+function CodeBlock({
+  className,
+  title,
+  language,
+  lineNumbers,
+  code = '',
+}: Props) {
   return (
     <div className={styles.CodeBlock}>
       {title && <div className={styles.title}>{title}</div>}
-      <pre className={className} style={theme?.plain as any}>
-        <code>
-          <BaseCodeBlock theme={theme} code={code} language={language as any} />
-        </code>
-      </pre>
+
+      <BaseCodeBlock
+        className={className}
+        theme={theme}
+        code={code}
+        lineNumbers={lineNumbers}
+        language={language as any}
+      />
     </div>
   );
 }

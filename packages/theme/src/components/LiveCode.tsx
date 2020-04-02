@@ -39,8 +39,14 @@ const styles = dcss`
     & .editor {
       @apply bg-gray-100 rounded-b font-mono;
 
+      white-space: pre-wrap;
+
       textarea {
         outline: none;
+      }
+
+      & :global(.token-line-error) {
+       background-color: rgb(229, 62, 62, .4)
       }
     }
   }
@@ -116,6 +122,8 @@ export interface Props<TScope extends {} = {}> {
    * Imports can't be changed in the browser, so showing them is for
    * illustrative purposes only */
   showImports?: boolean;
+
+  lineNumbers?: boolean;
 }
 
 function StyledInfoMessage(props) {
@@ -138,6 +146,7 @@ export default function LiveCode({
   resolveImports,
   language,
   title,
+  lineNumbers,
   theme = syntaxTheme,
   showCode = true,
   showImports = false,
@@ -162,7 +171,12 @@ export default function LiveCode({
           <Preview className={cn(previewClassName, styles.preview)} />
 
           <div className={cn(editorClassName, styles.editor)}>
-            {showCode && <Editor infoComponent={StyledInfoMessage} />}
+            {showCode && (
+              <Editor
+                infoComponent={StyledInfoMessage}
+                lineNumbers={lineNumbers}
+              />
+            )}
           </div>
           <Error className={styles.error} />
         </div>
