@@ -115,7 +115,6 @@ module.exports = async function createDocpocalypseNode(
       return;
     }
     case 'DocumentationJs': {
-      console.log('D', node);
       const others = (baseNode.fields && baseNode.fields.docJsIds) || [];
       if (!others.includes(node.id))
         createNodeField({

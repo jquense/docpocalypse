@@ -17,7 +17,7 @@ export default function JsDocReturnBlock({ definition, level }: Props) {
 
   if (!def?.returns?.length) return null;
 
-  def = definition.returns[0];
+  def = def.returns[0];
 
   return (
     <>

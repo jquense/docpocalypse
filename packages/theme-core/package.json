@@ -73,6 +73,7 @@
     "gatsby-transformer-documentationjs": "^4.1.23",
     "gatsby-transformer-remark": "^2.6.49",
     "lodash": "^4.17.11",
+    "patch-package": "^6.2.1",
     "pkg-dir": "^4.2.0",
     "react-docgen-styled-resolver": "^0.3.0",
     "remark-slug": "^5.1.1",

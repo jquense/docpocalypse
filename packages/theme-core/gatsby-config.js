@@ -39,7 +39,9 @@ module.exports = (options = {}) => {
         },
       },
       'gatsby-transformer-remark',
-      'gatsby-transformer-documentationjs',
+      {
+        resolve: require.resolve('gatsby-transformer-documentationjs'),
+      },
       {
         resolve: require.resolve('./plugins/react-docgen'),
         options: {

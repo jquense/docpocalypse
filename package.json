@@ -27,6 +27,9 @@
       "www",
       "test-hooks",
       "packages/*"
+    ],
+    "nohoist": [
+      "**/gatsby-transformer-documentationjs"
     ]
   },
   "devDependencies": {

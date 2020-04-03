@@ -63,7 +63,6 @@ function handleError(
   } else if ('lineNumber' in err) {
     pos = { line: err.lineNumber - 1, column: err.columnNumber - 1 };
   } else {
-    console.log(err.loc);
     const [, line, col] = err.stack?.match(
       /at eval.+<anonymous>:(\d+):(\d+)/m,
     )!;
@@ -97,17 +96,10 @@ function codeToComponent<TScope extends {}>(
       );
     }
 
-    let result;
-
-    try {
-      result = transpile(code, {
-        inline: isInline,
-        wrapper: renderAsComponent ? wrapAsComponent : undefined,
-      });
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
+    const result = transpile(code, {
+      inline: isInline,
+      wrapper: renderAsComponent ? wrapAsComponent : undefined,
+    });
 
     const render = (element: JSX.Element) => {
       if (element === undefined) {
