@@ -35,9 +35,10 @@ const JsDocTitleSignature = ({
       className={className}
       css={dcss`
         @component JsDocTitleSignature & {
-          @apply inline-flex flex-wrap items-center;
+          @apply inline-flex items-center;
 
           margin: calc(theme(margin.2) / -2);
+          flex-wrap: wrap;
 
           & > *  {
             margin:  calc(theme(margin.2) / 2);

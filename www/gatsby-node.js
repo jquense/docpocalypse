@@ -12,6 +12,10 @@ exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
     resolve: {
       alias: {
+        '@docpocalypse/code-live/themes': path.resolve(
+          __dirname,
+          '../packages/code-live/themes',
+        ),
         '@docpocalypse/code-live': path.resolve(
           __dirname,
           '../packages/code-live/src',

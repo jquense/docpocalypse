@@ -1,0 +1,33 @@
+{
+  "name": "gatsby-transformer-documentationjs",
+  "description": "Gatsby transformer plugin which uses Documentation.js to extract JavaScript documentation",
+  "version": "4.2.1",
+  "author": "Kyle Mathews",
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
+  },
+  "dependencies": {
+    "documentation": "^12.1.4",
+    "prismjs": "^1.19.0"
+  },
+  "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-transformer-documentationjs#readme",
+  "keywords": [
+    "documentation.js",
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-transformer"
+  ],
+  "license": "MIT",
+  "main": "gatsby-node.js",
+  "peerDependencies": {
+    "gatsby": "^2.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby.git",
+    "directory": "packages/gatsby-transformer-documentationjs"
+  },
+  "engines": {
+    "node": ">=10.13.0"
+  }
+}

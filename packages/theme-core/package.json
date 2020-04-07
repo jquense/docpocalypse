@@ -14,8 +14,7 @@
   "license": "MIT",
   "scripts": {
     "tdd": "jest --watch",
-    "test": "jest",
-    "postinstall": "patch-package"
+    "test": "jest"
   },
   "publishConfig": {
     "access": "public"
@@ -58,6 +57,8 @@
     "chokidar": "^3.3.1",
     "classnames": "^2.2.6",
     "common-tags": "^1.8.0",
+    "documentation": "^12.1.4",
+    "prismjs": "^1.19.0",
     "find-package-json": "^1.2.0",
     "find-pkg": "^2.0.0",
     "find-up": "^4.0.0",
@@ -71,10 +72,7 @@
     "gatsby-plugin-typescript": "^2.1.26",
     "gatsby-remark-prismjs": "^3.3.30",
     "gatsby-source-filesystem": "^2.1.47",
-    "gatsby-transformer-documentationjs": "^4.1.23",
-    "gatsby-transformer-remark": "^2.6.49",
     "lodash": "^4.17.11",
-    "patch-package": "^6.2.1",
     "pkg-dir": "^4.2.0",
     "react-docgen-styled-resolver": "^0.3.0",
     "remark-slug": "^5.1.1",

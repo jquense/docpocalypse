@@ -40,7 +40,7 @@ module.exports = (options = {}) => {
       },
       'gatsby-transformer-remark',
       {
-        resolve: require.resolve('gatsby-transformer-documentationjs'),
+        resolve: require.resolve('./plugins/documentationjs'),
       },
       {
         resolve: require.resolve('./plugins/react-docgen'),
