@@ -1,6 +1,0 @@
-{
-  "extend": ".",
-  "compilerOptions": {
-    "composite": false
-  }
-}

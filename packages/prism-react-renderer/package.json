@@ -13,9 +13,8 @@
     "directory": "packages/prism-react-renderer"
   },
   "scripts": {
-    "build:pick-themes": "mkdir -p lib/themes && cherry-pick --cwd=lib/themes --input-dir=../../src/themes --cjs-dir=../cjs/themes --esm-dir=../esm/themes",
-    "build:pick": "cherry-pick --cwd=lib --input-dir=../src --cjs-dir=cjs --esm-dir=esm && yarn build:pick-themes",
-    "build": "rimraf lib && 4c build src && yarn build:pick",
+    "build:pick": "cherry-pick --cwd=lib --input-dir=../src --cjs-dir=cjs --esm-dir=esm ",
+    "build": "rimraf lib && 4c build src && yarn build:pick && node ../../tools/build-themes lib/themes",
     "test": "jest",
     "prepublishOnly": "yarn build && file-butler prepare-publish-dir lib"
   },

@@ -1,7 +1,7 @@
 // Original: https://github.com/damienstanton/ultramin
 // Converted automatically using ./tools/themeFromVsCode
 
-import { PrismTheme } from '../types';
+import { PrismTheme } from './theme';
 
 const theme: PrismTheme = {
   plain: {

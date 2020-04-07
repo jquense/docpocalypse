@@ -80,6 +80,8 @@ exports.sourceNodes = ({ actions, schema }) => {
       }
 
       type ComponentMetadata implements Node @dontInfer {
+        name: String
+
         displayName: String
 
         absolutePath: String

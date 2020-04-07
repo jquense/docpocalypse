@@ -11,7 +11,7 @@
   "author": "4Catalyzer",
   "license": "MIT",
   "scripts": {
-    "build": "4c build src && node build-themes.js",
+    "build": "4c build src && node ../../tools/build-themes.js",
     "prepublishOnly": "yarn run build",
     "tdd": "jest --watch",
     "test": "jest"

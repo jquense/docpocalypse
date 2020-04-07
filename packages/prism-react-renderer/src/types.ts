@@ -1,39 +1,6 @@
-import { Key } from 'react';
+import * as Theme from './theme.d';
 
-export type Language =
-  | 'markup'
-  | 'bash'
-  | 'clike'
-  | 'c'
-  | 'cpp'
-  | 'css'
-  | 'javascript'
-  | 'jsx'
-  | 'coffeescript'
-  | 'actionscript'
-  | 'css-extr'
-  | 'diff'
-  | 'git'
-  | 'go'
-  | 'graphql'
-  | 'handlebars'
-  | 'json'
-  | 'less'
-  | 'makefile'
-  | 'markdown'
-  | 'objectivec'
-  | 'ocaml'
-  | 'python'
-  | 'reason'
-  | 'sass'
-  | 'scss'
-  | 'sql'
-  | 'stylus'
-  | 'tsx'
-  | 'typescript'
-  | 'wasm'
-  | 'yaml';
-
+export type Language = Theme.Language;
 type PrismGrammar = {
   [key: string]: unknown;
 };
@@ -78,7 +45,7 @@ export type StyleObj = {
 };
 
 export type LineInputProps = {
-  key?: Key;
+  key?: string | number;
   style?: StyleObj;
   className?: string;
   line: Token[];
@@ -87,7 +54,7 @@ export type LineInputProps = {
 };
 
 export type LineOutputProps = {
-  key?: Key;
+  key?: string | number;
   style?: StyleObj;
   className: string;
 
@@ -95,7 +62,7 @@ export type LineOutputProps = {
 };
 
 export type TokenInputProps = {
-  key?: Key;
+  key?: string | number;
   style?: StyleObj;
   className?: string;
   token: Token;
@@ -104,7 +71,7 @@ export type TokenInputProps = {
 };
 
 export type TokenOutputProps = {
-  key?: Key;
+  key?: string | number;
   style?: StyleObj;
   className: string;
   children: string;
@@ -120,37 +87,6 @@ export type RenderProps = {
   getTokenProps: (input: TokenInputProps) => TokenOutputProps;
 };
 
-export type PrismThemeEntry = {
-  color?: string;
-  backgroundColor?: string;
-  fontStyle?: 'normal' | 'italic';
-  fontWeight?:
-    | 'normal'
-    | 'bold'
-    | '100'
-    | '200'
-    | '300'
-    | '400'
-    | '500'
-    | '600'
-    | '700'
-    | '800'
-    | '900';
-  textDecorationLine?:
-    | 'none'
-    | 'underline'
-    | 'line-through'
-    | 'underline line-through';
-  opacity?: number;
+export type PrismThemeEntry = Theme.PrismThemeEntry;
 
-  [styleKey: string]: string | number | void;
-};
-
-export type PrismTheme = {
-  plain: PrismThemeEntry;
-  styles: Array<{
-    types: string[];
-    style: PrismThemeEntry;
-    languages?: Language[];
-  }>;
-};
+export type PrismTheme = Theme.PrismTheme;

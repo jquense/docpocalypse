@@ -1,6 +1,6 @@
 // Original: https://raw.githubusercontent.com/PrismJS/prism-themes/master/themes/prism-ghcolors.css
 
-import { PrismTheme } from '../types';
+import { PrismTheme } from './theme';
 
 const theme: PrismTheme = {
   plain: {

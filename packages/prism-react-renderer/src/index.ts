@@ -1,10 +1,12 @@
 import Highlight from './Highlight';
 import defaultProps from './defaultProps';
 import Prism from './prism';
-import useHighlight, { UseHighlightOptions } from './useHighlight';
+import useHighlight from './useHighlight';
 
 export * from './types';
 
-export { Prism, defaultProps, useHighlight, UseHighlightOptions };
+export type UseHighlightOptions = import('./useHighlight').UseHighlightOptions;
+
+export { Prism, defaultProps, useHighlight };
 
 export default Highlight;

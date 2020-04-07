@@ -3,7 +3,15 @@ const Doclets = require('./doclets');
 function tagsHandler(documentation) {
   const description = documentation.get('description') || '';
 
+  const displayName = documentation.get('displayName');
   const tags = Doclets.parseTags(description);
+  const displayNameTag = tags.find(t => t.name === 'displayName');
+
+  documentation.set('name', displayName);
+
+  if (displayNameTag) {
+    documentation.set('displayName', displayNameTag.value || displayName);
+  }
 
   documentation.set('docblock', description);
   documentation.set('description', Doclets.cleanTags(description));

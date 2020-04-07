@@ -11,7 +11,8 @@
   "license": "MIT",
   "scripts": {
     "tdd": "jest --watch",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "node ../../tools/build-themes.js"
   },
   "publishConfig": {
     "access": "public"

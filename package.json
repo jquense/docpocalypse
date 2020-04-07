@@ -49,6 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "astroturf": "^0.10.0",
     "babel-plugin-macros": "^2.6.1",
+    "cpy": "^8.1.0",
     "eslint": "^6.6.0",
     "eslint-config-4catalyzer-jest": "^2.0.1",
     "eslint-config-4catalyzer-react": "^1.0.0",
@@ -65,7 +66,10 @@
     "lint-staged": "^9.2.1",
     "prettier": "^1.9.0",
     "ts-doctor": "^1.1.0",
-    "yargs": "^15.0.2"
+    "yargs": "^15.0.2",
+    "rollup": "^2.3.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-copy": "^3.3.0"
   },
   "workspace-sources": {
     "@docpocalypse/code-live/lib/*": [
