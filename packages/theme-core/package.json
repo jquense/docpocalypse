@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme-core",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -58,7 +58,6 @@
     "classnames": "^2.2.6",
     "common-tags": "^1.8.0",
     "documentation": "^12.1.4",
-    "prismjs": "^1.19.0",
     "find-package-json": "^1.2.0",
     "find-pkg": "^2.0.0",
     "find-up": "^4.0.0",
@@ -74,6 +73,7 @@
     "gatsby-source-filesystem": "^2.1.47",
     "lodash": "^4.17.11",
     "pkg-dir": "^4.2.0",
+    "prismjs": "^1.19.0",
     "react-docgen-styled-resolver": "^0.3.0",
     "remark-slug": "^5.1.1",
     "resolve": "^1.15.1",
