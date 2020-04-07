@@ -81,7 +81,7 @@ yarn add prism-react-renderer
 ```jsx
 import React from "react";
 import { render } from "react-dom";
-import Highlight, { defaultProps } from "prism-react-renderer";
+import Highlight, { defaultProps } from "@docpocalypse/prism-react-renderer";
 
 const exampleCode = `
 (function someDemo() {

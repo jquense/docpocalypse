@@ -1,7 +1,8 @@
 import React from 'react';
 import { cleanup, render } from 'react-testing-library';
 
-import defaultProps from '../src/defaultProps';
+import { Prism } from '../src';
+import theme from '../../prism-themes/src/duotoneDark';
 import Highlight from '../src/Highlight';
 
 const exampleCode = `
@@ -19,7 +20,12 @@ describe('<Highlight />', () => {
   describe('snapshots', () => {
     it('renders correctly', () => {
       const { container } = render(
-        <Highlight {...defaultProps} code={exampleCode} language="jsx">
+        <Highlight
+          Prism={Prism}
+          theme={theme}
+          code={exampleCode}
+          language="jsx"
+        >
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={className} style={style}>
               {tokens.map((line, i) => (
@@ -40,9 +46,10 @@ describe('<Highlight />', () => {
     it('renders unsupported languages correctly', () => {
       const { container } = render(
         <Highlight
-          {...defaultProps}
+          Prism={Prism}
+          theme={theme}
           code={exampleCode}
-          language="abcdefghijklmnop"
+          language={'abcdefghijklmnop' as any}
         >
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={className} style={style}>
@@ -63,12 +70,7 @@ describe('<Highlight />', () => {
 
     it('renders without style props when no theme is passed', () => {
       const { container } = render(
-        <Highlight
-          {...defaultProps}
-          theme={undefined}
-          code={exampleCode}
-          language="jsx"
-        >
+        <Highlight Prism={Prism} code={exampleCode} language="jsx">
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={className} style={style}>
               {tokens.map((line, i) => (
@@ -98,7 +100,12 @@ describe('<Highlight />', () => {
       };
 
       render(
-        <Highlight {...defaultProps} code={exampleCode} language="jsx">
+        <Highlight
+          Prism={Prism}
+          theme={theme}
+          code={exampleCode}
+          language="jsx"
+        >
           {({ getLineProps }) => {
             const output = getLineProps(input);
 
@@ -131,7 +138,12 @@ describe('<Highlight />', () => {
       };
 
       render(
-        <Highlight {...defaultProps} code={exampleCode} language="jsx">
+        <Highlight
+          Prism={Prism}
+          theme={theme}
+          code={exampleCode}
+          language="jsx"
+        >
           {({ getTokenProps }) => {
             const output = getTokenProps(input);
 
@@ -152,7 +164,12 @@ describe('<Highlight />', () => {
     it('transforms constructor token style correctly', () => {
       // From https://github.com/FormidableLabs/prism-react-renderer/issues/11
       render(
-        <Highlight {...defaultProps} code="open Common;" language="reason">
+        <Highlight
+          Prism={Prism}
+          theme={theme}
+          code="open Common;"
+          language="reason"
+        >
           {({ tokens, getTokenProps }) => {
             const line = tokens[0];
             const token = line[2];
