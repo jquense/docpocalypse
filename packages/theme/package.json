@@ -12,7 +12,7 @@
   "scripts": {
     "tdd": "jest --watch",
     "test": "jest",
-    "prepublishOnly": "node ../../tools/build-themes.js"
+    "prepublishOnly": "node ../../tools/build-themes.js ./syntax-themes"
   },
   "publishConfig": {
     "access": "public"

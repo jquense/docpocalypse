@@ -1,4 +1,4 @@
-import { Link } from 'gatsby';
+import { Anchor } from '@docpocalypse/gatsby-theme';
 import React from 'react';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
 }
 
 function ShadowLink({ children }: Props) {
-  return <Link to="/shadowing">{children || 'shadow'}</Link>;
+  return <Anchor href="/shadowing">{children || 'shadow'}</Anchor>;
 }
 
 export default ShadowLink;

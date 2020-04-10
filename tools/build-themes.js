@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+
 const { rollup } = require('rollup');
 const babel = require('rollup-plugin-babel');
 const copy = require('rollup-plugin-copy');

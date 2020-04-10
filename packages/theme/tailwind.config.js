@@ -1,5 +1,12 @@
 const base = require('tailwindcss/defaultTheme');
 
+const componentsSources = require('./tailwind-components.json');
+
+const components = {};
+Object.keys(componentsSources).forEach(key => {
+  components[key] = true;
+});
+
 module.exports = ({ theming }) => ({
   theme: {
     screens: base.screens,
@@ -23,32 +30,8 @@ module.exports = ({ theming }) => ({
       ...base.height,
       navbar: t('spacing.16'),
     }),
-    Anchor: true,
-    Heading: true,
-    LinkedHeading: true,
-    InlineCode: true,
-    CodeBlock: true,
-    LiveCode: true,
-    Paragraph: true,
 
-    HookSignature: true,
-
-    Navbar: true,
-    SideNavigationPanel: true,
-    SideNavigationItem: true,
-    SideNavigationHeader: true,
-    SideNavigationLink: true,
-
-    PropListName: true,
-    PropListRequiredBadge: true,
-    PropListTypeDefinition: true,
-    PropListDefaultValue: true,
-
-    JsDocTypeWrapper: true,
-    JsDocDescription: true,
-    JsDocTypeExpression: true,
-    JsDocMemberListItem: true,
-    JsDocTitleSignature: true,
+    ...components,
   },
   ...(theming === 'minimal'
     ? {

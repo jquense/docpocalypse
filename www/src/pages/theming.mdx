@@ -1,15 +1,17 @@
+import tailwindComponents from '@docpocalypse/gatsby-theme/tailwind-components.json';
+
 # Theming
 
 Docpocalypse is designed to allow quick bootstraping and developement of documentation sites.
-It comes, Docpocalypsecomes configured with [Tailwindcss](https://tailwindcss.com/), a utility first
+It comes, Docpocalypse comes configured with [Tailwindcss](https://tailwindcss.com/), a utility first
 CSS framework. The "batteries included" makes for an excellent fit for building beautiful sites quickly.
 
 ## Extending the default theme
 
-The default Docpocalypse theme is basically just the default tailwind thing with some pre-picked
-values for the major theme components (side bar, nav bar, etc).
-Nothing is set in stone, and can be easily adjusted. To begin create
-a `tailwind.config.js` in the root of your docs site and add it to the gatsby-config.js
+The default Docpocalypse theme is thedefault tailwind theme with some pre-picked
+values for the major theme components (sidebar, heading sizes, navbar, etc).
+Nothing is set in stone, and can be easily adjusted. To customize your site create
+a `tailwind.config.js` in your root directory and add it to the gatsby-config.js
 
 ```js title=gatsby-config.js
 module.exports = {
@@ -28,16 +30,16 @@ module.exports = {
 Now any configuration in your theme file will be merged into the base theme.
 
 ```js title=tailwind.config.js
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
   theme: {
     extend: {
       colors: {
-        accent:
-      }
-    }
-  }
+        accent: 'red',
+      },
+    },
+  },
 };
 ```
 
@@ -46,17 +48,12 @@ details about extending, and creating a tailwind theme._
 
 ### Customizing built-in components
 
-Beyond tweaking theme variables, you may want to apply specific styles to particular
-theme components, such as the `<Navbar>`. Most straightforward way to do this is to
+You can also customize the included Docpocalypse components, such as the `<Navbar>`. Docpocalypse components
+are also styled via TailwindCSS and can be overridden or extended in the same
+way as the rest of your theme.
 
-<Shadow /> the component you wish to extend and apply a CSS `className` or `style` prop to
-the original component. This approach works great for Bring Your Own CSS Framework situations,
-or when you want to use a component based CSS-in-JS option.
-
-For folks that prefer a more tailwind-esque approach, each major theme component can
-be styled via the tailwind theme using a CSS object syntax.
-
-To Override the styles of a built-in component, add a style keyed under it's name in your theme.
+To Override the styles of a built-in component, add a style keyed under
+it's name in your theme.
 
 ```js title=./tailwind.config.js
 module.exports = {
@@ -101,6 +98,34 @@ module.exports = {
   },
 };
 ```
+
+For users of other styling solutions that don't include tailwind you
+can also <Shadow /> each component directly to style it.
+
+```jsx  title='./@docpocalypse/gatsby-theme/components/Navbar'
+import Navbar from '@docpocalypse/gatsby-theme/src/components/Navbar'
+import styled from 'styled-components';
+
+export default styled(Navbar)`
+  padding: 4rem;
+  background: papayawhip;
+`
+```
+
+#### All components
+
+Below is a list of all the tailwind components provided by Docpocalypse. Consult
+the source (linked) for style details and defaults.
+
+<ul>
+  {Object.entries(tailwindComponents).map(([key, src]) => (
+    <li key={key}>
+      <SourceLink filePath={`/packages/theme/src/components/${typeof src === 'string' ? src : key}.tsx`} target="_blank">
+        {key}
+      </SourceLink>
+    </li>
+  ))}
+</ul>
 
 ## Disabling tailwind
 
@@ -148,7 +173,7 @@ displayed code. The simplest way to control which syntax theme is used is
 to <Shadow /> the `syntax-theme.ts` file and re-export an existing theme.
 
 ```js title=./src/@docpocalypse/gatsby-theme/syntax-theme.js
-import nightOwl from '@docpocalypse/gatsby-theme/syntax/night-owl';
+import nightOwl from '@docpocalypse/gatsby-theme/syntax-themes/night-owl';
 
 export default nightOwl;
 ```

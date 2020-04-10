@@ -1,3 +1,5 @@
+export { default as Anchor } from './src/components/Anchor';
+
 export { default as ComponentImport } from './src/components/ComponentImport';
 export { default as Example } from './src/components/Example';
 export { default as PropsTable } from './src/components/PropsTable';
@@ -31,7 +33,6 @@ export { default as LinkedHeading } from './src/components/LinkedHeading';
 
 export { MDXProvider } from '@mdx-js/react';
 export { MDXRenderer } from 'gatsby-plugin-mdx';
-export { default as Box } from './src/components/Box';
 
 export { default as templates } from './src/templates';
 export { components } from './src/wrap-page';

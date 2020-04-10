@@ -1,17 +1,32 @@
 import React from 'react';
-import dstyled, { css as dcss } from 'astroturf';
+import { css as dcss } from 'astroturf';
 
 import LinkedHeading from './LinkedHeading';
 import typeExpression from './utils/jsDocTypeExpression';
 import JsDocTitleSignature from './JsDocTitleSignature';
 import JsDocBlock from './JsDocBlock';
 
-const HookSignatureCount = dstyled('span')`
-  position: absolute;
-  left: 0;
+const styles = dcss`
+  @component HookSignature {
+    margin-left: theme(margin.-5);
 
-  &::before {
-    content: 'ƒ';
+    & > * {
+      padding-left: theme(padding.5);
+    }
+
+    & .count {
+      display: block;
+      position: absolute;
+      left: 0;
+
+      &::before {
+        content: 'ƒ';
+      }
+    }
+  }
+
+  .count {
+    display: none;
   }
 `;
 
@@ -30,24 +45,14 @@ function HookSignature({ definition, level }) {
   const title = `ƒ (${params.join(', ')}) => ${returns}`;
 
   return (
-    <li
-      css={dcss`
-      @component HookSignature & {
-        margin-left: theme(margin.-5);
-
-        & > * {
-          padding-left: theme(padding.5);
-        }
-      }
-   `}
-    >
+    <li className={styles.HookSignature}>
       <LinkedHeading
         id={title}
         title={title}
         h={level}
         css={dcss`position: relative;`}
       >
-        <HookSignatureCount />
+        <span className={styles.count} />
         <JsDocTitleSignature definition={definition} />
       </LinkedHeading>
       <div>

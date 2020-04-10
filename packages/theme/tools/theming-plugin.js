@@ -1,6 +1,6 @@
+const merge = require('lodash/merge');
 const postcss = require('postcss');
 const postcssJs = require('postcss-js');
-const merge = require('lodash/merge');
 const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
 const defaultConfig = require('tailwindcss/defaultConfig');
 const formatCSS = require('tailwindcss/lib/lib/formatCSS').default;
@@ -19,7 +19,7 @@ function themeAtRulePlugin(theming) {
       const config = postcss.list.space(atRule.params);
       if (!config.every(c => themingValues.includes(c))) {
         throw atRule.error(
-          `Unrecognized theming configuration: \`${config}\`.`
+          `Unrecognized theming configuration: \`${config}\`.`,
         );
       }
 
@@ -35,15 +35,13 @@ function componentAtRulePlugin(getConfig, theming) {
   return css => {
     const themePlugin = themeAtRulePlugin(theming);
     const { theme, userConfig } = getConfig();
+    const userTheme = userConfig && userConfig.theme;
 
     css.walkAtRules('component', atRule => {
       const [name, ident = `.${name}`] = postcss.list.space(atRule.params);
 
       const isExtending =
-        userConfig &&
-        userConfig.theme &&
-        userConfig.theme.extend &&
-        name in userConfig.theme.extend;
+        userTheme && userTheme.extend && name in userTheme.extend;
 
       const hasChildren = atRule.nodes && atRule.nodes.length;
       const themeValue = theme[name];
@@ -61,7 +59,7 @@ function componentAtRulePlugin(getConfig, theming) {
         if (isExtending)
           css.error(
             `Component ${name} is being extended but the theming config option is set to "none". ` +
-              `Extensions aren't possible when theming is disabled because the default styles don't exist.`
+              `Extensions aren't possible when theming is disabled because the default styles don't exist.`,
           );
 
         // just remove and return for "true" values
@@ -88,9 +86,9 @@ function componentAtRulePlugin(getConfig, theming) {
 
       const { nodes } = postcss().process(
         {
-          [ident]: content
+          [ident]: content,
         },
-        { parser: postcssJs }
+        { parser: postcssJs },
       ).root;
 
       atRule.replaceWith(nodes);
@@ -120,7 +118,7 @@ const plugin = postcss.plugin('tailwind', (gatsbyThemeOptions = {}) => {
   const plugins = [
     componentAtRulePlugin(getConfig, theming),
     themeAtRulePlugin(theming),
-    registerConfigAsDependency(tailwindConfigPath)
+    registerConfigAsDependency(tailwindConfigPath),
   ];
 
   if (typeof config === 'string') {

@@ -6,6 +6,7 @@ module.exports = {
     description: '',
   },
   plugins: [
+    'gatsby-source-local-git',
     {
       resolve: `gatsby-plugin-webfonts`,
       options: {

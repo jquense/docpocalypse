@@ -1,0 +1,28 @@
+{
+  "Anchor": true,
+  "Heading": true,
+  "LinkedHeading": true,
+  "InlineCode": true,
+  "CodeBlock": true,
+  "LiveCode": true,
+  "Paragraph": true,
+
+  "HookSignature": true,
+
+  "Navbar": true,
+  "SideNavigationPanel": true,
+  "SideNavigationItem": true,
+  "SideNavigationHeader": true,
+  "SideNavigationLink": true,
+
+  "PropListName": "PropsList",
+  "PropListRequiredBadge": "PropsList",
+  "PropListTypeDefinition": "PropsList",
+  "PropListDefaultValue": "PropsList",
+
+  "JsDocTypeWrapper": true,
+  "JsDocDescription": true,
+  "JsDocTypeExpression": true,
+  "JsDocMemberListItem": true,
+  "JsDocTitleSignature": true
+}

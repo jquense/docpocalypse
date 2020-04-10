@@ -41,7 +41,7 @@ const JsDocTitleSignature = ({
           flex-wrap: wrap;
 
           & > *  {
-            margin:  calc(theme(margin.2) / 2);
+            margin: calc(theme(margin.2) / 2);
           }
         }
       `}
