@@ -1,5 +1,6 @@
 import sortBy from 'lodash/sortBy';
 import React from 'react';
+
 import DefaultValue from './DefaultValue';
 import PropTypeValue, { PropType } from './PropTypeValue';
 import TypescriptTypeValue, { TSType, TokenMap } from './TypescriptTypeValue';
@@ -42,14 +43,14 @@ export default function renderProps(
   propsData: Prop[],
   {
     tokenMap,
-    elementTypes = ['elementType', /React\.ComponentType(<.*>)?/]
-  }: RenderPropsOptions = {}
+    elementTypes = ['elementType', /React\.ComponentType(<.*>)?/],
+  }: RenderPropsOptions = {},
 ) {
   return sortBy(propsData, 'name')
     .filter(
       prop =>
-        prop.type &&
-        !prop.tags.find(d => d.name === 'private' || d.name === 'ignore')
+        (prop.type || prop.tsType) &&
+        !prop.tags.find(d => d.name === 'private' || d.name === 'ignore'),
     )
     .map(propData => {
       const { name, type, defaultValue, description, tags, tsType } = propData;
@@ -82,7 +83,7 @@ export default function renderProps(
             isElementType={isElementType(typeName, elementTypes)}
           />
         ),
-        propData
+        propData,
       };
     });
 }
