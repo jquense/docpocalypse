@@ -48,9 +48,7 @@ export default function renderProps(
 ) {
   return sortBy(propsData, 'name')
     .filter(
-      prop =>
-        (prop.type || prop.tsType) &&
-        !prop.tags.find(d => d.name === 'private' || d.name === 'ignore'),
+      prop => !prop.tags.find(d => d.name === 'private' || d.name === 'ignore'),
     )
     .map(propData => {
       const { name, type, defaultValue, description, tags, tsType } = propData;
