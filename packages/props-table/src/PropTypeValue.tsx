@@ -1,49 +1,10 @@
 import React, { useMemo } from 'react';
-import TypescriptTypeValue, { TSType, TokenMap } from './TypescriptTypeValue';
-import {
-  Doclet,
-  cleanDocletValue,
-  getDisplayTypeName,
-  getDoclet
-} from './utils';
 
-interface ObjectPropType {
-  name: 'object';
-}
-interface CustomPropType {
-  name: 'custom';
-  raw: string;
-}
+import TypescriptTypeValue, { TokenMap } from './TypescriptTypeValue';
+import { Doclet, PropType, TSType } from './types';
+import { cleanDocletValue, getDisplayTypeName, getDoclet } from './utils';
 
-interface ArrayPropType {
-  name: 'arrayOf';
-  value: PropType;
-}
-
-interface ShapePropType {
-  name: 'shape';
-  value: Record<string, PropType & { required: boolean }>;
-}
-
-interface UnionPropType {
-  name: 'union';
-  value: PropType[];
-}
-
-interface EnumPropType {
-  name: 'enum';
-  value: string | Array<{ value: string; computed: boolean }>;
-}
-
-export type PropType =
-  | ObjectPropType
-  | CustomPropType
-  | ArrayPropType
-  | EnumPropType
-  | UnionPropType
-  | ShapePropType;
-
-interface Props {
+export interface Props {
   type: PropType;
   tags: Doclet[];
   tokens?: TokenMap;
@@ -69,10 +30,10 @@ function mapToTypes(propType: PropType, tags: Doclet[]): TSType {
             key,
             value: {
               ...map(value),
-              required: value.required
-            }
-          }))
-        }
+              required: value.required,
+            },
+          })),
+        },
       };
     case 'union':
       return { name: 'union', elements: propType.value.map(map) };
@@ -85,7 +46,7 @@ function mapToTypes(propType: PropType, tags: Doclet[]): TSType {
 
       return {
         name: 'union',
-        elements: enumValues.map(e => ({ name: e.value }))
+        elements: enumValues.map(e => ({ name: e.value })),
       };
     }
     case 'arrayOf':

@@ -1,84 +1,13 @@
 import React, { ReactNode } from 'react';
-import { Doclet, getDoclet, joinElements } from './utils';
 
-interface TSSimple {
-  name: string;
-}
-
-interface TSComplexType {
-  name: string;
-  raw?: string;
-  elements: TSType[];
-}
-
-interface TSArgument {
-  name: string;
-  type: TSType;
-}
-
-interface TSFunctionSignature {
-  name: 'signature';
-  type: 'function';
-  raw: string;
-  signature: {
-    arguments: TSArgument[];
-    return: TSType;
-  };
-}
-
-interface TSProperty {
-  key: string;
-  value: TSType & { required: boolean };
-}
-
-interface TSObjectSignature {
-  name: 'signature';
-  type: 'object';
-  raw: string;
-  signature: {
-    properties: TSProperty[];
-  };
-}
-
-interface TSArray {
-  name: 'Array';
-  raw?: string;
-  elements: TSType[];
-}
-
-interface TSLiteral {
-  name: 'literal';
-  value: string;
-}
-
-interface TSUnion {
-  name: 'union';
-  raw?: string;
-  elements: TSType[];
-}
-
-interface TSTuple {
-  name: 'tuple';
-  raw?: string;
-  elements: TSType[];
-}
-
-interface TSIntersect {
-  name: 'intersect';
-  raw: string;
-  elements: TSType[];
-}
-
-export type TSConcreteType =
-  | TSLiteral
-  | TSArray
-  | TSUnion
-  | TSTuple
-  | TSIntersect
-  | TSFunctionSignature
-  | TSObjectSignature;
-
-export type TSType = TSSimple | TSComplexType | TSConcreteType;
+import {
+  Doclet,
+  TSArray,
+  TSComplexType,
+  TSConcreteType,
+  TSType,
+} from './types';
+import { getDoclet, joinElements } from './utils';
 
 export type Token =
   | 'keyword'

@@ -1,9 +1,6 @@
 import React, { ReactNode } from 'react';
 
-export interface Doclet {
-  name: string;
-  value: string;
-}
+import { CustomPropType, Doclet, Prop } from './types';
 
 export function docletsToMap(doclets: Doclet[]) {
   return new Map(doclets.map(({ name, value }) => [name, value]));
@@ -21,19 +18,21 @@ export function cleanDocletValue(str: string) {
     .replace(/\}$/, '');
 }
 
-export function getDisplayTypeName(typeName: string) {
+export function getDisplayTypeName(typeName?: string) {
   if (typeName === 'func') return 'function';
   if (typeName === 'bool') return 'boolean';
 
   return typeName;
 }
 
-export function getTypeName(prop: any) {
-  const type = prop.type || {};
-  const name = getDisplayTypeName(type.name);
+export function getTypeName(prop: Prop) {
+  const { type } = prop;
+  const name = getDisplayTypeName(type?.name);
 
   if (name === 'custom')
-    return cleanDocletValue(getDoclet(prop.doclets, 'type') || type.raw);
+    return cleanDocletValue(
+      getDoclet(prop.tags, 'type') || (type as CustomPropType).raw,
+    );
 
   return name;
 }
@@ -41,7 +40,7 @@ export function getTypeName(prop: any) {
 export function joinElements<T>(
   arr: Array<T>,
   delim: ReactNode,
-  fn: (item: T, idx: number) => ReactNode
+  fn: (item: T, idx: number) => ReactNode,
 ) {
   return arr.reduce((acc, val, idx, list) => {
     let item = fn(val, idx);

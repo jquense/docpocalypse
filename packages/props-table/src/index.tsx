@@ -2,36 +2,20 @@ import sortBy from 'lodash/sortBy';
 import React from 'react';
 
 import DefaultValue from './DefaultValue';
-import PropTypeValue, { PropType } from './PropTypeValue';
-import TypescriptTypeValue, { TSType, TokenMap } from './TypescriptTypeValue';
-import { Doclet, docletsToMap, getTypeName } from './utils';
+import PropTypeValue from './PropTypeValue';
+import TypescriptTypeValue, { TokenMap } from './TypescriptTypeValue';
+import { Prop } from './types';
+import { docletsToMap, getTypeName } from './utils';
 
-export interface Prop {
-  name: string;
-  tags: Doclet[];
-  docblock?: string;
-  defaultValue?: {
-    value: any;
-    computed: boolean;
-  };
-  description?: {
-    mdx?: { body: string };
-    markdownRemark?: { html: string };
-  };
-  required: boolean;
-  type: null | PropType;
-  tsType: TSType | null;
-}
+export * from './types';
 
-interface PropsTableProps {
-  propsData: Prop[];
-  className?: string;
-}
-
-const isElementType = (name: string, types: Array<string | RegExp>) => {
+const isElementType = (
+  name: string | undefined,
+  types: Array<string | RegExp>,
+) => {
   return types.some(t => {
     if (typeof t === 'string') return t === name;
-    return !!name.match(t);
+    return !!name?.match(t);
   });
 };
 
@@ -39,6 +23,7 @@ export interface RenderPropsOptions {
   tokenMap?: TokenMap;
   elementTypes?: Array<string | RegExp>;
 }
+
 export default function renderProps(
   propsData: Prop[],
   {
