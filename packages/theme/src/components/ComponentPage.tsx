@@ -8,8 +8,8 @@ import Heading from './OutlineHeading';
 import PageLayout from './PageLayout';
 
 let Props: any;
-// @ts-ignore
-if (__DOCPOC_PROPS_LAYOUT__ === 'list') {
+
+if (process.env.DOCPOC_PROPS_LAYOUT === 'list') {
   Props = require('./PropsList').default;
 } else {
   Props = require('./PropsTable').default;

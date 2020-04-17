@@ -9,8 +9,9 @@ import {
 } from '@docpocalypse/code-live';
 import { css as dcss } from 'astroturf';
 import cn from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 
+import { DEFAULT_SHOW_CODE, DEFAULT_SHOW_IMPORTS } from '../config';
 import syntaxTheme from '../syntax-theme';
 
 const styles = dcss`
@@ -48,6 +49,12 @@ const styles = dcss`
       & :global(.token-line-error) {
        background-color: rgb(229, 62, 62, .4)
       }
+    }
+
+    & .show-code {
+      @apply px-5 py-2 font-mono;
+
+      float: right;
     }
   }
 `;
@@ -116,7 +123,7 @@ export interface Props<TScope extends {} = {}> {
   language?: string;
 
   /** Default value for whether example code is visible or only the rendered preview */
-  showCode?: boolean;
+  showCode?: boolean | 'collapsible';
   /**
    * Determines whether imports are shown in the editor.
    * Imports can't be changed in the browser, so showing them is for
@@ -148,10 +155,13 @@ export default function LiveCode({
   title,
   lineNumbers,
   theme = syntaxTheme,
-  showCode = true,
-  showImports = false,
+  showCode = DEFAULT_SHOW_CODE,
+  showImports = DEFAULT_SHOW_IMPORTS,
   renderAsComponent = false,
 }: Props) {
+  const canCollapse = showCode === 'collapsible';
+  const [expanded, setExpanded] = useState(showCode === true);
+
   return (
     <Provider
       scope={scope}
@@ -170,16 +180,27 @@ export default function LiveCode({
         <div className={cn(contentClassName, styles.content)}>
           <Preview className={cn(previewClassName, styles.preview)} />
 
-          <div className={cn(editorClassName, styles.editor)}>
-            {showCode && (
-              <Editor
-                infoComponent={StyledInfoMessage}
-                lineNumbers={lineNumbers}
-              />
-            )}
-          </div>
+          {expanded && (
+            <div className={cn(editorClassName, styles.editor)}>
+              {showCode && (
+                <Editor
+                  infoComponent={StyledInfoMessage}
+                  lineNumbers={lineNumbers}
+                />
+              )}
+            </div>
+          )}
           <Error className={styles.error} />
         </div>
+        {!expanded && canCollapse && (
+          <button
+            type="button"
+            className={styles.showCode}
+            onClick={() => setExpanded(prev => !prev)}
+          >
+            {'</show code>'}
+          </button>
+        )}
       </div>
     </Provider>
   );

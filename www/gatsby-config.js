@@ -39,12 +39,15 @@ module.exports = {
         reactDocgenConfig: {
           babelrcRoots: true,
         },
-        propsLayout: 'list',
         theming: 'minimal',
         tailwindConfig: require.resolve('./src/tailwind.config'),
         typedocConfig: {
           tsconfig: require.resolve('./tsconfig.json'),
           mode: 'modules',
+        },
+        defaults: {
+          propsLayout: 'list',
+          showExampleCode: 'collapsible',
         },
       },
     },

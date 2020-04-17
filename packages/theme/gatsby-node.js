@@ -1,4 +1,7 @@
-exports.onCreateWebpackConfig = ({ actions, plugins }, pluginOptions) => {
+exports.onCreateWebpackConfig = (
+  { actions, plugins },
+  { propsLayout, defaults = {} } = {},
+) => {
   actions.setWebpackConfig({
     module: {
       rules: [
@@ -25,9 +28,15 @@ exports.onCreateWebpackConfig = ({ actions, plugins }, pluginOptions) => {
     },
     plugins: [
       plugins.define({
-        __DOCPOC_PROPS_LAYOUT__: JSON.stringify(
-          pluginOptions.propsLayout || 'table',
-        ),
+        'process.env': {
+          DOCPOC_PROPS_LAYOUT: JSON.stringify(
+            defaults.propsLayout || propsLayout || 'table',
+          ),
+          DOCPOC_SHOW_CODE: JSON.stringify(defaults.showExampleCode || true),
+          DOCPOC_SHOW_IMPORTS: JSON.stringify(
+            defaults.showExampleImports || false,
+          ),
+        },
       }),
     ],
   });
