@@ -3,11 +3,11 @@
 import { graphql } from 'gatsby';
 import React from 'react';
 
+import { HeadingLevel } from './Heading';
+import Description from './JsDocDescription';
 import ExamplesBlock from './JsDocExamples';
 import Members from './JsDocMembers';
-import Description from './JsDocDescription';
 import ReturnBlock from './JsDocReturnBlock';
-import { HeadingLevel } from './Heading';
 
 interface Props {
   definition: any;

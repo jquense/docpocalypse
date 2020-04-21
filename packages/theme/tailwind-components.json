@@ -20,9 +20,14 @@
   "PropListTypeDefinition": "PropsList",
   "PropListDefaultValue": "PropsList",
 
-  "JsDocTypeWrapper": true,
+  "DocTypeWrapper": true,
   "JsDocDescription": true,
   "JsDocTypeExpression": true,
   "JsDocMemberListItem": true,
-  "JsDocTitleSignature": true
+  "JsDocTitleSignature": true,
+
+  "TsDocTitleSignature": true,
+  "TsDocTypeExpression": true,
+  "TsDocMemberListItem": true,
+  "TsDocDescription": true
 }

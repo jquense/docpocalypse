@@ -3,8 +3,8 @@
 import { graphql } from 'gatsby';
 import React from 'react';
 
-import DocBlock from './JsDocBlock';
 import Heading, { HeadingLevel } from './Heading';
+import DocBlock from './JsDocBlock';
 import JsDocTitleSignature from './JsDocTitleSignature';
 
 interface Props {

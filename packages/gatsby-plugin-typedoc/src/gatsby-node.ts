@@ -2,7 +2,13 @@
 
 import fs from 'fs';
 import { dirname, join } from 'path';
+
+import {
+  GatsbyResolverContext,
+  proxyToNode,
+} from '@docpocalypse/gatsby-data-utils';
 import { CreateSchemaCustomizationArgs } from 'gatsby';
+import camelCase from 'lodash/camelCase';
 import {
   Application,
   JSONOutput,
@@ -10,14 +16,10 @@ import {
   TSConfigReader,
 } from 'typedoc';
 import { findConfigFile, readConfigFile, sys } from 'typescript';
-import camelCase from 'lodash/camelCase';
-import {
-  GatsbyResolverContext,
-  proxyToNode,
-} from '@docpocalypse/gatsby-data-utils';
+
+import createCommentNodes from './lib/createCommentNodes';
 import resolveNodes, { DocNode } from './lib/resolveNode';
 import * as T from './lib/types';
-import createCommentNode from './lib/createCommentNode';
 
 // class MySourceReferenceContainerSerializer extends SourceReferenceContainerSerializer {
 //   toObject(arg: any, obj: any) {
@@ -94,11 +96,10 @@ export function createSchemaCustomization({
       },
     }),
     schema.buildObjectType({
-      name: 'TypedocComment',
+      name: 'TypedocCommentText',
       interfaces: ['Node'],
       extensions: ['dontInfer'],
       fields: {
-        tags: '[TypedocTag]',
         markdownRemark: {
           type: 'TypedocMarkdownRemark',
           resolve: proxyToNode('fields.markdownRemark'),
@@ -109,6 +110,7 @@ export function createSchemaCustomization({
         },
       },
     }),
+
     /* GraphQL */ `
       type TypedocFlags @dontInfer {
         isPrivate: Boolean
@@ -124,6 +126,12 @@ export function createSchemaCustomization({
         isAbstract: Boolean
         isConst: Boolean
         isLet: Boolean
+      }
+
+      type TypedocComment {
+        tags: [TypedocTag]
+        body: TypedocCommentText @link
+        returns: TypedocCommentText @link
       }
 
       type TypedocSource @dontInfer {
@@ -184,7 +192,10 @@ export function createSchemaCustomization({
         originalName: String
         defaultValue: String
         flags: TypedocFlags!
-        comment: TypedocComment! @link
+
+        tags: [TypedocTag]
+        description: TypedocCommentText @link
+        returnsDescription: TypedocCommentText @link
 
         signatures: [TypedocNode!] @link
         typedocs: [TypedocNode!] @link
@@ -351,14 +362,14 @@ export function sourceNodes(
       }
 
       const dnode: any = docNode;
-      const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
+      const typedocs = dnode.children?.map((c) => traverse(c, nodeId).id) ?? [];
       const signatures =
-        dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
+        dnode.signatures?.map((c) => traverse(c, nodeId).id) ?? [];
       const parameters =
-        dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
+        dnode.parameters?.map((c) => traverse(c, nodeId).id) ?? [];
 
       const typeParameter = dnode.typeParameter
-        ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
+        ? [].concat(dnode.typeParameter).map((tp) => traverse(tp, nodeId)?.id)
         : [];
 
       [
@@ -370,7 +381,7 @@ export function sourceNodes(
         'implementedTypes',
         'implementedBy',
         'implementationOf',
-      ].forEach(field => {
+      ].forEach((field) => {
         (docNode as any)[field] = findDeclarations(
           (docNode as any)[field],
           nodeId,
@@ -391,9 +402,9 @@ export function sourceNodes(
         sources: ('sources' in docNode && docNode.sources) || [],
         groups:
           ('groups' in docNode &&
-            docNode.groups?.map(group => ({
+            docNode.groups?.map((group) => ({
               ...group,
-              children: group.children?.map(id => createId(id)),
+              children: group.children?.map((id) => createId(id)),
             }))) ||
           [],
       };
@@ -412,7 +423,7 @@ export function sourceNodes(
       nodes.set(nodeId, docNode);
 
       if ('comment' in node) {
-        createCommentNode(
+        createCommentNodes(
           node,
           node.comment,
           actions,
@@ -455,7 +466,7 @@ export function onCreateNode({ node, actions, getNode }) {
 
   const parentNode = node.parent && getNode(node.parent);
 
-  if (parentNode && parentNode.internal.type === 'TypedocComment') {
+  if (parentNode && parentNode.internal.type === 'TypedocCommentText') {
     const { type } = node.internal;
 
     if (type === 'Mdx' || type === 'MarkdownRemark') {

@@ -1,10 +1,11 @@
 import { css as dcss } from 'astroturf';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
-import { TypeDocComment } from './typedoc-types';
+
+import { TypeDocCommentText } from './typedoc-types';
 
 interface Props {
-  comment?: TypeDocComment;
+  comment?: TypeDocCommentText;
 }
 
 export default function TsDocComment({ comment }: Props) {
@@ -15,11 +16,13 @@ export default function TsDocComment({ comment }: Props) {
   return (
     <div
       css={dcss`
-          margin-top: 0.5em;
+      @component TsDocDescription & {
+        margin-top: 0.5em;
 
-          & p {
-            margin: 0;
-          }
+        & p {
+          margin: 0;
+        }
+      }
         `}
     >
       <MDXRenderer>{comment.mdx.body}</MDXRenderer>

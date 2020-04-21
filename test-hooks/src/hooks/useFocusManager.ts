@@ -1,7 +1,6 @@
-import { useCallback, useRef, SyntheticEvent } from 'react';
-
-import useMounted from '@restart/hooks/useMounted';
 import useEventCallback from '@restart/hooks/useEventCallback';
+import useMounted from '@restart/hooks/useMounted';
+import { SyntheticEvent, useCallback, useRef } from 'react';
 
 export interface FocusManagerOptions {
   /**
@@ -26,13 +25,18 @@ export interface FocusManagerOptions {
   isDisabled: () => boolean;
 }
 
+export interface FocusEventHandlers {
+  onBlur(event?: SyntheticEvent): any;
+  onFocus: (event?: SyntheticEvent) => any;
+}
+
 /**
  * useFocusManager provides a way to track and manage focus as it moves around
  * a container element. An `onChange` is fired when focus enters or leaves the
  * element, but not when it moves around inside the element, similar to
  * `pointerenter` and `pointerleave` DOM events.
  *
- * ```ts
+ * ```jsx
  * const [focused, setFocusState] = useState(false)
  *
  * const { onBlur, onFocus } = useFocusManager({
@@ -50,14 +54,11 @@ export interface FocusManagerOptions {
  * ```
  *
  * @param opts Options
- * @returns FocusController a set of paired focus and blur event handlers
+ * @returns a set of paired focus and blur event handlers
  */
 export default function useFocusManager(
   opts: FocusManagerOptions,
-): {
-  onBlur(event?: SyntheticEvent): any;
-  onFocus: (event?: SyntheticEvent) => any;
-} {
+): FocusEventHandlers {
   const isMounted = useMounted();
 
   const lastFocused = useRef<boolean | undefined>();
@@ -91,14 +92,14 @@ export default function useFocusManager(
   );
 
   const handleBlur = useCallback(
-    event => {
+    (event) => {
       if (!isDisabled()) handleFocusChange(false, event);
     },
     [handleFocusChange, isDisabled],
   );
 
   const handleFocus = useCallback(
-    event => {
+    (event) => {
       if (!isDisabled()) handleFocusChange(true, event);
     },
     [handleFocusChange, isDisabled],

@@ -1,30 +1,37 @@
 import React from 'react';
+
+import DocTypeWrapper from './DocTypeWrapper';
 import Heading from './Heading';
-import TsDocSignatureType from './TsDocSignatureType';
-import TsDocParameter from './TsDocParameter';
+import Description from './TsDocComment';
+import { getReturnType } from './TsDocFunctionSignature';
+import Members from './TsDocMembers';
+import TsDocTypeExpression from './TsDocTypeExpression';
+import { TypedocNode } from './typedoc-types';
 
 interface Props {
-  definition: any;
+  definition: TypedocNode;
   depth?: number;
 }
 
 function TsDocReturnBlock({ definition, depth = 0 }: Props) {
+  const returnType = getReturnType(definition);
   return (
-    <div>
+    <>
       {definition.type && (
         <>
-          <Heading>Return Value</Heading>
-          <TsDocSignatureType type={definition.type} />
+          <Heading level={depth}>
+            Return Value{' '}
+            <DocTypeWrapper>
+              <TsDocTypeExpression type={returnType} compact />
+            </DocTypeWrapper>
+          </Heading>
 
-          {/* {definition.type.declaration && (
-            <TsDocParameter
-              definition={definition.type.declaration}
-              depth={depth + 1}
-            />
-          )} */}
+          <Description comment={definition.returnsDescription} />
+
+          <Members definition={returnType} depth={depth + 1} />
         </>
       )}
-    </div>
+    </>
   );
 }
 

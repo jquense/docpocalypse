@@ -1,9 +1,8 @@
 import React from 'react';
 
-import typeExpression from './utils/jsDocTypeExpression';
-
-import JsDocTypeWrapper from './JsDocTypeWrapper';
+import DocTypeWrapper from './DocTypeWrapper';
 import { InlineHighlight } from './InlineTypeHighlight';
+import typeExpression from './utils/jsDocTypeExpression';
 
 export interface JsDocFunctionSignatureProps {
   definition: any;
@@ -41,8 +40,8 @@ export default function JsDocFunctionSignature({
       : 'void';
 
   return (
-    <JsDocTypeWrapper block={block}>
+    <DocTypeWrapper block={block}>
       <InlineHighlight code={`(${params.join(', ')}) => ${returns}`} />
-    </JsDocTypeWrapper>
+    </DocTypeWrapper>
   );
 }

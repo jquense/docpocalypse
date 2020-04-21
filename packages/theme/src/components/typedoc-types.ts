@@ -42,8 +42,7 @@ export type TypedocTag = {
   text: string;
 };
 
-export type TypeDocComment = {
-  tags?: TypedocTag[];
+export type TypeDocCommentText = {
   mdx?: {
     body: string;
   };
@@ -161,13 +160,16 @@ export type TypedocNode = {
   rootDir?: string;
   tsconfig?: string;
 
-  kind: ReflectionKind;
+  kind: Kind;
   kindstring: string;
   name: string;
   originalName: string;
   defaultValue: string;
   flags: ReflectionFlags;
-  comment?: TypeDocComment;
+
+  tags?: TypedocTag[];
+  description?: TypeDocCommentText;
+  returnsDescription?: TypeDocCommentText;
 
   signatures?: TypedocNode[];
   typedocs?: TypedocNode[];

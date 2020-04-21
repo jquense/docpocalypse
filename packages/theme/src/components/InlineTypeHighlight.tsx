@@ -1,7 +1,6 @@
 import { useHighlight } from '@docpocalypse/code-live';
-
-import React from 'react';
 import theme from '@docpocalypse/code-live/themes/ultramin';
+import React from 'react';
 
 export function InlineHighlight({ code }) {
   const { tokens, getTokenProps } = useHighlight({

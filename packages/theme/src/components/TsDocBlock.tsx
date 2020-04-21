@@ -1,59 +1,42 @@
 /* eslint-disable import/no-cycle */
 
-import { css as dcss } from 'astroturf';
 import React from 'react';
-import Heading from './Heading';
-import TsDocSignatureTitle from './TsDocSignatureTitle';
-import TsDocComment from './TsDocComment';
-import TsDocReturnBlock from './TsDocReturnBlock';
-import TsDocParams from './TsDocParams';
+
+import Description from './TsDocComment';
+import Members from './TsDocMembers';
+import ReturnBlock from './TsDocReturnBlock';
 import { TypedocNode } from './typedoc-types';
+import { getFunctionNode } from './utils/tsDocTypeExpression';
 
 interface Props {
   definition: TypedocNode;
   depth?: number;
-  title?: string | null;
-  showSignature?: boolean;
-  showHeader?: boolean;
-  className?: string;
+  hideReturns?: boolean;
+  hideProperties?: boolean;
 }
 
 const TsDocBlock = ({
-  className,
   definition,
+  hideReturns,
+  hideProperties = !!getFunctionNode(definition),
   depth = 2,
-  title = null,
-  showHeader = true,
-  showSignature = true,
 }: Props) => {
   if (!definition) return null;
 
   const nextDepth = depth + 1;
 
   return (
-    <div className={className}>
-      {showHeader && (
-        <Heading>
-          <div
-            css={dcss`
-            @apply inline-block mr-3;
-          `}
-          >
-            <TsDocSignatureTitle
-              title={title}
-              definition={definition}
-              showSignature={showSignature}
-              arrowStyle
-              wrap
-            />
-          </div>
-        </Heading>
+    <>
+      <Description comment={definition.description} />
+      <Members
+        depth={nextDepth}
+        definition={definition}
+        hideProperties={hideProperties}
+      />
+      {!hideReturns && (
+        <ReturnBlock depth={nextDepth} definition={definition} />
       )}
-
-      <TsDocComment comment={definition.comment} />
-      <TsDocParams depth={nextDepth} definition={definition} />
-      <TsDocReturnBlock depth={nextDepth} definition={definition} />
-    </div>
+    </>
   );
 };
 

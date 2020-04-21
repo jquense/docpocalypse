@@ -55,7 +55,7 @@ export default function resolveNodes(
   info: GraphQLResolveInfo,
 ) {
   const exclude = [...alwaysExclude, ...(args.exclude || [])].filter(
-    i => !args.include || !args.include.includes(i),
+    (i) => !args.include || !args.include.includes(i),
   );
 
   const seen = new Set();
@@ -65,29 +65,33 @@ export default function resolveNodes(
 
   const typedocFields = Object.entries(gqlNodeType.getFields())
     .map(([key, config]) => [key, getNamedType(config.type).name] as const)
-    .filter(c => exclude.indexOf(c[0]) === -1);
+    .filter((c) => exclude.indexOf(c[0]) === -1);
 
   const typeFields = Object.entries(gqlTypeType.getFields())
     .map(([key, config]) => [key, getNamedType(config.type).name] as const)
-    .filter(c => exclude.indexOf(c[0]) === -1);
+    .filter((c) => exclude.indexOf(c[0]) === -1);
 
   // linked fields on TypedocNode types
   const typedocTypeFields = typedocFields
-    .filter(c => c[1] === 'TypedocType')
-    .map(c => c[0]);
+    .filter((c) => c[1] === 'TypedocType')
+    .map((c) => c[0]);
 
   const typedocNodeFields = typedocFields
-    .filter(c => c[1] === 'TypedocNode')
-    .map(c => c[0]);
+    .filter((c) => c[1] === 'TypedocNode')
+    .map((c) => c[0]);
+
+  const typedocCommentFields = typedocFields
+    .filter((c) => c[1] === 'TypedocCommentText')
+    .map((c) => c[0]);
 
   // linked fields on TypedocType types
   const typeTypeFields = typeFields
-    .filter(c => c[1] === 'TypedocType')
-    .map(c => c[0]);
+    .filter((c) => c[1] === 'TypedocType')
+    .map((c) => c[0]);
 
   const typeNodeFields = typeFields
-    .filter(c => c[1] === 'TypedocNode')
-    .map(c => c[0]);
+    .filter((c) => c[1] === 'TypedocNode')
+    .map((c) => c[0]);
 
   function visit(fn) {
     return async (node: any) => {
@@ -102,7 +106,7 @@ export default function resolveNodes(
         };
 
       const ret = { ...node };
-      exclude.forEach(k => {
+      exclude.forEach((k) => {
         delete ret[k];
       });
 
@@ -131,7 +135,7 @@ export default function resolveNodes(
 
   const visitType = visit(async (ret: any, node: any) => {
     await Promise.all(
-      typeTypeFields.map(async field => {
+      typeTypeFields.map(async (field) => {
         if (ret[field] != null) {
           ret[field] = await map(node[field], visitType);
         }
@@ -141,7 +145,7 @@ export default function resolveNodes(
     );
 
     await Promise.all(
-      typeNodeFields.map(async field => {
+      typeNodeFields.map(async (field) => {
         if (ret[field] != null) {
           ret[field] = await map(getNodeById(node, field, ctx), visitTypeDoc);
         }
@@ -153,7 +157,7 @@ export default function resolveNodes(
 
   const visitTypeDoc = visit(async (ret: any, node: DocNode) => {
     await Promise.all(
-      typedocNodeFields.map(async field => {
+      typedocNodeFields.map(async (field) => {
         if (ret[field] != null) {
           ret[field] = await map(getNodeById(node, field, ctx), visitTypeDoc);
         }
@@ -163,7 +167,7 @@ export default function resolveNodes(
     );
 
     await Promise.all(
-      typedocTypeFields.map(async field => {
+      typedocTypeFields.map(async (field) => {
         if (ret[field] != null) {
           ret[field] = await map(node[field], visitType);
         }
@@ -172,9 +176,13 @@ export default function resolveNodes(
       }),
     );
 
-    if (ret.comment != null) {
-      ret.comment = await visitComment(getNodeById(node, 'comment', ctx));
-    }
+    await Promise.all(
+      typedocCommentFields.map(async (field) => {
+        if (ret[field] != null) {
+          ret[field] = await visitComment(getNodeById(node, field, ctx));
+        }
+      }),
+    );
   });
 
   return visitTypeDoc(root);

@@ -1,22 +1,22 @@
-import { useMemo } from 'react'
+import { useMemo } from 'react';
 
-type CallbackRef<T> = (ref: T | null) => void
-type Ref<T> = React.MutableRefObject<T> | CallbackRef<T>
+type CallbackRef<T> = (ref: T | null) => void;
+type Ref<T> = React.MutableRefObject<T> | CallbackRef<T>;
 
 const toFnRef = <T>(ref?: Ref<T> | null) =>
   !ref || typeof ref === 'function'
     ? ref
     : (value: T) => {
-        ref.current = value
-      }
+        ref.current = value;
+      };
 
 export function mergeRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
-  const a = toFnRef(refA)
-  const b = toFnRef(refB)
+  const a = toFnRef(refA);
+  const b = toFnRef(refB);
   return (value: T | null) => {
-    if (a) a(value)
-    if (b) b(value)
-  }
+    if (a) a(value);
+    if (b) b(value);
+  };
 }
 
 /**
@@ -33,10 +33,14 @@ export function mergeRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
  *
  * @param refA A Callback or mutable Ref
  * @param refB A Callback or mutable Ref
+ * @typeParam T The Ref subject, usually a host node or instance handle
  * @category refs
  */
-function useMergedRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
-  return useMemo(() => mergeRefs(refA, refB), [refA, refB])
+function useMergedRefs<T extends object>(
+  refA?: Ref<T> | null,
+  refB?: Ref<T> | null,
+) {
+  return useMemo(() => mergeRefs(refA, refB), [refA, refB]);
 }
 
-export default useMergedRefs
+export default useMergedRefs;
