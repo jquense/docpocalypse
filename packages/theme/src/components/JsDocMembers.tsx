@@ -1,13 +1,12 @@
-import { graphql } from 'gatsby';
 import { css as dcss } from 'astroturf';
+import { graphql } from 'gatsby';
 import React from 'react';
 
 // eslint-disable-next-line import/no-cycle
-import DocBlock from './JsDocBlock';
 import Heading, { HeadingLevel } from './Heading';
-import List from './List';
-
+import DocBlock from './JsDocBlock';
 import TitleSignature from './JsDocTitleSignature';
+import List from './List';
 
 const DocList = ({ elements, level, ignoreParams }) => (
   <List>

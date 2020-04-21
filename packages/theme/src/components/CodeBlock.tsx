@@ -20,11 +20,16 @@ const styles = dcss`
 
     & .title {
       @apply font-medium bg-gray-300 px-5 py-3 font-mono text-sm leading-tight rounded-t;
+
+      & + pre {
+        @apply rounded-t-none;
+      }
     }
 
     & pre {
-      @apply px-5 py-6 bg-gray-100 rounded-b;
+      @apply px-5 py-6 bg-gray-100 rounded;
     }
+
   }
 `;
 

@@ -2,8 +2,8 @@
 
 import dstyled from 'astroturf';
 
-const JsDocWrapper = dstyled('span')<{ block?: boolean }>`
-  @component JsDocTypeWrapper & {
+const DocWrapper = dstyled('span')<{ block?: boolean }>`
+  @component DocTypeWrapper & {
     @apply font-mono;
 
     font-size: initial;
@@ -26,4 +26,4 @@ const JsDocWrapper = dstyled('span')<{ block?: boolean }>`
   }
 `;
 
-export default JsDocWrapper;
+export default DocWrapper;

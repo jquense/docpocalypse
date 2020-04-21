@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import { graphql } from 'gatsby';
 import React from 'react';
+
 import Heading, { HeadingLevel } from './Heading';
 
 function JsDocExample({

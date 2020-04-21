@@ -3,11 +3,11 @@
 import { graphql } from 'gatsby';
 import React from 'react';
 
-import TypeExpression from './JsDocTypeExpression';
-import JsDocTypeWrapper from './JsDocTypeWrapper';
+import DocTypeWrapper from './DocTypeWrapper';
 import JsDocFunctionSignature, {
   isFunctionDef,
 } from './JsDocFunctionSignature';
+import TypeExpression from './JsDocTypeExpression';
 
 const TypeComponent = ({ children }) => (
   <span className="token builtin">{children}</span>
@@ -48,17 +48,17 @@ export default function JsDocSignature({
 
   if (definition.type) {
     return (
-      <JsDocTypeWrapper block={block}>
+      <DocTypeWrapper block={block}>
         <TypeExpression type={definition.type} />
-      </JsDocTypeWrapper>
+      </DocTypeWrapper>
     );
   }
 
   if (fallbackToName && definition.name) {
     return (
-      <JsDocTypeWrapper block={block}>
+      <DocTypeWrapper block={block}>
         <TypeComponent>{definition.name}</TypeComponent>
-      </JsDocTypeWrapper>
+      </DocTypeWrapper>
     );
   }
 

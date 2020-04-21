@@ -1,6 +1,7 @@
-import React from 'react';
-import cn from 'classnames';
 import { css as dcss } from 'astroturf';
+import cn from 'classnames';
+import React from 'react';
+
 import typeExpression from './utils/jsDocTypeExpression';
 
 const styles = dcss`
@@ -9,7 +10,7 @@ const styles = dcss`
   }
 `;
 
-export default function JsDocTypeExpression({ type, className }) {
+export default function JsDocTypeExpression({ type, className }: any) {
   return (
     <span className={cn(className, styles.JsDocTypeExpression)}>
       {typeExpression(type)}

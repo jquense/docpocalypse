@@ -1,11 +1,13 @@
-import React from 'react';
+/* eslint-disable react/jsx-indent */
 import dstyled from 'astroturf';
+import React from 'react';
+
 import ComponentImport from './ComponentImport';
 import Example from './Example';
+import HookSignature from './HookSignature';
 import LinkedHeading from './LinkedHeading';
 import OutlineHeading from './OutlineHeading';
 import PageLayout from './PageLayout';
-import HookSignature from './HookSignature';
 
 const SignatureList = dstyled('ul')`
   list-style: none;
@@ -17,8 +19,8 @@ const SignatureList = dstyled('ul')`
 `;
 
 function HookPage({ data }) {
-  const { signatures, name, importName, example } = data.docpocalypse;
-
+  const { signatures, tsType, name, importName, example } = data.docpocalypse;
+  console.log(tsType);
   return (
     <PageLayout>
       <div>
@@ -35,8 +37,14 @@ function HookPage({ data }) {
         <ComponentImport importName={importName} docNode={data.docpocalypse} />
       )}
       <SignatureList>
+        {tsType?.signatures
+          ? tsType?.signatures.map(doc => (
+              <HookSignature level={3} tsDocType={doc} />
+            ))
+          : null}
+        <hr />
         {signatures?.map(doc => (
-          <HookSignature level={3} definition={doc} />
+          <HookSignature level={3} jsDocType={doc} />
         ))}
       </SignatureList>
     </PageLayout>

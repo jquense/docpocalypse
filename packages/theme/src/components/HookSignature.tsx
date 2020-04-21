@@ -1,10 +1,15 @@
-import React from 'react';
 import { css as dcss } from 'astroturf';
+import React from 'react';
 
-import LinkedHeading from './LinkedHeading';
-import typeExpression from './utils/jsDocTypeExpression';
-import JsDocTitleSignature from './JsDocTitleSignature';
 import JsDocBlock from './JsDocBlock';
+import JsDocTitleSignature from './JsDocTitleSignature';
+import LinkedHeading from './LinkedHeading';
+import TsDocBlock from './TsDocBlock';
+import { getParams } from './TsDocFunctionSignature';
+import TsDocTitleSignature from './TsDocTitleSignature';
+import { TypedocNode } from './typedoc-types';
+import jsDocTypeExpression from './utils/jsDocTypeExpression';
+import tsDocTypeExpression from './utils/tsDocTypeExpression';
 
 const styles = dcss`
   @component HookSignature {
@@ -30,19 +35,33 @@ const styles = dcss`
   }
 `;
 
-function HookSignature({ definition, level }) {
-  const params = definition.params
-    ? definition.params.map(param => {
-        const type = param.type && `${param.optional ? '?' : ''}`;
-        return `${param.name}${type || ''}`;
-      })
-    : [];
+function getTitle(jsDoc, tsDoc: TypedocNode) {
+  if (jsDoc) {
+    const params = jsDoc.params
+      ? jsDoc.params.map(param => {
+          const type = param.type && `${param.optional ? '?' : ''}`;
+          return `${param.name}${type || ''}`;
+        })
+      : [];
 
-  const returns = definition.returns?.length
-    ? typeExpression(definition.returns[0].type)
-    : 'void';
+    const returns = jsDoc.returns?.length
+      ? jsDocTypeExpression(jsDoc.returns[0].type)
+      : 'void';
 
-  const title = `ƒ (${params.join(', ')}) => ${returns}`;
+    return `ƒ (${params.join(', ')}) => ${returns}`;
+  }
+  // TODO: maybe?
+  // const typeParams = tsDoc.typeParameter?.map(p => p.name);
+
+  const params = getParams(tsDoc, { includeTypes: false });
+
+  const returns = tsDoc.type ? tsDocTypeExpression(tsDoc.type) : 'void';
+
+  return `ƒ (${params.join(', ')}) => ${returns}`;
+}
+
+function HookSignature({ jsDocType, tsDocType, level }: any) {
+  const title = getTitle(jsDocType, tsDocType);
 
   return (
     <li className={styles.HookSignature}>
@@ -53,10 +72,12 @@ function HookSignature({ definition, level }) {
         css={dcss`position: relative;`}
       >
         <span className={styles.count} />
-        <JsDocTitleSignature definition={definition} />
+        {tsDocType && <TsDocTitleSignature definition={tsDocType} />}
+        {jsDocType && <JsDocTitleSignature definition={jsDocType} />}
       </LinkedHeading>
       <div>
-        <JsDocBlock depth={level} definition={definition} />
+        {tsDocType && <TsDocBlock depth={level} definition={tsDocType} />}
+        {jsDocType && <JsDocBlock depth={level} definition={jsDocType} />}
       </div>
     </li>
   );

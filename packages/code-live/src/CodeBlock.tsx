@@ -63,10 +63,13 @@ interface Props {
 
 function CodeBlock({ code, theme, language, lineNumbers, ...props }: Props) {
   const highlight = useHighlight({ code: code.trim(), Prism, theme, language });
+
+  const style = typeof theme?.plain === 'object' ? theme.plain : {};
+
   return (
     <pre
       className={cn(props.className, highlight.props.className)}
-      style={{ ...props.style, ...highlight.props.style }}
+      style={{ ...props.style, ...style, ...highlight.props.style }}
     >
       <code>{mapTokens({ ...highlight, lineNumbers })}</code>
     </pre>
