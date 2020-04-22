@@ -15,8 +15,11 @@ export const isObjecty = (node: TypedocNode) =>
   node.kind === Kind.ObjectLiteral ||
   (node.kind === Kind.TypeLiteral && !!node.typedocs?.length);
 
-export const getReadableName = (node: TypedocNode) =>
-  isInternalType(node) ? node.originalName : node.name;
+export const getReadableName = (node: TypedocNode) => {
+  // grumble
+  if (node.name === '__namedParameters') return 'Destructured Object';
+  return isInternalType(node) ? node.originalName : node.name;
+};
 
 export const getFunctionNode = (
   definition?: TypedocNode,

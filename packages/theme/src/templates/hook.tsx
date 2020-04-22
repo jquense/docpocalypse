@@ -1,5 +1,6 @@
 import { graphql } from 'gatsby';
 import React from 'react';
+
 import HookPage from '../components/HookPage';
 
 function HookPageTemplate(props) {

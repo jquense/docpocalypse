@@ -20,13 +20,7 @@ import { findConfigFile, readConfigFile, sys } from 'typescript';
 import createCommentNodes from './lib/createCommentNodes';
 import resolveNodes, { DocNode } from './lib/resolveNode';
 import * as T from './lib/types';
-
-// class MySourceReferenceContainerSerializer extends SourceReferenceContainerSerializer {
-//   toObject(arg: any, obj: any) {
-//     console.log('HERE', arg.file, obj);
-//     return obj;
-//   }
-// }
+import watcher from './lib/watcher';
 
 interface GatsbyNode {
   id: string;
@@ -263,8 +257,6 @@ export function sourceNodes(
   const roots = ([] as string[]).concat(projects);
 
   const getFile = (node: any, project: ProjectReflection) => {
-    // console.log(project.getReflectionById(node.id));
-
     if (node.kind === T.Kind.Global) return node.rootDir;
     if (node.kind === T.Kind.ExternalModule && node.originalName)
       return node.originalName;
@@ -273,6 +265,156 @@ export function sourceNodes(
 
     return reflection?.sources?.[0]?.file?.fullFileName ?? null;
   };
+
+  function serializeProject(
+    app: Application,
+    rootDir: string,
+    tsconfig: string,
+    createId: (id: any) => string,
+  ) {
+    const projectFiles = app.expandInputFiles([rootDir]);
+    const project = app.convert(projectFiles);
+
+    if (!project) {
+      reporter.error('There was a problem building your typedoc project');
+    }
+
+    const data = app.serializer.projectToObject(project);
+
+    function findDeclarations(
+      type?: JSONOutput.SomeType,
+      parent?: string,
+    ): any {
+      const find = (t?: JSONOutput.SomeType) => findDeclarations(t, parent);
+      if (!type) return type;
+
+      if (type.type === 'reference' && 'id' in type) {
+        (type as any).reference = createId(type.id);
+      }
+
+      if ('declaration' in type && type.declaration) {
+        // @ts-ignore
+        type.declaration =
+          'name' in type.declaration
+            ? traverse(type.declaration, parent).id
+            : createId(type.declaration.id);
+      }
+      if ('target' in type) type.target = find(type.target);
+      if ('types' in type) type.types = type.types?.flatMap(find);
+      if ('constraint' in type) type.constraint = find(type.constraint);
+      if ('elementType' in type) type.elementType = find(type.elementType);
+      if ('elements' in type) type.elements = type.elements?.flatMap(find);
+      if ('typeArguments' in type)
+        type.typeArguments = type.typeArguments?.flatMap(find);
+
+      return type;
+    }
+
+    function traverse(docNode: DocNode, parent?: string): GatsbyNode {
+      const nodeId = createId(docNode.id);
+
+      if (nodes.has(nodeId)) {
+        return { id: nodeId };
+      }
+
+      const dnode: any = docNode;
+      const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
+      const signatures =
+        dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
+      const parameters =
+        dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
+
+      const typeParameter = dnode.typeParameter
+        ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
+        : [];
+
+      [
+        'type',
+        'overwrites',
+        'inheritedFrom',
+        'extendedTypes',
+        'extendedBy',
+        'implementedTypes',
+        'implementedBy',
+        'implementationOf',
+      ].forEach(field => {
+        (docNode as any)[field] = findDeclarations(
+          (docNode as any)[field],
+          nodeId,
+        );
+      });
+
+      const node: any = {
+        ...docNode,
+        parent,
+        rootDir,
+        tsconfig,
+        id: nodeId,
+        typedocs,
+        signatures,
+        parameters,
+        typeParameter,
+        // childrenTypedocNode: children,
+        sources: ('sources' in docNode && docNode.sources) || [],
+        groups:
+          ('groups' in docNode &&
+            docNode.groups?.map(group => ({
+              ...group,
+              children: group.children?.map(id => createId(id)),
+            }))) ||
+          [],
+      };
+
+      node.absolutePath = getFile(docNode, project!);
+
+      node.internal = {
+        type: 'TypedocNode',
+        contentDigest: createContentDigest(JSON.stringify(node)),
+      };
+
+      node.children = node.typedocs
+        .concat(signatures, parameters, typeParameter)
+        .filter(Boolean);
+
+      nodes.set(nodeId, docNode);
+
+      if ('comment' in node) {
+        createCommentNodes(
+          node,
+          node.comment,
+          actions,
+          createNodeId,
+          createContentDigest,
+        );
+      }
+
+      createNode(node);
+      return node;
+    }
+
+    if (data) {
+      if (debugRaw) {
+        const json = JSON.stringify(data);
+        // fs.writeFileSync(`${process.cwd()}/nodes.json`, json);
+
+        createNode({
+          rootDir,
+          id: createNodeId(`typedoc-${data.name || 'default'}`),
+          json: data,
+          internal: {
+            type: 'TypedocNodeRaw',
+            contentDigest: createContentDigest(json),
+          },
+        });
+      }
+
+      // console.log(project.getReflectionById(data.children![0]!.id!));
+      traverse(data);
+      nodes.clear();
+    } else {
+      reporter.error('Failed to generate TypeDoc');
+    }
+  }
 
   roots.forEach((root, idx) => {
     const createId = (id: any) => createNodeId(`TypedocNode:${idx}-${id}`);
@@ -317,147 +459,12 @@ export function sourceNodes(
       config.compilerOptions?.rootDir ?? '',
     );
 
-    const project = app.convert(app.expandInputFiles([rootDir]));
+    serializeProject(app, rootDir, tsconfig, createId);
 
-    if (!project) {
-      reporter.error('There was a problem building your typedoc project');
-      return;
-    }
-
-    const data = app.serializer.projectToObject(project);
-
-    function findDeclarations(
-      type?: JSONOutput.SomeType,
-      parent?: string,
-    ): any {
-      const find = (t?: JSONOutput.SomeType) => findDeclarations(t, parent);
-      if (!type) return type;
-
-      if (type.type === 'reference' && 'id' in type) {
-        (type as any).reference = createId(type.id);
-      }
-
-      if ('declaration' in type && type.declaration) {
-        type.declaration =
-          'name' in type.declaration
-            ? traverse(type.declaration, parent).id
-            : createId(type.declaration.id);
-      }
-      if ('target' in type) type.target = find(type.target);
-      if ('types' in type) type.types = type.types?.flatMap(find);
-      if ('constraint' in type) type.constraint = find(type.constraint);
-      if ('elementType' in type) type.elementType = find(type.elementType);
-      if ('elements' in type) type.elements = type.elements?.flatMap(find);
-      if ('typeArguments' in type)
-        type.typeArguments = type.typeArguments?.flatMap(find);
-
-      return type;
-    }
-
-    function traverse(docNode: DocNode, parent?: string): GatsbyNode {
-      const nodeId = createId(docNode.id);
-
-      if (nodes.has(nodeId)) {
-        return { id: nodeId };
-      }
-
-      const dnode: any = docNode;
-      const typedocs = dnode.children?.map((c) => traverse(c, nodeId).id) ?? [];
-      const signatures =
-        dnode.signatures?.map((c) => traverse(c, nodeId).id) ?? [];
-      const parameters =
-        dnode.parameters?.map((c) => traverse(c, nodeId).id) ?? [];
-
-      const typeParameter = dnode.typeParameter
-        ? [].concat(dnode.typeParameter).map((tp) => traverse(tp, nodeId)?.id)
-        : [];
-
-      [
-        'type',
-        'overwrites',
-        'inheritedFrom',
-        'extendedTypes',
-        'extendedBy',
-        'implementedTypes',
-        'implementedBy',
-        'implementationOf',
-      ].forEach((field) => {
-        (docNode as any)[field] = findDeclarations(
-          (docNode as any)[field],
-          nodeId,
-        );
-      });
-
-      const node: any = {
-        ...docNode,
-        parent,
-        rootDir,
-        tsconfig,
-        id: nodeId,
-        typedocs,
-        signatures,
-        parameters,
-        typeParameter,
-        // childrenTypedocNode: children,
-        sources: ('sources' in docNode && docNode.sources) || [],
-        groups:
-          ('groups' in docNode &&
-            docNode.groups?.map((group) => ({
-              ...group,
-              children: group.children?.map((id) => createId(id)),
-            }))) ||
-          [],
-      };
-
-      node.absolutePath = getFile(docNode, project!);
-
-      node.internal = {
-        type: 'TypedocNode',
-        contentDigest: createContentDigest(JSON.stringify(node)),
-      };
-
-      node.children = node.typedocs
-        .concat(signatures, parameters, typeParameter)
-        .filter(Boolean);
-
-      nodes.set(nodeId, docNode);
-
-      if ('comment' in node) {
-        createCommentNodes(
-          node,
-          node.comment,
-          actions,
-          createNodeId,
-          createContentDigest,
-        );
-      }
-
-      createNode(node);
-      return node;
-    }
-
-    if (data) {
-      if (debugRaw) {
-        const json = JSON.stringify(data);
-        fs.writeFileSync(`${process.cwd()}/nodes.json`, json);
-
-        createNode({
-          root,
-          id: createNodeId(`typedoc-${data.name || 'default'}`),
-          json: data,
-          internal: {
-            type: 'TypedocNodeRaw',
-            contentDigest: createContentDigest(json),
-          },
-        });
-      }
-
-      // console.log(project.getReflectionById(data.children![0]!.id!));
-      traverse(data);
-      nodes.clear();
-    } else {
-      reporter.error('Failed to generate TypeDoc');
-    }
+    watcher(rootDir, () => {
+      reporter.info('Updating TS project');
+      serializeProject(app, rootDir, tsconfig, createId);
+    });
   });
 }
 
