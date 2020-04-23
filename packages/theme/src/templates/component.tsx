@@ -1,5 +1,6 @@
 import { graphql } from 'gatsby';
 import React from 'react';
+
 import ComponentPage from '../components/ComponentPage';
 
 export default function ComponentPageTemplate(props) {
@@ -12,6 +13,10 @@ export const pageQuery = graphql`
       id
       name
       importName
+      tags {
+        name
+        value
+      }
       example {
         ...Example_example
       }

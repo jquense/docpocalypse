@@ -15,6 +15,10 @@ export const pageQuery = graphql`
       id
       name
       importName
+      tags {
+        name
+        value
+      }
       tsType
       example {
         ...Example_example
