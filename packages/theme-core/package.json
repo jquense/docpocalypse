@@ -81,5 +81,6 @@
     "typedoc": "^0.16.9",
     "unist-util-visit": "^2.0.2",
     "webpack-atoms": "^12.1.0"
-  }
+  },
+  "gitHead": "0717d4832dd2b549fe7dcbc5b8e3469f5176859f"
 }

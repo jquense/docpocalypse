@@ -277,6 +277,7 @@ export function sourceNodes(
 
     if (!project) {
       reporter.error('There was a problem building your typedoc project');
+      return
     }
 
     const data = app.serializer.projectToObject(project);

@@ -56,5 +56,6 @@
     "resolve": "^1.15.1",
     "tailwindcss": "^1.2.0",
     "webpack-atoms": "^12.1.0"
-  }
+  },
+  "gitHead": "0717d4832dd2b549fe7dcbc5b8e3469f5176859f"
 }

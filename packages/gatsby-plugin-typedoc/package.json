@@ -49,5 +49,6 @@
     "lodash": "^4.17.15",
     "typedoc": "^0.16.9",
     "typescript": "^3.7.0"
-  }
+  },
+  "gitHead": "0717d4832dd2b549fe7dcbc5b8e3469f5176859f"
 }
