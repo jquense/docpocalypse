@@ -41,11 +41,7 @@ function HookPage({ data }) {
           ? tsType?.signatures.map(doc => (
               <HookSignature level={3} tsDocType={doc} />
             ))
-          : null}
-        <hr />
-        {signatures?.map(doc => (
-          <HookSignature level={3} jsDocType={doc} />
-        ))}
+          : signatures?.map(doc => <HookSignature level={3} jsDocType={doc} />)}
       </SignatureList>
     </PageLayout>
   );
