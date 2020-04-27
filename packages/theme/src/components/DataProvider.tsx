@@ -1,9 +1,22 @@
-import React, { useMemo, useContext } from 'react';
-import { useStaticQuery, graphql } from 'gatsby';
+import { graphql, useStaticQuery } from 'gatsby';
+import React, { useContext, useMemo } from 'react';
 
 const Context = React.createContext<any>(null);
 
 export const usePageData = () => useContext(Context);
+
+export const baseFragment = graphql`
+  fragment DocpocalypseBase on Docpocalypse {
+    type
+    name
+    packageName
+    importName
+    tags {
+      name
+      value
+    }
+  }
+`;
 
 export const pagesFragment = graphql`
   fragment DocpocalypsePageQuery on Query {
@@ -28,13 +41,7 @@ function DataProvider(props) {
       ...DocpocalypsePageQuery
       api: allDocpocalypse {
         nodes {
-          type
-          name
-          packageName
-          tags {
-            name
-            value
-          }
+          ...DocpocalypseBase
         }
       }
     }
@@ -48,10 +55,10 @@ function DataProvider(props) {
           path: d.path,
           title: d.docpocalypse.title,
         })),
-      api: data.api.nodes.map(n => ({
-        path: `/api/${n.name}`,
-        title: n.name,
-        tags: n.tags,
+      api: data.api.nodes.map(({ name, ...rest }) => ({
+        path: `/api/${name}`,
+        title: name,
+        ...rest,
       })),
     };
   }, [data]);

@@ -13,13 +13,8 @@ export const pageQuery = graphql`
   query($nodeId: String) {
     docpocalypse(id: { eq: $nodeId }) {
       id
-      name
-      importName
-      tags {
-        name
-        value
-      }
       tsType
+      ...DocpocalypseBase
       example {
         ...Example_example
       }
