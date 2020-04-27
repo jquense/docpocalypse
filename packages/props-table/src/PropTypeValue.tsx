@@ -39,7 +39,7 @@ function mapToTypes(propType: PropType, tags: Doclet[]): TSType {
       return {
         name: 'union',
         elements: propType.value
-          .map(n => (typeof name === 'string' ? { name: n } : n))
+          .map(n => (typeof n === 'string' ? { name: n } : n))
           .map(map),
       };
     case 'enum': {
