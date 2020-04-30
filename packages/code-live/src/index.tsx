@@ -1,3 +1,5 @@
+import { Prism } from '@docpocalypse/prism-react-renderer';
+
 import CodeBlock from './CodeBlock';
 import Editor from './Editor';
 import Error from './Error';
