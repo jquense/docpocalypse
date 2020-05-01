@@ -19,9 +19,9 @@ const createWebpackRule = ({
   loader,
   cssModulesOptions,
   useCssModuleLoader,
+  useDefaultPostcss = true,
   importLoaders = loader ? 2 : 1,
-  postcssPlugins: plugins,
-  postcssParser = 'scss',
+  postcssOptions,
   api,
 }) => {
   const { stage, loaders } = api;
@@ -29,11 +29,19 @@ const createWebpackRule = ({
   const isSSR = stage.includes('html');
   const isDevelop = stage.includes('develop');
 
-  const parser =
-    postcssParser === 'scss' ? require.resolve('postcss-scss') : postcssParser;
-
   let modulesOptions = cssModulesOptions == null ? true : cssModulesOptions;
   if (useCssModuleLoader) modulesOptions = false;
+
+  const postcssLoader = (opts = {}) =>
+    useDefaultPostcss
+      ? loaders.postcss(opts)
+      : {
+          loader: require.resolve('postcss-loader'),
+          options: {
+            ident: cuid(),
+            ...opts,
+          },
+        };
 
   const cssLoader = (opts = {}) => ({
     loader: require.resolve('css-loader'),
@@ -68,11 +76,7 @@ const createWebpackRule = ({
             loader: require.resolve('css-module-loader'),
             options: cssModulesOptions,
           },
-          loaders.postcss({
-            ident: cuid(),
-            parser,
-            plugins,
-          }),
+          postcssLoader(postcssOptions),
           loader,
         ].filter(Boolean),
       },
@@ -83,11 +87,7 @@ const createWebpackRule = ({
           : [
               loaders.miniCssExtract(),
               loaders.css({ importLoaders }),
-              loaders.postcss({
-                ident: cuid(),
-                parser,
-                plugins,
-              }),
+              postcssLoader(postcssOptions),
               loader,
             ].filter(Boolean),
       },

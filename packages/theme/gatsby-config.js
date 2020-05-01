@@ -1,5 +1,4 @@
 const templates = require('./src/templates');
-const themingPlugin = require('./tools/theming-plugin');
 
 module.exports = (options = {}) => {
   return {
@@ -8,8 +7,11 @@ module.exports = (options = {}) => {
       {
         resolve: 'gatsby-plugin-css',
         options: {
-          postcssPlugins: () => {
-            return [themingPlugin(options), require('postcss-nested')];
+          useDefaultPostcss: false,
+          postcssOptions: {
+            config: {
+              ctx: options,
+            },
           },
         },
       },

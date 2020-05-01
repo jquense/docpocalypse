@@ -258,7 +258,7 @@ export function sourceNodes(
 
   const getFile = (node: any, project: ProjectReflection) => {
     if (node.kind === T.Kind.Global) return node.rootDir;
-    if (node.kind === T.Kind.ExternalModule && node.originalName)
+    if (node.kind === T.Kind.Module && node.originalName)
       return node.originalName;
 
     const reflection = project.getReflectionById(node.id);
@@ -277,7 +277,7 @@ export function sourceNodes(
 
     if (!project) {
       reporter.error('There was a problem building your typedoc project');
-      return
+      return;
     }
 
     const data = app.serializer.projectToObject(project);
@@ -319,14 +319,14 @@ export function sourceNodes(
       }
 
       const dnode: any = docNode;
-      const typedocs = dnode.children?.map(c => traverse(c, nodeId).id) ?? [];
+      const typedocs = dnode.children?.map((c) => traverse(c, nodeId).id) ?? [];
       const signatures =
-        dnode.signatures?.map(c => traverse(c, nodeId).id) ?? [];
+        dnode.signatures?.map((c) => traverse(c, nodeId).id) ?? [];
       const parameters =
-        dnode.parameters?.map(c => traverse(c, nodeId).id) ?? [];
+        dnode.parameters?.map((c) => traverse(c, nodeId).id) ?? [];
 
       const typeParameter = dnode.typeParameter
-        ? [].concat(dnode.typeParameter).map(tp => traverse(tp, nodeId)?.id)
+        ? [].concat(dnode.typeParameter).map((tp) => traverse(tp, nodeId)?.id)
         : [];
 
       [
@@ -338,7 +338,7 @@ export function sourceNodes(
         'implementedTypes',
         'implementedBy',
         'implementationOf',
-      ].forEach(field => {
+      ].forEach((field) => {
         (docNode as any)[field] = findDeclarations(
           (docNode as any)[field],
           nodeId,
@@ -359,9 +359,9 @@ export function sourceNodes(
         sources: ('sources' in docNode && docNode.sources) || [],
         groups:
           ('groups' in docNode &&
-            docNode.groups?.map(group => ({
+            docNode.groups?.map((group) => ({
               ...group,
-              children: group.children?.map(id => createId(id)),
+              children: group.children?.map((id) => createId(id)),
             }))) ||
           [],
       };
