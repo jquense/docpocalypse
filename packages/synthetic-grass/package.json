@@ -1,6 +1,6 @@
 {
   "name": "synthetic-grass",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A cheaper, less useful, Astroturf",
   "main": "lib/index.js",
   "license": "MIT",
