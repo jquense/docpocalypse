@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme-core",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -68,7 +68,7 @@
     "gatsby-plugin-mdx": "^1.2.4",
     "gatsby-plugin-page-creator": "^2.3.0",
     "gatsby-plugin-sorted-assets": "^1.0.2",
-    "gatsby-plugin-typedoc": "^0.3.9",
+    "gatsby-plugin-typedoc": "^0.3.10",
     "gatsby-plugin-typescript": "^2.4.0",
     "gatsby-remark-prismjs": "^3.5.0",
     "gatsby-source-filesystem": "^2.3.0",
