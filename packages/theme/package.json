@@ -35,6 +35,7 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
+    "gatsby-plugin-css": "^0.0.0",
     "@docpocalypse/code-live": "^0.4.14",
     "@docpocalypse/gatsby-theme-core": "^0.8.14",
     "@docpocalypse/props-table": "^0.3.9",

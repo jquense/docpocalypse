@@ -11,6 +11,7 @@ import highlight, { useHighlight } from './highlight';
 export type ImportResolver = _ImportResolver;
 
 export {
+  Prism,
   CodeBlock,
   Error,
   Editor,

@@ -6,20 +6,20 @@ module.exports = (options = {}) => {
     plugins: [
       'gatsby-plugin-typescript',
       {
-        resolve: require.resolve('./plugins/css-plugin'),
+        resolve: 'gatsby-plugin-css',
         options: {
           postcssPlugins: () => {
             return [themingPlugin(options), require('postcss-nested')];
-          }
-        }
+          },
+        },
       },
       {
         resolve: '@docpocalypse/gatsby-theme-core',
         options: {
           templates,
-          ...options
-        }
-      }
-    ]
+          ...options,
+        },
+      },
+    ],
   };
 };
