@@ -1,17 +1,16 @@
 const cuid = require('cuid');
-const { createAtoms } = require('webpack-atoms');
 
 const CSS_PATTERN = /\.css$/;
 const MODULE_CSS_PATTERN = /\.module\.css$/;
 
-const isCssRules = rule =>
+const isCssRules = (rule) =>
   rule.test &&
   (rule.test.toString() === CSS_PATTERN.toString() ||
     rule.test.toString() === MODULE_CSS_PATTERN.toString());
 
-const findCssRules = config =>
+const findCssRules = (config) =>
   config.module.rules.find(
-    rule => Array.isArray(rule.oneOf) && rule.oneOf.every(isCssRules),
+    (rule) => Array.isArray(rule.oneOf) && rule.oneOf.every(isCssRules),
   );
 
 const createWebpackRule = ({
@@ -25,27 +24,41 @@ const createWebpackRule = ({
   postcssParser = 'scss',
   api,
 }) => {
-  const { stage, loaders: gatsbyLoaders } = api;
+  const { stage, loaders } = api;
 
   const isSSR = stage.includes('html');
   const isDevelop = stage.includes('develop');
-
-  const { loaders } = createAtoms({
-    env: isDevelop ? 'development' : 'production',
-  });
 
   const parser =
     postcssParser === 'scss' ? require.resolve('postcss-scss') : postcssParser;
 
   let modulesOptions = cssModulesOptions == null ? true : cssModulesOptions;
   if (useCssModuleLoader) modulesOptions = false;
+
+  const cssLoader = (opts = {}) => ({
+    loader: require.resolve('css-loader'),
+    options: {
+      sourceMap: isDevelop,
+      localsConvention: 'dashes',
+      ...opts,
+      onlyLocals: isSSR,
+      modules: opts.modules
+        ? {
+            // https://github.com/webpack-contrib/css-loader/issues/406
+            localIdentName: '[name]--[local]--[hash:base64:5]',
+            ...opts.modules,
+          }
+        : false,
+    },
+  });
+
   return {
     oneOf: [
       {
         test: modulesTest,
         use: [
-          !isSSR && gatsbyLoaders.miniCssExtract({ hmr: false }),
-          loaders.css({
+          !isSSR && loaders.miniCssExtract({ hmr: false }),
+          cssLoader({
             modules: modulesOptions,
             importLoaders: useCssModuleLoader
               ? importLoaders + 1
@@ -53,10 +66,7 @@ const createWebpackRule = ({
           }),
           useCssModuleLoader && {
             loader: require.resolve('css-module-loader'),
-            options: {
-              ...(cssModulesOptions || {}),
-              onlyLocals: isSSR,
-            },
+            options: cssModulesOptions,
           },
           loaders.postcss({
             ident: cuid(),
@@ -69,9 +79,9 @@ const createWebpackRule = ({
       {
         test,
         use: isSSR
-          ? [gatsbyLoaders.null()]
+          ? [loaders.null()]
           : [
-              gatsbyLoaders.miniCssExtract(),
+              loaders.miniCssExtract(),
               loaders.css({ importLoaders }),
               loaders.postcss({
                 ident: cuid(),
