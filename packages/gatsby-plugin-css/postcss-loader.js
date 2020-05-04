@@ -80,7 +80,7 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
     const hasOptions =
       programmaticOptions.plugins.length || programmaticOptions.options;
 
-    if (hasOptions) {
+    if (hasOptions || loaderOptions.config === false) {
       return programmaticOptions;
     }
 

@@ -25,8 +25,9 @@ const createWebpackRule = ({
   loader,
   cssModulesOptions,
   useCssModuleLoader,
-  autoprefix = true,
-  importLoaders = loader ? 2 : 1,
+  postcss = 'autoprefix',
+  postcssLoaderOptions = {},
+  importLoaders = 0,
   api,
 }) => {
   const { stage, loaders } = api;
@@ -37,18 +38,20 @@ const createWebpackRule = ({
   let modulesOptions = cssModulesOptions == null ? true : cssModulesOptions;
   if (useCssModuleLoader) modulesOptions = false;
 
-  const postcssLoader = autoprefix && {
-    loader: require.resolve('./postcss-loader'),
-    options: {
-      ident: cuid(),
-      plugins: [
-        require('autoprefixer')({
-          overrideBrowserslist: getSupportedBrowsers(),
-          flexbox: `no-2009`,
-        }),
-      ],
-    },
-  };
+  const postcssLoader = () =>
+    postcss && {
+      loader: require.resolve('./utility-postcss-loader'),
+      options: {
+        ident: cuid(),
+        // disallow configs when just autoprefixing
+        config: postcss === true,
+        ...postcssLoaderOptions,
+        autoprefix: !!postcss,
+      },
+    };
+
+  if (postcss) importLoaders += 1;
+  if (loader) importLoaders += 1;
 
   const cssLoader = (opts = {}) => ({
     loader: require.resolve('css-loader'),
@@ -83,7 +86,7 @@ const createWebpackRule = ({
             loader: require.resolve('css-module-loader'),
             options: cssModulesOptions,
           },
-          postcssLoader,
+          postcssLoader(),
           loader,
         ].filter(Boolean),
       },
@@ -94,7 +97,7 @@ const createWebpackRule = ({
           : [
               loaders.miniCssExtract(),
               loaders.css({ importLoaders }),
-              postcssLoader,
+              postcssLoader(),
               loader,
             ].filter(Boolean),
       },

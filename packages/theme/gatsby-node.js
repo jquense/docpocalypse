@@ -13,7 +13,7 @@ exports.onCreateWebpackConfig = (
     api: { stage, loaders },
     test: /\.css$/,
     modulesTest: /\.module\.css$/,
-    autoprefix: false,
+    postcss: false,
     loader: {
       loader: require.resolve('./tools/theme-loader'),
       options: {

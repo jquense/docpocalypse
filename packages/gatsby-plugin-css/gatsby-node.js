@@ -10,6 +10,7 @@ exports.onCreateWebpackConfig = (api, { replaceExisting = true, ...rest }) => {
     api,
     test: /\.css$/,
     modulesTest: /\.module\.css$/,
+    postcss: true,
     ...rest,
   });
 
