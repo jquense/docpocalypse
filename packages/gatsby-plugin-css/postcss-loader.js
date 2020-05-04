@@ -105,7 +105,14 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
 
     ctx.webpack = this;
 
-    let config = await postcssrc(ctx, filePath);
+    let config = { filePath };
+    try {
+      config = await postcssrc(ctx, filePath);
+    } catch (err) {
+      if (!err.message.includes('No PostCSS Config')) {
+        throw err;
+      }
+    }
 
     if (typeof loaderOptions.config === 'function') {
       config = await loaderOptions.config.call(this, config, {
