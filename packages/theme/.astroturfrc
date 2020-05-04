@@ -1,0 +1,7 @@
+{
+  "cssTagName": false,
+  "styledTagName": "dstyled",
+  "stylesheetTagName": "dcss",
+  "extension": ".module.css",
+  "enableCssProp": true
+}

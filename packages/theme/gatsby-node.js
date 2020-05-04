@@ -36,7 +36,7 @@ exports.onCreateWebpackConfig = (
           ],
           use: [
             {
-              loader: 'astroturf/loader',
+              loader: require.resolve('astroturf/loader'),
               options: {
                 tagName: 'dcss',
                 styledTag: 'dstyled',
