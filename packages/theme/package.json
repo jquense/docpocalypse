@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme",
-  "version": "0.11.21",
+  "version": "0.11.22",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -49,7 +49,7 @@
     "autoprefixer": "^9.7.6",
     "classnames": "^2.2.6",
     "gatsby-plugin-astroturf": "^0.2.1",
-    "gatsby-plugin-css": "^2.0.1",
+    "gatsby-plugin-css": "^2.0.2",
     "gatsby-plugin-mdx": "^1.2.4",
     "lodash": "^4.17.15",
     "postcss": "^7.0.27",
