@@ -1,4 +1,6 @@
 const cuid = require('cuid');
+const { store } = require('gatsby/dist/redux');
+const { getBrowsersList } = require('gatsby/dist/utils/browserslist');
 
 const CSS_PATTERN = /\.css$/;
 const MODULE_CSS_PATTERN = /\.module\.css$/;
@@ -13,15 +15,18 @@ const findCssRules = (config) =>
     (rule) => Array.isArray(rule.oneOf) && rule.oneOf.every(isCssRules),
   );
 
+const getSupportedBrowsers = () => {
+  return getBrowsersList(store.getState().program.directory);
+};
+
 const createWebpackRule = ({
   test,
   modulesTest,
   loader,
   cssModulesOptions,
   useCssModuleLoader,
-  useDefaultPostcss = true,
+  autoprefix = true,
   importLoaders = loader ? 2 : 1,
-  postcssOptions,
   api,
 }) => {
   const { stage, loaders } = api;
@@ -32,16 +37,18 @@ const createWebpackRule = ({
   let modulesOptions = cssModulesOptions == null ? true : cssModulesOptions;
   if (useCssModuleLoader) modulesOptions = false;
 
-  const postcssLoader = (opts = {}) =>
-    useDefaultPostcss
-      ? loaders.postcss(opts)
-      : {
-          loader: require.resolve('postcss-loader'),
-          options: {
-            ident: cuid(),
-            ...opts,
-          },
-        };
+  const postcssLoader = autoprefix && {
+    loader: require.resolve('./postcss-loader'),
+    options: {
+      ident: cuid(),
+      plugins: [
+        require('autoprefixer')({
+          overrideBrowserslist: getSupportedBrowsers(),
+          flexbox: `no-2009`,
+        }),
+      ],
+    },
+  };
 
   const cssLoader = (opts = {}) => ({
     loader: require.resolve('css-loader'),
@@ -60,7 +67,7 @@ const createWebpackRule = ({
     },
   });
 
-  return {
+  const rule = {
     oneOf: [
       {
         test: modulesTest,
@@ -76,7 +83,7 @@ const createWebpackRule = ({
             loader: require.resolve('css-module-loader'),
             options: cssModulesOptions,
           },
-          postcssLoader(postcssOptions),
+          postcssLoader,
           loader,
         ].filter(Boolean),
       },
@@ -87,12 +94,19 @@ const createWebpackRule = ({
           : [
               loaders.miniCssExtract(),
               loaders.css({ importLoaders }),
-              postcssLoader(postcssOptions),
+              postcssLoader,
               loader,
             ].filter(Boolean),
       },
     ],
   };
+
+  return rule;
 };
 
-module.exports = { findCssRules, createWebpackRule, isCssRules };
+module.exports = {
+  findCssRules,
+  createWebpackRule,
+  isCssRules,
+  getSupportedBrowsers,
+};

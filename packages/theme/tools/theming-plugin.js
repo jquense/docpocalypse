@@ -14,10 +14,10 @@ const tailwindConfigPath = require.resolve('../tailwind.config');
 const themingValues = ['full', 'minimal', 'none'];
 
 function themeAtRulePlugin(theming) {
-  return css => {
-    css.walkAtRules('theme', atRule => {
+  return (css) => {
+    css.walkAtRules('theme', (atRule) => {
       const config = postcss.list.space(atRule.params);
-      if (!config.every(c => themingValues.includes(c))) {
+      if (!config.every((c) => themingValues.includes(c))) {
         throw atRule.error(
           `Unrecognized theming configuration: \`${config}\`.`,
         );
@@ -32,12 +32,12 @@ function themeAtRulePlugin(theming) {
 }
 
 function componentAtRulePlugin(getConfig, theming) {
-  return css => {
+  return (css) => {
     const themePlugin = themeAtRulePlugin(theming);
     const { theme, userConfig } = getConfig();
     const userTheme = userConfig && userConfig.theme;
 
-    css.walkAtRules('component', atRule => {
+    css.walkAtRules('component', (atRule) => {
       const [name, ident = `.${name}`] = postcss.list.space(atRule.params);
 
       const isExtending =

@@ -2,10 +2,17 @@
   "name": "gatsby-plugin-css",
   "version": "1.0.2",
   "main": "index.js",
+  "peerDependencies": {
+    "gatsby": "^2.8.2"
+  },
   "dependencies": {
+    "autoprefixer": "^9.7.6",
     "css-loader": "^3.5.3",
     "css-module-loader": "^1.0.0-beta.6",
     "cuid": "^2.1.8",
-    "loader-utils": "^2.0.0"
+    "loader-utils": "^2.0.0",
+    "postcss": "^7.0.29",
+    "postcss-load-config": "^2.1.0",
+    "semver": "^7.3.2"
   }
 }
