@@ -105,7 +105,7 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
 
     ctx.webpack = this;
 
-    let config = { filePath };
+    let config = { file: null, options: {}, plugins: [] };
     try {
       config = await postcssrc(ctx, filePath);
     } catch (err) {
