@@ -81,7 +81,7 @@ export default function typeExpression(
     }
 
     if (type.type === 'intersection') {
-      return type.types.map(tt => typeExpression(tt, opts)).join(' & ');
+      return type.types.map((tt) => typeExpression(tt, opts)).join(' & ');
     }
 
     if (type.type === 'predicate') {
@@ -97,7 +97,9 @@ export default function typeExpression(
     if (type.type === 'reference') {
       const typeArgs =
         type.typeArguments?.length &&
-        `<${type.typeArguments!.map(t => typeExpression(t, opts)).join(', ')}>`;
+        `<${type
+          .typeArguments!.map((t) => typeExpression(t, opts))
+          .join(', ')}>`;
 
       // TypeDoc doesn't always type functions correctly
       if (!type.reference && type.name === '(Anonymous function)') {
@@ -115,7 +117,7 @@ export default function typeExpression(
     }
 
     if (type.type === 'tuple') {
-      return `[${type.elements.map(e => typeExpression(e, opts)).join(',')}]`;
+      return `[${type.elements.map((e) => typeExpression(e, opts)).join(',')}]`;
     }
 
     if (type.type === 'typeOperator') {
@@ -123,17 +125,19 @@ export default function typeExpression(
     }
 
     if (type.type === 'union') {
-      return type.types.map(tt => typeExpression(tt, opts)).join(' | ');
+      return type.types.map((tt) => typeExpression(tt, opts)).join(' | ');
     }
   }
 
   if (getFunctionNode(type)) {
-    console.log('FN', type);
     return 'function';
   }
 
-  // { Object literal }
+  if (type.kind === Kind.Class) {
+    return type.name;
+  }
 
+  // { Object literal }
   if (isObjecty(type) && type.typedocs?.length) {
     if (opts?.compact) {
       return !isInternalType(type) ? type.name : 'object';
@@ -141,7 +145,7 @@ export default function typeExpression(
 
     const props = type.typedocs
       .map(
-        child =>
+        (child) =>
           `${child.name}${child.flags.isOptional ? '?:' : ':'} ${typeExpression(
             child.type || child,
             opts,
