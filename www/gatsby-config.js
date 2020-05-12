@@ -40,7 +40,6 @@ module.exports = {
           babelrcRoots: true,
         },
         theming: 'minimal',
-        tailwindConfig: require.resolve('./src/tailwind.config'),
         typedocConfig: {
           tsconfig: require.resolve('./tsconfig.json'),
           mode: 'modules',

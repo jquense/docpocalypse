@@ -7,7 +7,7 @@
     "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/theme"
   },
-  "author": "4Catalyzer",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "scripts": {
     "tdd": "jest --watch",

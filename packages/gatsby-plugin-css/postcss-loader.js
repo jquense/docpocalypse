@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const path = require('path');
 
 const { getOptions } = require('loader-utils');
@@ -5,6 +6,72 @@ const postcss = require('postcss');
 const postcssrc = require('postcss-load-config');
 const postcssPkg = require('postcss/package.json');
 const satisfies = require('semver/functions/satisfies');
+
+/**
+ * **PostCSS Syntax Error**
+ *
+ * Loader wrapper for postcss syntax errors
+ *
+ * @class SyntaxError
+ * @extends Error
+ *
+ * @param {Object} err CssSyntaxError
+ */
+class SyntaxError extends Error {
+  constructor(error) {
+    super(error);
+
+    const { line, column, reason } = error;
+
+    this.name = 'SyntaxError';
+
+    this.message = `${this.name}\n\n`;
+
+    if (typeof line !== 'undefined') {
+      this.message += `(${line}:${column}) `;
+    }
+
+    this.message += `${reason}`;
+
+    const code = error.showSourceCode();
+
+    if (code) {
+      this.message += `\n\n${code}\n`;
+    }
+
+    this.stack = false;
+  }
+}
+
+/**
+ * **PostCSS Plugin Warning**
+ *
+ * Loader wrapper for postcss plugin warnings (`root.messages`)
+ *
+ * @class Warning
+ * @extends Error
+ *
+ * @param {Object} warning PostCSS Warning
+ */
+class Warning extends Error {
+  constructor(warning) {
+    super(warning);
+
+    const { text, line, column } = warning;
+
+    this.name = 'Warning';
+
+    this.message = `${this.name}\n\n`;
+
+    if (typeof line !== 'undefined') {
+      this.message += `(${line}:${column}) `;
+    }
+
+    this.message += `${text}`;
+
+    this.stack = false;
+  }
+}
 
 function createLoader(fn) {
   const overrides = fn ? fn(postcss) : undefined;
@@ -16,7 +83,13 @@ function createLoader(fn) {
     // eslint-disable-next-line no-use-before-define
     postcssLoader.call(this, source, inputMap, meta, overrides).then(
       (args) => callback(null, ...args),
-      (err) => callback(err),
+      (err) => {
+        if (err.file) this.addDependency(err.file);
+
+        return err.name === 'CssSyntaxError'
+          ? callback(new SyntaxError(err))
+          : callback(err);
+      },
     );
   };
 }
@@ -78,7 +151,10 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
   const getConfig = async () => {
     const programmaticOptions = getProgrammaticOptions(loaderOptions);
     const hasOptions =
-      programmaticOptions.plugins.length || programmaticOptions.options;
+      loaderOptions.parser ||
+      loaderOptions.syntax ||
+      loaderOptions.stringifier ||
+      loaderOptions.plugins;
 
     if (hasOptions || loaderOptions.config === false) {
       return programmaticOptions;
@@ -99,7 +175,7 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
         filePath = path.resolve(loaderOptions.config.path);
       }
       if (loaderOptions.config.ctx) {
-        ctx.loaderOptions = loaderOptions.config.ctx;
+        ctx.options = loaderOptions.config.ctx;
       }
     }
 
@@ -153,6 +229,18 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
 
   delete options.to;
 
+  if (typeof options.parser === 'string') {
+    options.parser = require(options.parser);
+  }
+
+  if (typeof options.syntax === 'string') {
+    options.syntax = require(options.syntax);
+  }
+
+  if (typeof options.stringifier === 'string') {
+    options.stringifier = require(options.stringifier);
+  }
+
   if (sourceMap && typeof inputMap === 'string') {
     inputMap = JSON.parse(inputMap);
   }
@@ -175,6 +263,10 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
   }
 
   let { css, map, root, processor, messages } = result;
+
+  result.warnings().forEach((warning) => {
+    this.emitWarning(new Warning(warning));
+  });
 
   messages.forEach((msg) => {
     if (msg.type === 'dependency') {
@@ -199,6 +291,10 @@ async function postcssLoader(source, inputMap, meta, overrides = {}) {
 
   meta.ast = ast;
   meta.messages = messages;
+
+  if (this.loaderIndex === 0) {
+    css = `module.exports = ${JSON.stringify(css)}`;
+  }
 
   return [css, map, meta];
 }

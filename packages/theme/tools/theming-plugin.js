@@ -1,13 +1,17 @@
+const fs = require('fs');
+const path = require('path');
+
+const { store } = require('gatsby/dist/redux');
 const merge = require('lodash/merge');
 const postcss = require('postcss');
 const postcssJs = require('postcss-js');
-const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
 const defaultConfig = require('tailwindcss/defaultConfig');
 const formatCSS = require('tailwindcss/lib/lib/formatCSS').default;
 const registerConfigAsDependency = require('tailwindcss/lib/lib/registerConfigAsDependency')
   .default;
 const processTailwindFeatures = require('tailwindcss/lib/processTailwindFeatures')
   .default;
+const resolveConfig = require('tailwindcss/lib/util/resolveConfig').default;
 
 const tailwindConfigPath = require.resolve('../tailwind.config');
 
@@ -97,7 +101,15 @@ function componentAtRulePlugin(getConfig, theming) {
 }
 
 const plugin = postcss.plugin('tailwind', (gatsbyThemeOptions = {}) => {
-  const { tailwindConfig: config = {}, theming = 'full' } = gatsbyThemeOptions;
+  let { tailwindConfig: config, theming = 'full' } = gatsbyThemeOptions;
+
+  if (config == null) {
+    const userDefaultConfig = path.join(
+      store.getState().program.directory,
+      './tailwind.config.js',
+    );
+    config = fs.existsSync(userDefaultConfig) ? userDefaultConfig : {};
+  }
 
   function getConfig() {
     delete require.cache[tailwindConfigPath];

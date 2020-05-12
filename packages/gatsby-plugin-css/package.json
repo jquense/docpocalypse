@@ -2,6 +2,14 @@
   "name": "gatsby-plugin-css",
   "version": "2.0.3",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jquense/docpocalypse.git",
+    "directory": "packages/gatsby-plugin-css"
+  },
+  "scripts": {
+    "test": "jest --env node --verbose"
+  },
   "peerDependencies": {
     "gatsby": "^2.8.2"
   },
@@ -14,5 +22,13 @@
     "postcss": "^7.0.29",
     "postcss-load-config": "^2.1.0",
     "semver": "^7.3.2"
+  },
+  "devDependencies": {
+    "@webpack-utilities/test": "^1.0.0-alpha.0",
+    "jest": "^23.0.0",
+    "postcss-import": "^11.0.0",
+    "postcss-js": "^2.0.0",
+    "sugarss": "^1.0.0",
+    "webpack": "^4.0.0"
   }
 }

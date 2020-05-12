@@ -2,7 +2,7 @@
   "name": "gatsby-plugin-typedoc",
   "main": "./gatsby-node.js",
   "version": "0.3.10",
-  "author": "Jason Quense",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

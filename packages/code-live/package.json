@@ -8,7 +8,7 @@
     "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/code-live"
   },
-  "author": "4Catalyzer",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "4c build src && node ../../tools/build-themes.js",

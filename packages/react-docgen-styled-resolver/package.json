@@ -7,7 +7,7 @@
     "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/react-docgen-styled-resolver"
   },
-  "author": "Jason Quense",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "4c build src",

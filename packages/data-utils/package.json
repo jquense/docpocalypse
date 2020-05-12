@@ -7,7 +7,7 @@
     "url": "https://github.com/jquense/docpocalypse.git",
     "directory": "packages/data-utils"
   },
-  "author": "4Catalyzer",
+  "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "4c build src",
