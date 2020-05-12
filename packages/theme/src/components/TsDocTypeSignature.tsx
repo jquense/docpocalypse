@@ -11,7 +11,6 @@ import { getFunctionNode } from './utils/tsDocTypeExpression';
 
 interface SignatureProps {
   definition: TypedocNode;
-  ignoreParams?: string[];
   compact?: boolean;
   arrowStyle?: boolean;
 }
@@ -20,7 +19,6 @@ export default function TsDocTypeSignature({
   definition,
   arrowStyle,
   compact,
-  ignoreParams = [],
 }: SignatureProps) {
   // eventually resolves to a function call
   if (getFunctionNode(definition)) {
@@ -28,7 +26,6 @@ export default function TsDocTypeSignature({
       <TsDocFunctionSignature
         compact={compact}
         definition={definition}
-        ignoreParams={ignoreParams}
         arrowStyle={arrowStyle}
       />
     );

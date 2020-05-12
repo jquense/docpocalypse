@@ -3,11 +3,12 @@ const base = require('tailwindcss/defaultTheme');
 const componentsSources = require('./tailwind-components.json');
 
 const components = {};
-Object.keys(componentsSources).forEach(key => {
+Object.keys(componentsSources).forEach((key) => {
   components[key] = true;
 });
 
 module.exports = ({ theming }) => ({
+  purge: false,
   theme: {
     screens: base.screens,
     colors: {
@@ -26,7 +27,7 @@ module.exports = ({ theming }) => ({
       default: base.fontFamily.sans,
       mono: base.fontFamily.mono,
     },
-    height: t => ({
+    height: (t) => ({
       ...base.height,
       navbar: t('spacing.16'),
     }),

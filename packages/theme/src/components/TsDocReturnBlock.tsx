@@ -3,10 +3,10 @@ import React from 'react';
 import DocTypeWrapper from './DocTypeWrapper';
 import Heading from './Heading';
 import Description from './TsDocComment';
-import { getReturnType } from './TsDocFunctionSignature';
 import Members from './TsDocMembers';
 import TsDocTypeExpression from './TsDocTypeExpression';
 import { TypedocNode } from './typedoc-types';
+import { getReturnType } from './utils/tsDocTypeExpression';
 
 interface Props {
   definition: TypedocNode;

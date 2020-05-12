@@ -5,14 +5,14 @@ import Heading from './Heading';
 import List from './List';
 import DocBlock from './TsDocBlock';
 import TitleSignature from './TsDocTitleSignature';
-import { Kind, TypedocNode } from './typedoc-types';
+import { TypedocNode } from './typedoc-types';
 import { getLinkedNode, isObjecty } from './utils/tsDocTypeExpression';
 
 const DocList = ({ elements, depth, ignoreParams }) => (
   <List>
     {(elements as TypedocNode[])
-      .filter(param => !ignoreParams.includes(param.name))
-      .map(param => (
+      .filter((param) => !ignoreParams.includes(param.name))
+      .map((param) => (
         <li
           key={param.name}
           css={dcss`
@@ -36,7 +36,7 @@ interface Props {
 }
 
 const typeParamsWithComment = (params?: TypedocNode[]) =>
-  params?.filter(p => p.description);
+  params?.filter((p) => p.description);
 
 function TsDocMembers({
   definition,

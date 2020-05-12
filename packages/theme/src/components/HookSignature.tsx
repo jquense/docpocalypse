@@ -5,11 +5,10 @@ import JsDocBlock from './JsDocBlock';
 import JsDocTitleSignature from './JsDocTitleSignature';
 import LinkedHeading from './LinkedHeading';
 import TsDocBlock from './TsDocBlock';
-import { getParams } from './TsDocFunctionSignature';
 import TsDocTitleSignature from './TsDocTitleSignature';
 import { TypedocNode } from './typedoc-types';
 import jsDocTypeExpression from './utils/jsDocTypeExpression';
-import tsDocTypeExpression from './utils/tsDocTypeExpression';
+import tsDocTypeExpression, { getParams } from './utils/tsDocTypeExpression';
 
 const styles = dcss`
   @component HookSignature {
@@ -38,7 +37,7 @@ const styles = dcss`
 function getTitle(jsDoc, tsDoc: TypedocNode) {
   if (jsDoc) {
     const params = jsDoc.params
-      ? jsDoc.params.map(param => {
+      ? jsDoc.params.map((param) => {
           const type = param.type && `${param.optional ? '?' : ''}`;
           return `${param.name}${type || ''}`;
         })

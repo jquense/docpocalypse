@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Kind, TypedocNode, TypedocType } from '../typedoc-types';
 
 export const getLinkedNode = (def?: TypedocNode) => {
@@ -17,7 +18,7 @@ export const isObjecty = (node: TypedocNode) =>
 
 export const getReadableName = (node: TypedocNode) => {
   // grumble
-  if (node.name === '__namedParameters') return 'Destructured Object';
+  if (node.name === '__namedParameters') return '__namedParameters';
   return isInternalType(node) ? node.originalName : node.name;
 };
 
@@ -25,6 +26,10 @@ export const getFunctionNode = (
   definition?: TypedocNode,
 ): false | TypedocNode => {
   if (!definition) return false;
+  if (definition.kind === Kind.TypeLiteral && definition.signatures?.length) {
+    return getFunctionNode(definition.signatures![0]);
+  }
+
   if (
     definition.kind === Kind.CallSignature ||
     definition.parameters?.length ||
@@ -35,8 +40,64 @@ export const getFunctionNode = (
   return getFunctionNode(getLinkedNode(definition));
 };
 
+export const getReturnType = (definition: TypedocNode) => {
+  if (definition.kind === Kind.CallSignature) {
+    return definition.type;
+  }
+  if (definition.kind === Kind.TypeLiteral) {
+    return getReturnType(definition.signatures![0]);
+  }
+
+  const typeNode = getLinkedNode(definition);
+  if (typeNode) return getReturnType(typeNode);
+
+  return definition.type || definition || { name: '???', type: 'intrinsic' };
+};
+
+export const getParams = (
+  def: TypedocNode,
+  {
+    includeTypes = true,
+    ignoreParams = [],
+  }: { includeTypes?: boolean; ignoreParams?: string[] } = {},
+) =>
+  def.parameters
+    ? def
+        .parameters!.filter((param) => !ignoreParams.includes(param.name))
+        .map((param) => {
+          const name = getReadableName(param);
+          const type =
+            param.type && includeTypes ? `: ${typeExpression(param.type)}` : '';
+
+          return `${param.flags.isRest ? '...' : ''}${name}${
+            param.flags.isOptional ? '?' : ''
+          }${type}`;
+        })
+    : [];
+
 const isType = (node: TypedocType | TypedocNode): node is TypedocType =>
   typeof node.type === 'string';
+
+export function tsFunctionExpression(
+  definition: TypedocNode,
+  opts: { compact?: boolean; arrowStyle?: boolean } = { arrowStyle: true },
+): string | null {
+  const def = getFunctionNode(definition);
+
+  if (!def) return null;
+
+  const typeParams = definition.typeParameter?.length
+    ? `<${definition.typeParameter.map((p) => p.name).join(', ')}>`
+    : '';
+
+  const params = getParams(def);
+
+  const returnType = getReturnType(definition);
+
+  return `${typeParams}(${params.join(', ')})${
+    opts.arrowStyle ? ' => ' : ': '
+  }${typeExpression(returnType, opts)}`;
+}
 
 export default function typeExpression(
   type: TypedocType | TypedocNode,
@@ -130,7 +191,10 @@ export default function typeExpression(
   }
 
   if (getFunctionNode(type)) {
-    return 'function';
+    return tsFunctionExpression(type, {
+      compact: opts?.compact,
+      arrowStyle: true,
+    });
   }
 
   if (type.kind === Kind.Class) {

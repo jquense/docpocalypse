@@ -20,7 +20,7 @@ const SignatureList = dstyled('ul')`
 
 function HookPage({ data }) {
   const { signatures, tsType, name, importName, example } = data.docpocalypse;
-  console.log(tsType);
+
   return (
     <PageLayout>
       <div>
@@ -38,10 +38,12 @@ function HookPage({ data }) {
       )}
       <SignatureList>
         {tsType?.signatures
-          ? tsType?.signatures.map(doc => (
+          ? tsType?.signatures.map((doc) => (
               <HookSignature level={3} tsDocType={doc} />
             ))
-          : signatures?.map(doc => <HookSignature level={3} jsDocType={doc} />)}
+          : signatures?.map((doc) => (
+              <HookSignature level={3} jsDocType={doc} />
+            ))}
       </SignatureList>
     </PageLayout>
   );

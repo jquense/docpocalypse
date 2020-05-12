@@ -39,7 +39,7 @@ export function mergeRefs<T>(refA?: Ref<T> | null, refB?: Ref<T> | null) {
 function useMergedRefs<T extends object>(
   refA?: Ref<T> | null,
   refB?: Ref<T> | null,
-) {
+): (value: T | null) => void {
   return useMemo(() => mergeRefs(refA, refB), [refA, refB]);
 }
 
