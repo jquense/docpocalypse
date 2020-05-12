@@ -1,7 +1,7 @@
 {
   "name": "gatsby-plugin-typedoc",
   "main": "./gatsby-node.js",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "author": "Jason Quense <monastic.panic@gmail.com>",
   "license": "MIT",
   "repository": {
@@ -44,7 +44,7 @@
     "jest": "^25.5.3"
   },
   "dependencies": {
-    "@docpocalypse/gatsby-data-utils": "^1.0.5",
+    "@docpocalypse/gatsby-data-utils": "^1.0.6",
     "chokidar": "^3.4.0",
     "lodash": "^4.17.15",
     "typedoc": "^0.17.6",

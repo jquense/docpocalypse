@@ -1,6 +1,6 @@
 {
   "name": "@docpocalypse/gatsby-theme",
-  "version": "0.11.23",
+  "version": "0.11.24",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -36,9 +36,9 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@docpocalypse/code-live": "^0.4.17",
-    "@docpocalypse/gatsby-theme-core": "^0.8.16",
-    "@docpocalypse/props-table": "^0.3.10",
+    "@docpocalypse/code-live": "^0.4.18",
+    "@docpocalypse/gatsby-theme-core": "^0.8.17",
+    "@docpocalypse/props-table": "^0.3.11",
     "@fortawesome/free-brands-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@mdx-js/mdx": "^1.6.0",
@@ -49,7 +49,7 @@
     "autoprefixer": "^9.7.6",
     "classnames": "^2.2.6",
     "gatsby-plugin-astroturf": "^0.2.1",
-    "gatsby-plugin-css": "^2.0.3",
+    "gatsby-plugin-css": "^2.1.0",
     "gatsby-plugin-mdx": "^1.2.4",
     "lodash": "^4.17.15",
     "postcss": "^7.0.27",
