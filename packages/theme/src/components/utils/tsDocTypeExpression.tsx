@@ -37,6 +37,11 @@ export const getFunctionNode = (
   )
     return definition;
 
+  // return the node if it's a method but no signatures
+  if (definition.kind === Kind.Method) {
+    return definition;
+  }
+
   return getFunctionNode(getLinkedNode(definition));
 };
 
@@ -44,8 +49,16 @@ export const getReturnType = (definition: TypedocNode) => {
   if (definition.kind === Kind.CallSignature) {
     return definition.type;
   }
-  if (definition.kind === Kind.TypeLiteral) {
-    return getReturnType(definition.signatures![0]);
+
+  if (
+    definition.kind === Kind.Function ||
+    definition.kind === Kind.Method ||
+    definition.kind === Kind.FunctionOrMethod ||
+    definition.kind === Kind.TypeLiteral
+  ) {
+    return definition.signatures!.length
+      ? getReturnType(definition.signatures![0])
+      : { name: 'void', type: 'intrinsic' }; // Methods that have no params or return value are (): void
   }
 
   const typeNode = getLinkedNode(definition);
@@ -78,6 +91,16 @@ export const getParams = (
 const isType = (node: TypedocType | TypedocNode): node is TypedocType =>
   typeof node.type === 'string';
 
+export function getPropertyKey(node: TypedocNode) {
+  return `${node.name}${node.flags.isOptional ? '?' : ''}`;
+}
+
+export function getGenericSuffix(typeParameters?: TypedocNode[]) {
+  return typeParameters?.length
+    ? `<${typeParameters.map((p) => p.name).join(', ')}>`
+    : '';
+}
+
 export function tsFunctionExpression(
   definition: TypedocNode,
   opts: { compact?: boolean; arrowStyle?: boolean } = { arrowStyle: true },
@@ -86,9 +109,7 @@ export function tsFunctionExpression(
 
   if (!def) return null;
 
-  const typeParams = definition.typeParameter?.length
-    ? `<${definition.typeParameter.map((p) => p.name).join(', ')}>`
-    : '';
+  const typeParams = getGenericSuffix(definition.typeParameter);
 
   const params = getParams(def);
 
@@ -99,10 +120,46 @@ export function tsFunctionExpression(
   }${typeExpression(returnType, opts)}`;
 }
 
+export function propertyEntries(
+  typedocs: TypedocNode[] = [],
+): Array<[TypedocNode, TypedocNode]> {
+  const result: [TypedocNode, TypedocNode][] = [];
+
+  for (const child of typedocs) {
+    if (child.kind === Kind.Method && child.signatures?.length) {
+      child.signatures.forEach((sig) => result.push([child, sig]));
+    } else {
+      result.push([child, child]);
+    }
+  }
+
+  return result;
+}
+
 export default function typeExpression(
   type: TypedocType | TypedocNode,
   opts: { compact?: boolean } = {},
 ) {
+  function printProperties(innerType: TypedocNode) {
+    return propertyEntries(innerType.typedocs).reduce(
+      (acc, [keyNode, child]) => {
+        const key = getPropertyKey(keyNode);
+
+        let value: string;
+        if (child.kind === Kind.Method) {
+          value = `${key}(): void`;
+        } else if (keyNode.kind === Kind.Method) {
+          value = `${key}${tsFunctionExpression(child, { arrowStyle: false })}`;
+        } else {
+          value = `${key}: ${typeExpression(child.type || child, opts)}`;
+        }
+
+        return acc ? `${acc}; ${value}` : value;
+      },
+      '',
+    );
+  }
+
   if (!type) return null;
 
   if (isType(type)) {
@@ -166,7 +223,11 @@ export default function typeExpression(
       if (!type.reference && type.name === '(Anonymous function)') {
         return 'function';
       }
-      return `${type.reference?.name ?? type.name}${typeArgs ?? ''}`;
+
+      // TODO handle type params for linked nodes?
+      return type.reference
+        ? typeExpression(type.reference, opts)
+        : `${type.name}${typeArgs ?? ''}`;
     }
 
     if (type.type === 'reflection') {
@@ -197,8 +258,21 @@ export default function typeExpression(
     });
   }
 
+  if (type.kind === Kind.TypeAlias) {
+    if (type.type && !opts?.compact) return typeExpression(type.type, opts);
+
+    return `${type.name}${getGenericSuffix(type.typeParameter)}`;
+  }
+
   if (type.kind === Kind.Class) {
-    return type.name;
+    return `${type.name}${getGenericSuffix(type.typeParameter)}`;
+  }
+
+  if (type.kind === Kind.Interface) {
+    const name = `${type.name}${getGenericSuffix(type.typeParameter)}`;
+    if (opts?.compact) return name;
+
+    return `${name} { ${printProperties(type)}; }`;
   }
 
   // { Object literal }
@@ -207,17 +281,7 @@ export default function typeExpression(
       return !isInternalType(type) ? type.name : 'object';
     }
 
-    const props = type.typedocs
-      .map(
-        (child) =>
-          `${child.name}${child.flags.isOptional ? '?:' : ':'} ${typeExpression(
-            child.type || child,
-            opts,
-          )}`,
-      )
-      .join('; ');
-
-    return `{ ${props}}`;
+    return `{ ${printProperties(type)}; }`;
   }
 
   return '???';

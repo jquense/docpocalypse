@@ -140,7 +140,7 @@ exports.createResolvers = ({ createResolvers }) => {
 
           const fieldsToVisit = [`elements`, `expression`, `applications`];
 
-          const resolve = obj => {
+          const resolve = (obj) => {
             if (!obj.typeDef___NODE) {
               return obj;
             }
@@ -154,21 +154,21 @@ exports.createResolvers = ({ createResolvers }) => {
             };
           };
 
-          const visit = obj => {
+          const visit = (obj) => {
             if (!obj) {
               return null;
             }
 
             const ret = { ...obj };
 
-            fieldsToVisit.forEach(fieldName => {
+            fieldsToVisit.forEach((fieldName) => {
               const v = obj[fieldName];
               if (!v) {
                 return;
               }
 
               if (Array.isArray(v)) {
-                ret[fieldName] = v.map(t => visit(resolve(t)));
+                ret[fieldName] = v.map((t) => visit(resolve(t)));
               } else {
                 ret[fieldName] = visit(resolve(v));
               }
@@ -220,18 +220,25 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
     const handledDocs = new WeakMap();
     const typeDefs = new Map();
 
-    const getNodeIDForType = typeName => {
+    const getNodeIDForType = (typeName, parent) => {
       if (typeDefs.has(typeName)) {
         return typeDefs.get(typeName);
       }
 
       const index = documentationJson.findIndex(
-        docsJson =>
+        (docsJson) =>
           docsJson.name === typeName &&
-          [`typedef`, `constant`].includes(docsJson.kind),
+          [`interface`, `typedef`, `constant`].includes(docsJson.kind),
       );
 
-      if (index !== -1) {
+      const isCycle = parent === documentationJson[index];
+
+      if (isCycle) {
+        helpers.reporter.warn(
+          `Unexpected cycle detected creating DocumentationJS nodes for file:\n\n\t${node.absolutePath}\n\nFor type: ${typeName}`,
+        );
+      }
+      if (index !== -1 && !isCycle) {
         // eslint-disable-next-line no-use-before-define
         return prepareNodeForDocs(documentationJson[index], {
           commentNumber: index,
@@ -241,21 +248,21 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
       return null;
     };
 
-    const tryToAddTypeDef = type => {
+    const tryToAddTypeDef = (type, parent) => {
       if (type.applications) {
-        type.applications.forEach(tryToAddTypeDef);
+        type.applications.forEach((t) => tryToAddTypeDef(t, parent));
       }
 
       if (type.expression) {
-        tryToAddTypeDef(type.expression);
+        tryToAddTypeDef(type.expression, parent);
       }
 
       if (type.elements) {
-        type.elements.forEach(tryToAddTypeDef);
+        type.elements.forEach((t) => tryToAddTypeDef(t, parent));
       }
 
       if (type.type === `NameExpression` && type.name) {
-        type.typeDef___NODE = getNodeIDForType(type.name);
+        type.typeDef___NODE = getNodeIDForType(type.name, parent);
       }
     };
 
@@ -337,12 +344,12 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
           picked.type = picked.type.expression;
         }
 
-        tryToAddTypeDef(picked.type);
+        tryToAddTypeDef(picked.type, docsJson);
       }
 
       const mdFields = [`description`, `deprecated`];
 
-      mdFields.forEach(fieldName => {
+      mdFields.forEach((fieldName) => {
         if (docsJson[fieldName]) {
           const childNode = prepareDescriptionNode(
             docSkeletonNode,
@@ -368,17 +375,14 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
         `todos`,
         `yields`,
       ];
-      docsSubfields.forEach(fieldName => {
+      docsSubfields.forEach((fieldName) => {
         if (docsJson[fieldName] && docsJson[fieldName].length > 0) {
           picked[`${fieldName}___NODE`] = docsJson[fieldName].map(
             (docObj, fieldIndex) => {
               // When documenting destructured parameters, the name
               // is parent.child where we just want the child.
               if (docObj.name && docObj.name.split(`.`).length > 1) {
-                docObj.name = docObj.name
-                  .split(`.`)
-                  .slice(-1)
-                  .join(`.`);
+                docObj.name = docObj.name.split(`.`).slice(-1).join(`.`);
               }
 
               const adjustedObj = {
@@ -413,7 +417,7 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
           docsJson.members,
           (acc, membersOfType, key) => {
             if (membersOfType.length > 0) {
-              acc[`${key}___NODE`] = membersOfType.map(member => {
+              acc[`${key}___NODE`] = membersOfType.map((member) => {
                 const nodeHierarchy = prepareNodeForDocs(member, {
                   level: level + 1,
                   parent: docSkeletonNode.id,
@@ -429,7 +433,7 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
       }
 
       if (docsJson.examples) {
-        picked.examples = docsJson.examples.map(example => {
+        picked.examples = docsJson.examples.map((example) => {
           return {
             ...example,
             raw: example.description,
@@ -465,7 +469,7 @@ exports.onCreateNode = async ({ node, actions, ...helpers }) => {
 
     const createChildrenNodesRecursively = ({ node: parent, children }) => {
       if (children) {
-        children.forEach(nodeHierarchy => {
+        children.forEach((nodeHierarchy) => {
           createNode(nodeHierarchy.node);
           createParentChildLink({
             parent,

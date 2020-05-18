@@ -28,7 +28,10 @@ function TsDocReturnBlock({ definition, depth = 0 }: Props) {
 
           <Description comment={definition.returnsDescription} />
 
-          <Members definition={returnType} depth={depth + 1} />
+          <Members
+            definition={returnType.reference || returnType}
+            depth={depth + 1}
+          />
         </>
       )}
     </>

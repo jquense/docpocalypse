@@ -9,7 +9,10 @@ module.exports = {
     {
       resolve: '@docpocalypse/gatsby-theme',
       options: {
-        sources: [path.resolve(__dirname, './src/hooks')],
+        sources: [
+          path.resolve(__dirname, './src/hooks'),
+          path.resolve(__dirname, './src/components'),
+        ],
         getImportName(docNode, _) {
           return `import { ${docNode.name} } from '${docNode.packageName}'`;
         },
@@ -19,7 +22,6 @@ module.exports = {
         propsLayout: 'list',
       },
     },
-
     {
       resolve: 'gatsby-plugin-typedoc',
       options: {
