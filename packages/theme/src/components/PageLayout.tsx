@@ -50,7 +50,7 @@ function PageLayout({ children, className, style }: Props) {
 
             order: 1;
 
-            @screen sm { @apply sm:px-12 };
+            @screen sm { @apply px-12 };
             @screen md { @apply col-span-9 };
             @screen xl { @apply col-span-8 };
           `}
