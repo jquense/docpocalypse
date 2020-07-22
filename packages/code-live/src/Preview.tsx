@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
 import useCallbackRef from '@restart/hooks/useCallbackRef';
+import React, { useEffect } from 'react';
+
 import ErrorBoundary from './ErrorBoundary';
 import { useElement, useError } from './Provider';
 
@@ -8,7 +9,7 @@ if (typeof window !== 'undefined') {
   holderjs = require('holderjs');
 }
 
-const Preview = ({ className, holderTheme }: any) => {
+const Preview = ({ className, holderTheme, ...props }: any) => {
   const [example, attachRef] = useCallbackRef<HTMLDivElement>();
   const hasTheme = !!holderTheme;
   const element = useElement();
@@ -36,6 +37,7 @@ const Preview = ({ className, holderTheme }: any) => {
   return error ? null : (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <div
+      {...props}
       role="region"
       aria-label="Code Example"
       ref={attachRef}
